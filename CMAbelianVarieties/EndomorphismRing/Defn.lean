@@ -1,4 +1,7 @@
-import Mathlib
+--import Mathlib
+import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+import Mathlib.CategoryTheory.Monoidal.Mon
+
 
 open CategoryTheory MonoidalCategory Mon MonObj CartesianMonoidalCategory
 
@@ -59,10 +62,5 @@ instance : Add (EndRing A) where
     }
   }
 
-#check Semiring
-section
-variable (f g : EndRing A)
 
-#check f + g
-
-end
+#min_imports
