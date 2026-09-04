@@ -1,7 +1,6 @@
 
-import Mathlib
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
-import Mathlib.CategoryTheory.Monoidal.Mon
+--import Mathlib
+import CMAbelianVarieties.AbstractNonsense.MonHom
 
 
 open CategoryTheory MonoidalCategory Mon MonObj CartesianMonoidalCategory
@@ -22,9 +21,6 @@ ring
 .
 I haven't given this much thought. So, I could easily be wrong
 -/
-
-
-
 
 instance : Add (Hom (mk A) (mk B)) where
   add f g := {
@@ -164,5 +160,45 @@ instance : Add (Hom (mk A) (mk B)) where
         rw[this, ← this₀]
     }
   }
+
+set_option linter.unusedSectionVars false
+lemma add_def_of_isCommMonObj_Hom (f g : (Hom (mk A) (mk B))) : (f + g).hom = (lift f.hom g.hom) ≫ μ
+    := rfl
+
+instance : AddCommSemigroup (Hom (mk A) (mk B)) where
+  add f g := f + g
+  add_assoc f g h := by
+    ext
+    simp only [add_def_of_isCommMonObj_Hom]
+    have : ((lift (lift f.hom g.hom) (h.hom)) ≫ (μ[B] ▷ B))
+        = lift (lift f.hom g.hom ≫ μ) h.hom := by
+      ext <;> simp
+    rw[← this]
+    have : (lift (lift f.hom g.hom) h.hom) ≫ (μ ▷ B) ≫ μ
+        = ((lift (lift f.hom g.hom) h.hom) ≫ (μ ▷ B)) ≫ μ := by
+      apply Category.assoc'
+    simp only [← this, MonObj.mul_assoc, Category.assoc']
+    have : ((lift (lift f.hom g.hom) h.hom ≫ (α_ B B B).hom) ≫ B ◁ μ)
+        = lift f.hom (lift g.hom h.hom ≫ μ) := by
+      ext <;> simp
+    rw[this]
+  add_comm f g := by
+    ext
+    simp only [add_def_of_isCommMonObj_Hom]
+    nth_rw 1 [← IsCommMonObj.mul_comm B, Category.assoc']
+    have : (lift f.hom g.hom ≫ (β_ B B).hom) = lift g.hom f.hom := by
+      ext <;> simp
+    rw[this]
+
+instance : AddCommMonoid (Hom (mk A) (mk B)) where
+  add f g := f + g
+  add_assoc := add_assoc
+  zero := zero_hom A B
+  zero_add := sorry
+  add_zero := sorry
+  nsmul := sorry
+  nsmul_zero := sorry
+  nsmul_succ := sorry
+  add_comm := add_comm
 
 #min_imports
