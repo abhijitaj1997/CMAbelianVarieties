@@ -103,8 +103,19 @@ instance : Add (Hom (mk A) (mk B)) where
         rw[← this, ← this₁, ← Category.assoc, Category.assoc, ← this₀]
         simp
 
-      mul_hom := by
-
+     mul_hom := by
+        have : μ[A] ≫ lift f.hom g.hom = lift (μ[A] ≫ f.hom) (μ[A] ≫ g.hom) := by
+          ext <;> simp
+        rw[← Category.assoc, this, f.isMonHom_hom.mul_hom, g.isMonHom_hom.mul_hom]
+        let comb (f₁ f₂ f₃ f₄ : A ⟶ B) : A ⊗ A ⟶ (B ⊗ B) ⊗ (B ⊗ B) :=
+          (lift f₁ f₂) ⊗ₘ (lift f₃ f₄)
+        have :  lift ((f.hom ⊗ₘ f.hom) ≫ μ) ((g.hom ⊗ₘ g.hom) ≫ μ)
+            = (comb f.hom f.hom g.hom g.hom) ≫ (μ[B] ⊗ₘ μ[B]) := by
+          ext
+          · simp
+            
+            sorry
+          · sorry
         sorry
     }
   }
