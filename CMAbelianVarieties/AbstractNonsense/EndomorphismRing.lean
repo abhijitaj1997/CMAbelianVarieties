@@ -1,6 +1,7 @@
-import Mathlib
+--import Mathlib
 import CMAbelianVarieties.AbstractNonsense.MonHom
-
+import Mathlib.Algebra.Ring.Defs
+import Mathlib.CategoryTheory.Monoidal.Grp
 
 open CategoryTheory MonoidalCategory Mon MonObj CartesianMonoidalCategory
 
