@@ -1,5 +1,4 @@
-
---import Mathlib
+import Mathlib
 import CMAbelianVarieties.AbstractNonsense.MonHom
 
 
@@ -20,6 +19,10 @@ ring
 .
 .
 I haven't given this much thought. So, I could easily be wrong
+-/
+
+/-
+## Addition
 -/
 
 instance : Add (Hom (mk A) (mk B)) where
@@ -190,15 +193,105 @@ instance : AddCommSemigroup (Hom (mk A) (mk B)) where
       ext <;> simp
     rw[this]
 
+
+lemma zero_hom.zero_add (f : Hom (mk A) (mk B)) : (zero_hom A B) + f = f := by
+    ext
+    rw[add_def_of_isCommMonObj_Hom]
+    have : lift (zero_hom A B).hom f.hom
+        = lift (toUnit A) (f.hom) ≫ (η ⊗ₘ (𝟙 B)) := by
+      ext
+      · simp only [lift_fst, tensorHom_id, lift_whiskerRight]; rfl
+      · simp only [lift_snd, tensorHom_id, lift_whiskerRight]
+    rw[this, Category.assoc]
+    simp[MonObj.one_mul B]
+
+instance : AddZeroClass (Hom (mk A) (mk B)) where
+  zero := zero_hom A B
+  add f g := f + g
+  zero_add f := zero_hom.zero_add _ _ f
+  add_zero f := by
+    rw[add_comm]
+    exact zero_hom.zero_add _ _ f
+
+def mon_hom.nsmul (n : ℕ) : (Hom (mk A) (mk B)) →  (Hom (mk A) (mk B)) :=
+  match n with
+  | Nat.zero => fun _ => 0
+  | Nat.succ m => fun f => (mon_hom.nsmul m f) + f
+
 instance : AddCommMonoid (Hom (mk A) (mk B)) where
   add f g := f + g
   add_assoc := add_assoc
-  zero := zero_hom A B
-  zero_add := sorry
-  add_zero := sorry
-  nsmul := sorry
-  nsmul_zero := sorry
-  nsmul_succ := sorry
+  zero := 0
+  zero_add := zero_add
+  add_zero := add_zero
+  nsmul n := mon_hom.nsmul A B n
+  nsmul_zero := fun _ => rfl
+  nsmul_succ := fun _ _ => rfl
   add_comm := add_comm
+
+
+instance [GrpObj A] [GrpObj B] : AddCommGroup (Hom (mk A) (mk B)) where
+  add f g := f + g
+  add_assoc := add_assoc
+  zero := 0
+  zero_add := zero_add
+  add_zero := add_zero
+  neg := sorry
+  zsmul := sorry
+  sub_eq_add_neg := sorry
+  zsmul_zero' := sorry
+  zsmul_succ' := sorry
+  zsmul_neg' := sorry
+  neg_add_cancel := sorry
+  add_comm := sorry
+
+/-
+## Multiplication
+-/
+
+
+
+instance : Mul (Hom (mk A) (mk A)) where
+  mul f g := {
+    hom := g.hom ≫ f.hom
+    isMonHom_hom := by infer_instance
+  }
+
+lemma mul_def_of_isCommMonObj_Hom (f g : (Hom (mk A) (mk A))) :
+    (f * g).hom = g.hom ≫ f.hom := rfl
+
+/-
+## Ring structures
+-/
+
+set_option linter.style.show false
+instance : Semiring (Hom (mk A) (mk A)) where
+  mul_assoc f g h := by
+    ext
+    simp[mul_def_of_isCommMonObj_Hom]
+  one := {
+    hom := 𝟙 A
+    isMonHom_hom := by infer_instance
+  }
+  one_mul f := by
+    ext
+    show f.hom ≫ (𝟙 A) = f.hom
+    simp only [Category.comp_id]
+  mul_one f := by
+    ext
+    show (𝟙 A) ≫ f.hom = f.hom
+    simp only [Category.id_comp]
+  zero_mul f := by
+    ext
+    show f.hom ≫ ((toUnit A) ≫ (MonObj.one : 𝟙_ C ⟶ A)) = ((toUnit A) ≫ (MonObj.one : 𝟙_ C ⟶ A))
+    simp only [comp_toUnit_assoc]
+  mul_zero f := by
+    ext
+    show ((toUnit A) ≫ (MonObj.one : 𝟙_ C ⟶ A)) ≫ f.hom = ((toUnit A) ≫ (MonObj.one : 𝟙_ C ⟶ A))
+    simp only [Category.assoc, IsMonHom.one_hom]
+  left_distrib f g h := by
+    ext
+    sorry
+  right_distrib := sorry
 
 #min_imports
