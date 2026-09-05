@@ -1,6 +1,10 @@
+module
+
 --import Mathlib
-import CMAbelianVarieties.AbstractNonsense.Kernels
-import Mathlib.AlgebraicGeometry.Group.Abelian
+public import CMAbelianVarieties.AbstractNonsense.Kernels
+public import Mathlib.AlgebraicGeometry.Group.Abelian
+
+@[expose] public section
 
 open CategoryTheory AlgebraicGeometry Mon Limits
 

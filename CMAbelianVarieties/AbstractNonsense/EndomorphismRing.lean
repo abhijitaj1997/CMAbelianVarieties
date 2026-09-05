@@ -1,5 +1,9 @@
+module
+
 --import Mathlib
-import CMAbelianVarieties.AbstractNonsense.MonHom
+public import CMAbelianVarieties.AbstractNonsense.MonHom
+
+@[expose] public section
 
 open CategoryTheory MonoidalCategory Mon MonObj CartesianMonoidalCategory
 
@@ -11,6 +15,8 @@ variable {B : C} [GrpObj B] [IsCommMonObj B]
 
 
 abbrev EndRing (A₀ : C) [MonObj A₀] [IsCommMonObj A₀] := Hom (mk A₀) (mk A₀)
+
+
 
 /-
 ## Addition

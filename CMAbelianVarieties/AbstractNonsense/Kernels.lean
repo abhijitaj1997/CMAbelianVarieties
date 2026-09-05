@@ -1,5 +1,9 @@
+module
+
 --import Mathlib
-import CMAbelianVarieties.AbstractNonsense.EndomorphismRing
+public import CMAbelianVarieties.AbstractNonsense.EndomorphismRing
+
+@[expose] public section
 
 open CategoryTheory Limits Mon MonObj MonoidalCategory CartesianMonoidalCategory
 

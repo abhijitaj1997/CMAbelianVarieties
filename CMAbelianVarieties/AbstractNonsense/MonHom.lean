@@ -1,5 +1,9 @@
+module
+
 --import Mathlib
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
+
+@[expose] public section
 
 open CategoryTheory MonoidalCategory Mon MonObj CartesianMonoidalCategory
 
