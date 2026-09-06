@@ -8,6 +8,11 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.GrpLimits
 
 public noncomputable section
 
+
+
+
+
+
 section
 open CategoryTheory MonoidalCategory Mon MonObj CartesianMonoidalCategory
 
@@ -22,6 +27,12 @@ variable (F G : Hom (mk A) (mk A))
 #check F * G
 
 #check Ring
+end
+
+
+
+
+
 
 
 
@@ -39,9 +50,14 @@ variable (n : ℤ)
 #check A[n]
 
 #check pullback A.hom A.hom
-
-
 end
+
+
+
+
+
+
+
 
 section
 open CategoryTheory Limits
@@ -55,10 +71,23 @@ variable [IsMonHom f] [IsMonHom g]
 --#synth GrpObj (pullback f g) --ERROR
 end
 
+
+
+
+
+
+
+
+
+
+
 section
+open AlgebraicGeometry Scheme Hom CategoryTheory
 
-open AlgebraicGeometry Scheme Hom
-
+variable {K} [Field K]
+variable {A : Over (Spec (.of K))} {B : Over (Spec (.of K))}
+variable [IsProper A.hom] [GeometricallyIntegral A.hom] [GrpObj A]
+variable (F : EndRing A) (n : ℤ)
 
 variable {X Y : Scheme} (f : X ⟶ Y)
 
@@ -66,6 +95,7 @@ variable {X Y : Scheme} (f : X ⟶ Y)
 --#check f⁻¹ᵁ
 
 #check IsFinite
+
 
 instance : IsAffineHom f where
   isAffine_preimage := by
@@ -77,40 +107,17 @@ instance : IsFinite f where
   isAffine_preimage := sorry
   finite_app := sorry
 
-end
-
-
-
-section
-open AlgebraicGeometry CategoryTheory Limits Mon MonObj MonoidalCategory CartesianMonoidalCategory
-
-variable (X : Scheme)
-
-#check Over X
-
-#check Scheme
-
-#synth Limits.HasPullbacks (Over X)
-#synth Category (Over X)
-#synth CartesianMonoidalCategory (Over X)
-
-
-open CategoryTheory Limits
-
-variable {A B X : C} [GrpObj A] [GrpObj B] [GrpObj X]
-variable {f : A ⟶ X} {g : B ⟶ X}
-variable [IsMonHom f] [IsMonHom g]
-variable (F : Hom (mk A) (mk X))
-variable [HasPullbacks C]
-
-#check pullback f g
-#check (pullback (Grp.ofHom F.hom) (Grp.ofHom η[X]))
-
-#check Grp.ofHom
-instance :  GrpObj (pullback (Grp.ofHom f) (Grp.ofHom g)).X := by
-  infer_instance
+#check GrpHom_ker (n[A])
 
 end
+
+
+
+
+
+
+
+
 
 
 #min_imports

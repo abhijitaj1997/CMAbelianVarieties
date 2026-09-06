@@ -13,23 +13,9 @@ variable (H : C) [MonObj H] [IsCommMonObj H]
 variable {A : C} [GrpObj A] [IsCommMonObj A]
 variable {B : C} [GrpObj B] [IsCommMonObj B]
 
-instance : IsMonHom (toUnit G) where
-  one_hom := by simp only [comp_toUnit, toUnit_unit, MonObj.one_def]
-  mul_hom := SemiCartesianMonoidalCategory.toUnit_unique_iff.mpr _root_.trivial
-
-instance : IsMonHom (η[G]) where
-  one_hom := by simp only [MonObj.one_def, Category.id_comp]
-  mul_hom := by
-    simp only [MonObj.mul_def, mul_one_hom]
-    have : (λ_ (𝟙_ C)).hom = (ρ_ (𝟙_ C)).hom := by
-      exact SemiCartesianMonoidalCategory.toUnit_unique_iff.mpr _root_.trivial
-    rw[this]
-
 def zero_hom : (Hom (mk G) (mk H)) where
   hom := (toUnit G) ≫ (MonObj.one : 𝟙_ C ⟶ H)
   isMonHom_hom := instIsMonHomComp (toUnit G) η[H]
-
---instance [GrpObj A] : IsMonHom (ι : A ⟶ A) := by infer_instance
 
 def comp_inv (f : A ⟶ B) [IsMonHom f] := ι ≫ f
 def inv_comp (f : A ⟶ B) [IsMonHom f] := f ≫ ι
