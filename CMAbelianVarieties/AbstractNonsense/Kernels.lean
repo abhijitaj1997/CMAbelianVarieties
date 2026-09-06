@@ -1,7 +1,7 @@
 module
 
 --import Mathlib
-public import CMAbelianVarieties.AbstractNonsense.EndomorphismRing
+public import CMAbelianVarieties.AbstractNonsense.MonHom
 
 @[expose] public section
 
@@ -28,11 +28,20 @@ noncomputable instance {f : Hom (mk A) (mk B)} [HasPullback (f.hom) η]
         have : (p₁ ≫ μ) ≫ f.hom = (p₂ ≫ μ) ≫ η := by
           simp only [Category.assoc, IsMonHom.mul_hom]
           have : (p₁ ≫ (f.hom ⊗ₘ f.hom)) = (p₂ ≫ (η ⊗ₘ η)) := by
-            ext
-            · simp only [Category.assoc, tensorHom_fst, p₁, p₂, tensorHom_fst_assoc]
-              sorry
-            · simp only [Category.assoc, tensorHom_snd, p₁, p₂, tensorHom_snd_assoc]
-              sorry
+            have fst : ((pullback.fst (f.hom) η) ≫
+                f.hom) ⊗ₘ ((pullback.fst (f.hom) η) ≫ f.hom) = (p₁ ≫ (f.hom ⊗ₘ f.hom))
+                := by
+              ext <;> simp only [tensorHom_fst_assoc, tensorHom_fst, Category.assoc, p₁,
+              tensorHom_snd, tensorHom_snd_assoc]
+            have snd : ((pullback.snd (f.hom) η) ≫
+                η[B]) ⊗ₘ ((pullback.snd (f.hom) η) ≫ η[B]) = (p₂ ≫ (η ⊗ₘ η))
+                := by
+              ext <;> simp only [tensorHom_fst_assoc, tensorHom_fst, Category.assoc, p₂,
+              tensorHom_snd, tensorHom_snd_assoc]
+            rw [← fst, ←  snd]
+            have : pullback.fst f.hom η ≫ f.hom = pullback.snd f.hom η ≫ η := by
+              exact pullback.condition
+            ext <;> simp only [tensorHom_fst, tensorHom_snd, pullback.condition]
           simp only [← Category.assoc, this]
         exact @pullback.lift _ _ _ _ _ _ (f.hom) η[B] _ (p₁ ≫ μ) (p₂ ≫ μ) this
       one_mul := sorry
@@ -41,3 +50,6 @@ noncomputable instance {f : Hom (mk A) (mk B)} [HasPullback (f.hom) η]
       inv := sorry
       left_inv := sorry
       right_inv := sorry
+
+
+#min_imports

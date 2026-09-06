@@ -1,7 +1,7 @@
 module
 
 --import Mathlib
-public import CMAbelianVarieties.AbstractNonsense.Kernels
+public import CMAbelianVarieties.AbstractNonsense.EndomorphismRing
 public import Mathlib.AlgebraicGeometry.Group.Abelian
 
 @[expose] public section
@@ -22,17 +22,6 @@ varieties give a finite free module.
 -/
 
 
-noncomputable def int_hom (n : ℤ) (A₀ : Over (Spec (.of K)))
-    [IsProper A₀.hom] [GeometricallyIntegral A₀.hom] [GrpObj A₀]
-    : Hom (mk A₀) (mk A₀) := n • 1
-
-noncomputable def ker_int (A₀ : Over (Spec (.of K))) (n : ℤ)
-    [IsProper A₀.hom] [GeometricallyIntegral A₀.hom] [GrpObj A₀]
-    : Over (Spec (.of K)) := GrpHom_ker (int_hom n A)
-
-
-notation:50 n:51 "[" A:51 "]" => int_hom n A
-notation:50 A:51 "[" n:51 "]" => ker_int A n
 
 
 instance hom_torsion_free : NoZeroSMulDivisors ℤ (Hom (mk A) (mk B)) where
