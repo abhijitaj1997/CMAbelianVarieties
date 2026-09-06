@@ -1,7 +1,8 @@
 module
 
 --import Mathlib
-public import CMAbelianVarieties.AbelianVarieties.Homomorphisms
+public import CMAbelianVarieties.AbelianVarieties.Homomorphisms.FiniteFree
+public import CMAbelianVarieties.AbelianVarieties.Homomorphisms.IntHom
 
 
 open CategoryTheory MonoidalCategory Mon MonObj CartesianMonoidalCategory
