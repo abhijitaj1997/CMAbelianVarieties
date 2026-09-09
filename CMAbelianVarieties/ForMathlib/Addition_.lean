@@ -30,7 +30,7 @@ lemma zero_comp_lift (f g : G ⟶ H) [IsAddMonHom f] [IsAddMonHom g]
   · simp [IsAddMonHom.zero_hom f]
   · simp [IsAddMonHom.zero_hom g]
 
-lemma leftUnitor_inv_comp_zero : (λ_ (𝟙_ C)).inv ≫ (ζ[H] ⊗ₘ ζ[H]) = lift ζ[H] ζ[H]
+lemma leftUnitor_neg_comp_zero : (λ_ (𝟙_ C)).inv ≫ (ζ[H] ⊗ₘ ζ[H]) = lift ζ[H] ζ[H]
     := by
   ext <;> simp only [mon_tauto] <;> simp
 
@@ -38,7 +38,7 @@ instance add_IsMonHom [BraidedCategory C] [IsCommAddMonObj H] {f g : G ⟶ H}
     [IsAddMonHom f] [IsAddMonHom g] : IsAddMonHom (IsAddMonHom.add f g) where
   zero_hom := by
     rw [reassoc_of% zero_comp_lift f g]
-    simp_rw [← reassoc_of% leftUnitor_inv_comp_zero, mon_tauto]
+    simp_rw [← reassoc_of% leftUnitor_neg_comp_zero, mon_tauto]
   add_hom := by
     have : σ[G] ≫ lift f g = lift (σ[G] ≫ f) (σ[G] ≫ g) := by
       ext <;> simp
