@@ -1,27 +1,27 @@
 module
 
-public import CMAbelianVarieties.ForMathlib.MonObj
+public import CMAbelianVarieties.ForMathlib.AddMonObj
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 
 
 @[expose] public section
 
-open CategoryTheory MonoidalCategory Mon MonObj CartesianMonoidalCategory
+open CategoryTheory MonoidalCategory AddMon AddMonObj CartesianMonoidalCategory
 
 variable {C} [Category C] [CartesianMonoidalCategory C] [BraidedCategory C]
-variable {A : C} [GrpObj A] [IsCommMonObj A]
-variable {B : C} [GrpObj B] [IsCommMonObj B]
+variable {A : C} [AddGrpObj A] [IsCommAddMonObj A]
+variable {B : C} [AddGrpObj B] [IsCommAddMonObj B]
 
-def inv_comp (f : A ⟶ B) := f ≫ ι
+-- name?
+def neg_comp (f : A ⟶ B) := f ≫ AddGrpObj.neg
 
-#synth IsMonHom (ι : A ⟶ A)
 
-def mon_hom.zsmul (n : ℤ) : (Hom (mk A) (mk B)) → (Hom (mk A) (mk B)) :=
+def AddMon.Hom.zsmul (n : ℤ) : (Hom (mk A) (mk B)) → (Hom (mk A) (mk B)) :=
   match n with
   | Int.ofNat m => Hom.nsmul m
   | Int.negSucc m => fun f => {
-      hom := inv_comp (Hom.nsmul (m + 1) f).hom
-      isMonHom_hom := instIsMonHomComp (Hom.nsmul (m + 1) f).hom ι
+      hom := neg_comp (Hom.nsmul (m + 1) f).hom
+      isAddMonHom_hom := instIsAddMonHomComp (Hom.nsmul (m + 1) f).hom AddGrpObj.neg
   }
 
 instance : AddCommGroup (Hom (mk A) (mk B)) where
@@ -31,19 +31,19 @@ instance : AddCommGroup (Hom (mk A) (mk B)) where
   zero_add := zero_add
   add_zero := add_zero
   neg f := {
-    hom := inv_comp f.hom
-    isMonHom_hom := instIsMonHomComp f.hom ι
+    hom := neg_comp f.hom
+    isAddMonHom_hom := instIsAddMonHomComp f.hom AddGrpObj.neg
   }
-  zsmul := mon_hom.zsmul
+  zsmul := AddMon.Hom.zsmul
   neg_add_cancel f := by
     ext
-    simp only [add_def_hom_of_Mon_Hom]
-    have : lift (inv_comp f.hom) f.hom = f.hom ≫ (lift ι (𝟙 B)) := by
+    simp only [AddMonHom.add_hom]
+    have : lift (neg_comp f.hom) f.hom = f.hom ≫ (lift AddGrpObj.neg (𝟙 B)) := by
       ext
       · simp only [lift_fst, comp_lift, Category.comp_id]
         rfl
       · simp only [lift_snd, comp_lift, Category.comp_id]
-    simp only [this, Category.assoc, GrpObj.left_inv, comp_toUnit_assoc]
+    simp only [this, Category.assoc, AddGrpObj.left_neg, comp_toUnit_assoc]
     rfl
   add_comm := add_comm
 

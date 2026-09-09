@@ -6,14 +6,16 @@ public import Mathlib.AlgebraicGeometry.Group.Abelian
 
 @[expose] public section
 
-open CategoryTheory AlgebraicGeometry Mon Limits
+open CategoryTheory AlgebraicGeometry AddMon Limits
 
 variable {K} [Field K]
 variable {A : Over (Spec (.of K))} {B : Over (Spec (.of K))}
-variable [IsProper A.hom] [GeometricallyIntegral A.hom] [GrpObj A]
-variable [IsProper B.hom] [GeometricallyIntegral B.hom] [GrpObj B]
+variable [IsProper A.hom] [GeometricallyIntegral A.hom] [AddGrpObj A]
+variable [IsProper B.hom] [GeometricallyIntegral B.hom] [AddGrpObj B]
 
-instance : IsCommMonObj A := isCommMonObj_of_isProper_of_geometricallyIntegral A
+-- this instance does not exist
+instance : IsCommAddMonObj A := sorry
+
 
 /-
 ## Main goal
@@ -23,7 +25,7 @@ varieties give a finite free module.
 
 
 
-
+/-
 instance hom_torsion_free : NoZeroSMulDivisors ℤ (Hom (mk A) (mk B)) where
   eq_zero_or_eq_zero_of_smul_eq_zero := by
     rintro n ⟨φ, isnt⟩ h
@@ -32,7 +34,7 @@ instance hom_torsion_free : NoZeroSMulDivisors ℤ (Hom (mk A) (mk B)) where
     · left; assumption
     · right
 
-      sorry
+      sorry-/
 
 
 #min_imports
