@@ -1,8 +1,19 @@
+/-
+Copyright (c) 2025 Abhijit A J. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Abhijit A J
+-/
 module
 
 --import Mathlib
-public import CMAbelianVarieties.AbstractNonsense.EndomorphismRing
+public import CMAbelianVarieties.ForMathlib.Endomorphism
 public import Mathlib.AlgebraicGeometry.Group.Abelian
+
+/-!
+## Main goal
+The main goal of this section is to show that the homomorphisms between abelian
+varieties give a finite free module.
+-/
 
 @[expose] public section
 
@@ -16,12 +27,6 @@ variable [IsProper B.hom] [GeometricallyIntegral B.hom] [AddGrpObj B]
 -- this instance does not exist
 instance : IsCommAddMonObj A := sorry
 
-
-/-
-## Main goal
-The main goal of this section is to show that the homomorphisms between abelian
-varieties give a finite free module.
--/
 
 
 

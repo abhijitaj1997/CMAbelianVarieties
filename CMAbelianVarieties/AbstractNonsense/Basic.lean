@@ -1,5 +1,3 @@
 module
 
-public import CMAbelianVarieties.AbstractNonsense.EndomorphismRing
 public import CMAbelianVarieties.AbstractNonsense.Kernels
-public import CMAbelianVarieties.AbstractNonsense.MonHom
