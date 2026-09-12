@@ -1,40 +1,37 @@
-/-
-Copyright (c) 2025 Abhijit A J. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Abhijit A J
--/
 module
-
-/-
-## Needs to be updated
-
-This page needs to be updated to additive notation
--/
 
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.GrpLimits
 
 /-!
-## Goal
+## Kernel of a group homomorphism
 
-In this file we will define the ker of a homomorphism
+The document defined the kernel of a homomorphisms of a group objects.
+
+_Incomplete bits_
+• `AddGrp C` does not have pullbacks - needs to be fixed
 -/
 
 @[expose] public noncomputable section
 
 
 section WHAT
-open CategoryTheory Limits AddMon AddMonObj MonoidalCategory CartesianMonoidalCategory
+open CategoryTheory Limits AddMonObj
 
-variable {C : Type*} [Category* C] [CartesianMonoidalCategory C] [BraidedCategory C] [HasPullbacks C]
+variable {C : Type*} [Category* C]
+variable [CartesianMonoidalCategory C] [BraidedCategory C] [HasPullbacks C]
 
 -- Needs to be fixed in mathlib
 #synth HasPullbacks (Grp C)
 instance : HasPullbacks (AddGrp C) := sorry
 
 
-def AddGrp.ker {A B : AddGrp C} [IsCommAddMonObj B.X] (f : A ⟶ B) : AddGrp C
-    where
-      X := pullback f.hom.hom ζ[B.X]
-      addGrp := sorry
+def AddGrp.inAddGrp_ker {A B : C} [AddGrpObj A] [AddGrpObj B] (f : A ⟶ B) [IsAddMonHom f]
+    : AddGrp C := (pullback (AddGrp.ofHom f) (AddGrp.ofHom ζ[B]))
+
+def AddGrp.ker {A B : C} [AddGrpObj A] [AddGrpObj B] (f : A ⟶ B) [IsAddMonHom f]
+    : C := (AddGrp.inAddGrp_ker f).X
+
+instance {A B : C} [AddGrpObj A] [AddGrpObj B] {f : A ⟶ B} [IsAddMonHom f]
+    : AddGrpObj (AddGrp.ker f) := (AddGrp.inAddGrp_ker f).addGrp
 
 #min_imports
