@@ -13,9 +13,7 @@ _Incomplete bits_
 
 @[expose] public noncomputable section
 
-
-section WHAT
-open CategoryTheory Limits AddMonObj
+open CategoryTheory Limits AddMonObj AddGrp
 
 variable {C : Type*} [Category* C]
 variable [CartesianMonoidalCategory C] [BraidedCategory C] [HasPullbacks C]
@@ -25,13 +23,13 @@ variable [CartesianMonoidalCategory C] [BraidedCategory C] [HasPullbacks C]
 instance : HasPullbacks (AddGrp C) := sorry
 
 
-def AddGrp.inAddGrp_ker {A B : C} [AddGrpObj A] [AddGrpObj B] (f : A ⟶ B) [IsAddMonHom f]
-    : AddGrp C := (pullback (AddGrp.ofHom f) (AddGrp.ofHom ζ[B]))
+abbrev AddGrp.inAddGrp_ker {A B : C} [AddGrpObj A] [AddGrpObj B] (f : (mk A) ⟶ (mk B))
+    : AddGrp C := (pullback f (AddGrp.ofHom ζ[B]))
 
-def AddGrp.ker {A B : C} [AddGrpObj A] [AddGrpObj B] (f : A ⟶ B) [IsAddMonHom f]
+abbrev AddGrp.ker {A B : C} [AddGrpObj A] [AddGrpObj B] (f : (mk A) ⟶ (mk B))
     : C := (AddGrp.inAddGrp_ker f).X
 
-instance {A B : C} [AddGrpObj A] [AddGrpObj B] {f : A ⟶ B} [IsAddMonHom f]
+instance {A B : C} [AddGrpObj A] [AddGrpObj B] {f : (mk A) ⟶ (mk B)}
     : AddGrpObj (AddGrp.ker f) := (AddGrp.inAddGrp_ker f).addGrp
 
 #min_imports
