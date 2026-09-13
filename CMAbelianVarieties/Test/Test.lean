@@ -14,19 +14,18 @@ public noncomputable section
 
 
 section
-open CategoryTheory MonoidalCategory Mon MonObj CartesianMonoidalCategory
+open CategoryTheory MonoidalCategory Grp GrpObj CartesianMonoidalCategory
 
 variable {C} [Category C] [CartesianMonoidalCategory C] [BraidedCategory C]
-variable {A : C} [GrpObj A] [IsCommMonObj A]
+variable {A : C} [AddGrpObj A] [IsCommAddMonObj A] {X : C}
 
-variable (f g : (EndRing A))
-variable (F G : Hom (mk A) (mk A))
+#check CategoryTheory.Hom.addCommMonoid
 
-#check f * g
-#check F + G
-#check F * G
+attribute [instance] CategoryTheory.Hom.addCommGroup
 
-#check Ring
+#synth AddMonoid (X ⟶ A)
+
+
 end
 
 
@@ -44,10 +43,6 @@ variable {K} [Field K]
 variable {A : Over (Spec (.of K))} {B : Over (Spec (.of K))}
 variable [IsProper A.hom] [GeometricallyIntegral A.hom] [GrpObj A]
 variable (n : ℤ)
-
-#check ((5[A]).hom : A ⟶ A)
-#check n[A]
-#check A[n]
 
 #check pullback A.hom A.hom
 end
@@ -87,7 +82,6 @@ open AlgebraicGeometry Scheme Hom CategoryTheory
 variable {K} [Field K]
 variable {A : Over (Spec (.of K))} {B : Over (Spec (.of K))}
 variable [IsProper A.hom] [GeometricallyIntegral A.hom] [GrpObj A]
-variable (F : EndRing A) (n : ℤ)
 
 variable {X Y : Scheme} (f : X ⟶ Y)
 
@@ -107,7 +101,6 @@ instance : IsFinite f where
   isAffine_preimage := sorry
   finite_app := sorry
 
-#check GrpHom_ker (n[A])
 
 end
 

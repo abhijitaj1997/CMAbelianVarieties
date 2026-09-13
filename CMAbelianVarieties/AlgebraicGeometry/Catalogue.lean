@@ -1,6 +1,7 @@
 module
 
-public import Mathlib
+public import Mathlib.AlgebraicGeometry.Artinian
+public import Mathlib.AlgebraicGeometry.Morphisms.Finite
 
 open AlgebraicGeometry Scheme Hom CategoryTheory Iso
 

@@ -1,18 +1,25 @@
 module
 
-public import CMAbelianVarieties.AbelianVarieties.Homomorphisms.FiniteFree
 public import CMAbelianVarieties.AlgebraicGeometry.Finite
+public import CMAbelianVarieties.ForMathlib.Endomorphism
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.GrpLimits
+public import Mathlib.AlgebraicGeometry.Geometrically.Integral
+public import Mathlib.AlgebraicGeometry.Morphisms.Proper
+
 
 /-!
+
 ## Properties of [n]
 
 The Goal of this file is discuss some basics about the map `[n] : A ⟶ A`. The
 main result is that when `n ≠ 0` `A[n]` is finite over `K` and hence discrete
 as a topological space.
 
-_Incomplete bits_
+_Incomplete tasks_
+• We need the `IsCommAddMonObj` instance
+• We need `AddGrp` to have pullbacks
 • I still haven't shown that fact that `[n] : A ⟶ A` is finite when `n ≠ 0`
-
+• We still need the group structure on `A[n]`
 -/
 
 @[expose] public noncomputable section
@@ -20,10 +27,15 @@ _Incomplete bits_
 open CategoryTheory AlgebraicGeometry AddGrp Limits AddMonObj MonoidalCategory
 
 variable {K} [Field K]
-variable {A : Over (Spec (.of K))} {B : Over (Spec ↧K)}
+variable {A : Over (Spec ↧K)} {B : Over (Spec ↧K)}
 variable [IsProper A.hom] [GeometricallyIntegral A.hom] [AddGrpObj A]
 variable [IsProper B.hom] [GeometricallyIntegral B.hom] [AddGrpObj B]
 
+instance : IsCommAddMonObj A := sorry
+
+-- Needs to be fixed in mathlib
+#synth HasPullbacks (Grp (Over (Spec ↧K)))
+instance : HasPullbacks (AddGrp (Over (Spec ↧K))) := sorry
 
 def int_hom (n : ℤ) (A₀ : Over (Spec ↧K))
     [IsProper A₀.hom] [GeometricallyIntegral A₀.hom] [AddGrpObj A₀]
@@ -39,8 +51,12 @@ abbrev ker_int (A₀ : Over (Spec ↧K)) (n : ℤ)
     [IsProper A₀.hom] [GeometricallyIntegral A₀.hom] [AddGrpObj A₀]
     : Over (Spec ↧K) := (pullback (n[A₀]) ζ[A₀])
 
-
 notation:50 A:51 "[" n:51 "]" => ker_int A n
+
+instance {n : ℤ} : AddGrpObj (A[n]) := by
+  rw [ker_int]
+
+  sorry
 
 lemma isFinite_int_hom {n : ℤ} (hn : n ≠ 0)
   : IsFinite (n[A]).left := sorry
