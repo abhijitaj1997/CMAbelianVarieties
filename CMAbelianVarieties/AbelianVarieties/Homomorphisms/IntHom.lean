@@ -20,11 +20,14 @@ _Incomplete tasks_
 • We need `AddGrp` to have pullbacks
 • I still haven't shown that fact that `[n] : A ⟶ A` is finite when `n ≠ 0`
 • We still need the group structure on `A[n]`
+• In addition to the above, we also need a AddMonHom structure on `lift f (toUnit)`
+• Also, `pullback_fst_hom`
 -/
 
 @[expose] public noncomputable section
 
 open CategoryTheory AlgebraicGeometry AddGrp Limits AddMonObj MonoidalCategory
+open CartesianMonoidalCategory
 
 variable {K} [Field K]
 variable {A : Over (Spec ↧K)} {B : Over (Spec ↧K)}
@@ -55,7 +58,17 @@ notation:50 A:51 "[" n:51 "]" => ker_int A n
 
 instance {n : ℤ} : AddGrpObj (A[n]) := by
   rw [ker_int]
+  #check (pullback (AddGrp.ofHom (n[A])) ζ).X
+  have : pullback (n[A]) ζ ≅ (pullback (AddGrp.ofHom (n[A])) ζ).X := by
+    sorry
   sorry
+
+lemma group_hom_to_kernel {n : ℤ} (f : A ⟶ B) [IsAddMonHom f]
+    (h : f ≫ (n[B]) = 0) : IsAddMonHom (pullback.lift f (toUnit A) h) := sorry
+
+
+lemma pullback_fst_hom (n : ℤ) : IsAddMonHom (pullback.fst (n[A]) ζ) := sorry
+
 
 lemma isFinite_int_hom {n : ℤ} (hn : n ≠ 0)
   : IsFinite (n[A]).left := sorry
@@ -74,6 +87,8 @@ lemma step₂ {n : ℤ} (hn : n ≠ 0) : IsFinite (pullback.snd (n[A]) ζ[A]).le
     rw [← Iso.hom_inv_id φ, Category.assoc]
     infer_instance
   exact finite_comp
+
+lemma step₂' {n : ℤ} (hn : n ≠ 0) : IsAffine (pullback (n[A]) ζ[A]).left := by sorry
 
 lemma step₃ {n : ℤ} (hn : n ≠ 0) : DiscreteTopology (A[n]).left :=
   @discrete_of_isFiniteOverField _ _ _ (pullback.snd (n[A]) ζ[A]).left (step₂ hn)

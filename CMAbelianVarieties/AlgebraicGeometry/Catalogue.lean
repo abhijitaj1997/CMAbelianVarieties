@@ -39,10 +39,12 @@ variable {ψ : α ⟶ β} [IsIso ψ]
 #check IsAffine.affine            -- if `X` is affine, then `X.toSpecΓ` is an iso
 #check IsAffine.of_isIso          -- Affineness defined up to isomorphism
 #check isAffine_of_isAffineHom    -- finite morphism + target affine => source is affine
+#check ext_of_isAffine            -- `f : X ⟶ Y ≅ Spec R` is entirely determined by `f♯`
 #check preimage_top f             -- `f⁻¹ᵁ ⊤ = ⊤`
 #check hom_inv_apply              -- `e : X ≅ Y`, `∀ x : X`, `e.inv (e.hom x) = x`
 #check inv_hom_apply              -- `e : X ≅ Y`, `∀ x : X`, `e.hom (e.inv x) = x`
 #check f.app V                    -- `Γ(Y, V) ⟶ Γ(X, f⁻¹ᵁ V)`
+#check f.appTop                   -- `Γ(Y, ⊤) ⟶ Γ(X, ⊤)`
 #check IsFinite.finite_app        -- if `f` is finite and `V` affine open, `(f.app V).hom` is finite
 #check IsArtinianScheme.finite    -- Artinian schemes are set theoretically finite
 

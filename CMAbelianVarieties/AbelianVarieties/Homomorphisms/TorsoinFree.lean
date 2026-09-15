@@ -77,7 +77,30 @@ example : Γ(A.left, ⊤) ≅ Γ((𝟙_ (Over (Spec ↧K))).left, ⊤) := by
 -- I picked ℕ becasue that is what I need below
 lemma comp_nat_eq_zero {n : ℕ} (hn : n ≠ 0)
     (h : f ≫ (AddGrp.ofHom (n[B])) = (0 : (mk A) ⟶ (mk B)))
-    : f = (0 : mk A ⟶ mk B) := by sorry
+    : f = (0 : mk A ⟶ mk B) := by
+  have hypo : f.hom.hom ≫ (n[B]) = 0 := by
+    have : (f ≫ (AddGrp.ofHom (n[B]))).hom.hom = f.hom.hom ≫ (n[B]) := by
+      simp
+    simp [← this, h] ; rfl
+  have : IsAddMonHom (pullback.lift f.hom.hom (toUnit A) hypo) := by
+    apply group_hom_to_kernel
+  have : IsAffine (pullback (n[B]) ζ).left := by
+    apply step₂'
+    intro h; apply hn
+    linarith
+  have : pullback.lift f.hom.hom (toUnit A) hypo ≫ pullback.fst (n[B]) ζ
+      = f.hom.hom := by
+    exact pullback.lift_fst f.hom.hom (toUnit A) hypo
+  --have : IsAddMonHom (pullback.lift f.hom.hom (toUnit A)) := by
+    --apply group_hom_to_kernel
+  have _ : IsAddMonHom (pullback.fst (n[B]) ζ) := by
+    apply pullback_fst_hom
+  have zero_comp₀ : 0 ≫ pullback.fst (n[B]) ζ = (0 : A ⟶ B) := by
+    apply AddMonObj.zero_comp
+  rw [homomorphism_to_affine (pullback.lift f.hom.hom (toUnit A) hypo), zero_comp₀]
+    at this
+  exact AddGrp.hom_ext_iff.mpr (id (Eq.symm this))
+
 
 lemma tor_free_hom : IsAddTorsionFree (mk A ⟶ mk B) where
   nsmul_right_injective n hn f₁ f₂ := by

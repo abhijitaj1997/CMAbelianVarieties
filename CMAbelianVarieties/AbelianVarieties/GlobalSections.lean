@@ -1,4 +1,4 @@
-  module
+module
 
 public import Mathlib.AlgebraicGeometry.Geometrically.Integral
 public import Mathlib.AlgebraicGeometry.Morphisms.Proper
@@ -10,7 +10,10 @@ public import Mathlib.RingTheory.SimpleRing.Principal
 ## Main goal
 
 The main goal of this section is to show that the global sections of an abelian
-variety over `K` is isomorphic to `K`
+variety over `K` is isomorphic to `K`.
+
+One major consequence of this result is that any additive group homomorphism
+to an affine scheme is trivial.
 -/
 
 @[expose] public noncomputable section
@@ -77,14 +80,15 @@ lemma comp_field_id {F₁ F₂ : CommRingCat} (h₁ : IsField F₁) (h₂ : IsFi
           exact h_inj this
         · exact h
 
+
+instance isIso_unit_op : IsIso (unit_op A)
+    := comp_field_id (isField_of_isIntegral_of_subsingleton (Spec (CommRingCat.of K)))
+  (isField_of_AbelianVariety A) (struct_comp_unit A)
+
 -- I am happy with this result!
 def globalSections_iso_baseField_abelianVariety (A : Over (Spec ↧K)) [IsProper A.hom]
     [GeometricallyIntegral A.hom] [AddGrpObj A] : Γ(A.left, ⊤) ≅ Γ((𝟙_ (Over (Spec ↧K))).left, ⊤)
-    := by
-  have : IsIso (unit_op A) :=
-    comp_field_id (isField_of_isIntegral_of_subsingleton (Spec (CommRingCat.of K)))
-    (isField_of_AbelianVariety A) (struct_comp_unit A)
-  exact asIso (unit_op A)
+    := asIso (unit_op A)
 
 
 
@@ -95,6 +99,21 @@ def globalSections_iso_baseField_abelianVariety (A : Over (Spec ↧K)) [IsProper
 example : Γ((𝟙_ (Over (Spec ↧K))).left, ⊤) ≅ ↧K := by
   simp only [Over.tensorUnit_left]
   exact ΓSpecIso (CommRingCat.of K)
+
+
+
+lemma homomorphism_to_affine {G : Over (Spec ↧K)} [IsAffine G.left] [AddGrpObj G] (f : A ⟶ G)
+    [IsAddMonHom f] : f = 0 := by
+  ext
+  have : ζ[A] ≫ f = ζ[A] ≫ 0 := by
+    rw[Hom.zero_def, IsAddMonHom.zero_hom f, IsAddMonHom.zero_hom (toUnit A ≫ ζ[G])]
+  have : (appTop f.left) ≫ (unit_op A) = (appTop (0 : A ⟶ G).left) ≫ (unit_op A) := by
+    have hf : (ζ[A] ≫ f).left.app ⊤ = (appTop f.left) ≫ (unit_op A) := by simp [unit_op]
+    rw [← hf, this]
+    simp [unit_op]
+  have : (appTop f.left) = (appTop (0 : A ⟶ G).left) := Mono.right_cancellation (appTop f.left)
+    (appTop (0 : A ⟶ G).left) this
+  exact ext_of_isAffine this
 
 
 #min_imports
