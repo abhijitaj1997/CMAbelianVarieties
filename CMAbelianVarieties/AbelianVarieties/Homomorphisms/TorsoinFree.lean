@@ -6,13 +6,15 @@ Authors: Abhijit A J
 module
 
 public import CMAbelianVarieties.AbelianVarieties.Homomorphisms.IntHom
+public import CMAbelianVarieties.AbelianVarieties.GlobalSections
 
 /-!
 ## Main goal
 The main goal of this section is to show that the homomorphisms between abelian
-varieties give a finite free module.
+varieties give a torsion free group.
 
 _Incomplete tasks_
+• Do I need to move the `nat_action` somewhere else. I might need it for finiteness?
 • I still need to show that if `f ≫ [n] = 0` then `f = 0` (when `n ≠ 0`)
 • I haven't started the finiteness at all.
 -/
@@ -20,7 +22,7 @@ _Incomplete tasks_
 @[expose] public noncomputable section
 
 open CategoryTheory AlgebraicGeometry AddGrp Limits CartesianMonoidalCategory
-open AddMonObj
+open AddMonObj MonoidalCategory
 
 variable {K} [Field K]
 variable {A : Over (Spec ↧K)} {B : Over (Spec ↧K)}
@@ -69,6 +71,9 @@ lemma nat_action (f : mk X ⟶ mk Y) (n : ℕ) : n • f = f ≫ (n • (𝟙 (m
 section Freeness
 variable {f : (mk A) ⟶ (mk B)}
 
+example : Γ(A.left, ⊤) ≅ Γ((𝟙_ (Over (Spec ↧K))).left, ⊤) := by
+  exact globalSections_iso_baseField_abelianVariety A
+
 -- I picked ℕ becasue that is what I need below
 lemma comp_nat_eq_zero {n : ℕ} (hn : n ≠ 0)
     (h : f ≫ (AddGrp.ofHom (n[B])) = (0 : (mk A) ⟶ (mk B)))
@@ -86,18 +91,10 @@ lemma tor_free_hom : IsAddTorsionFree (mk A ⟶ mk B) where
     rw [(@AddGrp.hom_ext_iff _ _ _ _ _ (n • (𝟙 (mk B))) (AddGrp.ofHom (n[B]))).2 rfl] at this
     exact comp_nat_eq_zero hn this
 
-#check Module.isTorsionFree_int_iff_isAddTorsionFree
-
 lemma module_tor_free_hom : Module.IsTorsionFree ℤ (mk A ⟶ mk B) := by
   rw [Module.isTorsionFree_int_iff_isAddTorsionFree]
   exact tor_free_hom
 
 end Freeness
-
-
-
-section Finiteness
-
-end Finiteness
 
 #min_imports

@@ -54,3 +54,8 @@ variable {ψ : α ⟶ β} [IsIso ψ]
 
 #check IsIso φ                    -- `φ` is an isomorphism
 #check asIso ψ                    -- gives the corresponding term of type `α ≅ β`
+
+-- ## FUNDAMENTAL EXAMPLES
+
+noncomputable example (X : Scheme) (R : CommRingCat) (f : X ⟶ Spec R) : (R ⟶ Γ(X, ⊤)) :=
+  (ΓSpec.adjunction.homEquiv' (Opposite.op R) X f).unop

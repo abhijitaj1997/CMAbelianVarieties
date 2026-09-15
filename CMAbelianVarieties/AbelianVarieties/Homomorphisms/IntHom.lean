@@ -55,7 +55,6 @@ notation:50 A:51 "[" n:51 "]" => ker_int A n
 
 instance {n : ℤ} : AddGrpObj (A[n]) := by
   rw [ker_int]
-
   sorry
 
 lemma isFinite_int_hom {n : ℤ} (hn : n ≠ 0)
