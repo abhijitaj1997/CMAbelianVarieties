@@ -1,4 +1,4 @@
 module
 
-public import CMAbelianVarieties.AbelianVarieties.Homomorphisms.FiniteFree
+public import CMAbelianVarieties.AbelianVarieties.Homomorphisms.TorsionFree
 public import CMAbelianVarieties.AbelianVarieties.Homomorphisms.IntHom

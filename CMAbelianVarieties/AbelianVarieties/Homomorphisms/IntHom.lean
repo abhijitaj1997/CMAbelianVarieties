@@ -5,6 +5,7 @@ public import CMAbelianVarieties.ForMathlib.Endomorphism
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.GrpLimits
 public import Mathlib.AlgebraicGeometry.Geometrically.Integral
 public import Mathlib.AlgebraicGeometry.Morphisms.Proper
+public import CMAbelianVarieties.AbstractNonsense.PullbackAddGrp
 
 
 /-!
@@ -16,12 +17,10 @@ main result is that when `n ≠ 0` `A[n]` is finite over `K` and hence discrete
 as a topological space.
 
 _Incomplete tasks_
-• We need the `IsCommAddMonObj` instance
-• We need `AddGrp` to have pullbacks
-• I still haven't shown that fact that `[n] : A ⟶ A` is finite when `n ≠ 0`
-• We still need the group structure on `A[n]`
-• In addition to the above, we also need a AddMonHom structure on `lift f (toUnit)`
-• Also, `pullback_fst_hom`
+• commutativity of abelian varieties
+• finiteness of `[n]`
+• finiteness of `A[n]`
+
 -/
 
 @[expose] public noncomputable section
@@ -35,10 +34,6 @@ variable [IsProper A.hom] [GeometricallyIntegral A.hom] [AddGrpObj A]
 variable [IsProper B.hom] [GeometricallyIntegral B.hom] [AddGrpObj B]
 
 instance : IsCommAddMonObj A := sorry
-
--- Needs to be fixed in mathlib
-#synth HasPullbacks (Grp (Over (Spec ↧K)))
-instance : HasPullbacks (AddGrp (Over (Spec ↧K))) := sorry
 
 def int_hom (n : ℤ) (A₀ : Over (Spec ↧K))
     [IsProper A₀.hom] [GeometricallyIntegral A₀.hom] [AddGrpObj A₀]
@@ -56,19 +51,7 @@ abbrev ker_int (A₀ : Over (Spec ↧K)) (n : ℤ)
 
 notation:50 A:51 "[" n:51 "]" => ker_int A n
 
-instance {n : ℤ} : AddGrpObj (A[n]) := by
-  rw [ker_int]
-  #check (pullback (AddGrp.ofHom (n[A])) ζ).X
-  have : pullback (n[A]) ζ ≅ (pullback (AddGrp.ofHom (n[A])) ζ).X := by
-    sorry
-  sorry
-
-lemma group_hom_to_kernel {n : ℤ} (f : A ⟶ B) [IsAddMonHom f]
-    (h : f ≫ (n[B]) = 0) : IsAddMonHom (pullback.lift f (toUnit A) h) := sorry
-
-
-lemma pullback_fst_hom (n : ℤ) : IsAddMonHom (pullback.fst (n[A]) ζ) := sorry
-
+#synth IsCommAddMonObj (A[19])
 
 lemma isFinite_int_hom {n : ℤ} (hn : n ≠ 0)
   : IsFinite (n[A]).left := sorry
@@ -88,7 +71,8 @@ lemma step₂ {n : ℤ} (hn : n ≠ 0) : IsFinite (pullback.snd (n[A]) ζ[A]).le
     infer_instance
   exact finite_comp
 
-lemma step₂' {n : ℤ} (hn : n ≠ 0) : IsAffine (pullback (n[A]) ζ[A]).left := by sorry
+lemma step₂' {n : ℤ} (hn : n ≠ 0) : IsAffine (pullback (n[A]) ζ[A]).left := by
+  sorry
 
 lemma step₃ {n : ℤ} (hn : n ≠ 0) : DiscreteTopology (A[n]).left :=
   @discrete_of_isFiniteOverField _ _ _ (pullback.snd (n[A]) ζ[A]).left (step₂ hn)

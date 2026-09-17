@@ -1,15 +1,15 @@
-import CMAbelianVarieties.AbelianVarieties.Homomorphisms.Basic
-import CMAbelianVarieties.AbelianVarieties.Homomorphisms.FiniteFree
-import CMAbelianVarieties.AbelianVarieties.Homomorphisms.IntHom
-import CMAbelianVarieties.AbstractNonsense.Basic
-import CMAbelianVarieties.AbstractNonsense.EndomorphismRing
-import CMAbelianVarieties.AbstractNonsense.Kernels
-import CMAbelianVarieties.AbstractNonsense.MonHom
-import CMAbelianVarieties.Basic
-import CMAbelianVarieties.ForMathlib.AddGrpObj
-import CMAbelianVarieties.ForMathlib.AddMonObj
-import CMAbelianVarieties.ForMathlib.Addition
-import CMAbelianVarieties.ForMathlib.Addition_
-import CMAbelianVarieties.ForMathlib.GrpObj
-import CMAbelianVarieties.ForMathlib.MonObj
-import CMAbelianVarieties.Test.Test
+module
+
+public import CMAbelianVarieties.AbelianVarieties.Catalogue
+public import CMAbelianVarieties.AbelianVarieties.GlobalSections
+public import CMAbelianVarieties.AbelianVarieties.Homomorphisms.Basic
+public import CMAbelianVarieties.AbelianVarieties.Homomorphisms.IntHom
+public import CMAbelianVarieties.AbelianVarieties.Homomorphisms.TorsionFree
+public import CMAbelianVarieties.AbelianVarieties.TateModule
+public import CMAbelianVarieties.AbstractNonsense.Basic
+public import CMAbelianVarieties.AbstractNonsense.Kernels
+public import CMAbelianVarieties.AlgebraicGeometry.Catalogue
+public import CMAbelianVarieties.AlgebraicGeometry.Finite
+public import CMAbelianVarieties.Basic
+public import CMAbelianVarieties.ForMathlib.Endomorphism
+public import CMAbelianVarieties.Test.Test
