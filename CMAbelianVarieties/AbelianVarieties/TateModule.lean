@@ -50,12 +50,43 @@ lemma rational_torsion (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyInt
         sorry
   sorry
 
-def torsion_map (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyIntegral A.hom]
-    [AddGrpObj A] (p n m : ℕ) (h : n ≥ m) : A[p ^ n](K) →+ A[p ^ m](K) where
-  toFun := sorry
-  map_zero' := sorry
-  map_add' := sorry
+/-
+Steps:
+1. Define a function from `A[n](K)` to function `{pt} → |A[n]|`
+2. the above function is injective
+3. this should imply finitness.
+-/
+lemma finite_torsion_points {n : ℤ} (A : Over (Spec ↧K)) [IsProper A.hom]
+    [GeometricallyIntegral A.hom] [AddGrpObj A] (hn : n ≠ 0) : Finite (AddGrpCat.mk (A[n](K)))
+    := by
+  simp
+  let : ((specᵤ K) ⟶ A[n]) →  ((specᵤ K).left.carrier ⟶ A[n].left.carrier) := sorry
+  #check (specᵤ K).left.carrier
+  #check Scheme
+  sorry
 
-#check ProfiniteGrp.limit
+def torsion_map_of_schemes (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyIntegral A.hom]
+    [AddGrpObj A] (p : ℤ) {n m : ℕ} (h : n ≥ m) : A[p ^ n] ⟶ A[p ^ m] := by
+  have : p  ^ m ∣ p ^ n := by
+    have : n = m + (n - m) := by
+      exact Eq.symm (Nat.add_sub_of_le h)
+    rw [Eq.symm (Nat.add_sub_of_le h), Int.pow_add]
+    use p ^ (n - m)
+  exact ker_int_hom A this
+
+instance {p : ℤ} {n m : ℕ} {h : n ≥ m} : IsAddMonHom (torsion_map_of_schemes A p h) := by
+  simp only [torsion_map_of_schemes]
+  infer_instance
+
+def torsion_map (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyIntegral A.hom]
+    [AddGrpObj A] (p : ℤ) {n m : ℕ} (h : n ≥ m) : A[p ^ n](K) →+ A[p ^ m](K) := by
+  exact IsAddMonHom.addMonoidHom (torsion_map_of_schemes A p h) (specᵤ K)
+
+def torsion_point_as_profinite {n : ℤ} (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyIntegral
+    A.hom] [AddGrpObj A] (hn : n ≠ 0) : ProfiniteAddGrp :=
+  ProfiniteAddGrp.ofFiniteAddGrp (@FiniteAddGrp.mk (AddGrpCat.mk (A[n](K))) (finite_torsion_points A
+  hn))
+
+
 
 #min_imports

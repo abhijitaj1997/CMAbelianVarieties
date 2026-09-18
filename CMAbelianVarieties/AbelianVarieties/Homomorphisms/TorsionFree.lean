@@ -7,6 +7,7 @@ module
 
 public import CMAbelianVarieties.AbelianVarieties.Homomorphisms.IntHom
 public import CMAbelianVarieties.AbelianVarieties.GlobalSections
+public import CMAbelianVarieties.AbstractNonsense.PullbackAddGrp
 
 /-!
 ## Main goal
@@ -83,7 +84,7 @@ lemma comp_nat_eq_zero {n : ℕ} (hn : n ≠ 0)
       simp
     simp [← this, h] ; rfl
   have : IsAddMonHom (pullback.lift f.hom.hom (toUnit A) hypo) := by
-    apply group_hom_to_kernel
+    apply IsAddMonHom.pullback_lift
   have : IsAffine (pullback (n[B]) ζ).left := by
     apply step₂'
     intro h; apply hn
@@ -93,8 +94,7 @@ lemma comp_nat_eq_zero {n : ℕ} (hn : n ≠ 0)
     exact pullback.lift_fst f.hom.hom (toUnit A) hypo
   --have : IsAddMonHom (pullback.lift f.hom.hom (toUnit A)) := by
     --apply group_hom_to_kernel
-  have _ : IsAddMonHom (pullback.fst (n[B]) ζ) := by
-    apply pullback_fst_hom
+  have _ : IsAddMonHom (pullback.fst (n[B]) ζ) := by infer_instance
   have zero_comp₀ : 0 ≫ pullback.fst (n[B]) ζ = (0 : A ⟶ B) := by
     apply AddMonObj.zero_comp
   rw [homomorphism_to_affine (pullback.lift f.hom.hom (toUnit A) hypo), zero_comp₀]

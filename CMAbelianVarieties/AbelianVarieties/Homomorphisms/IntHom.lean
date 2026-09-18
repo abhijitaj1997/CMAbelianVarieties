@@ -7,7 +7,6 @@ public import Mathlib.AlgebraicGeometry.Geometrically.Integral
 public import Mathlib.AlgebraicGeometry.Morphisms.Proper
 public import CMAbelianVarieties.AbstractNonsense.PullbackAddGrp
 
-
 /-!
 
 ## Properties of [n]
@@ -45,13 +44,32 @@ instance {n : ℤ} : IsAddMonHom (n[A]) := by
   rw [int_hom]
   infer_instance
 
+lemma int_hom_comp (n m : ℤ) (A₀ : Over (Spec ↧K))
+    [IsProper A₀.hom] [GeometricallyIntegral A₀.hom] [AddGrpObj A₀]
+    : (n[A₀]) ≫ (m[A₀]) =  ((m * n)[A₀]) := by
+  simp [int_hom]
+
 abbrev ker_int (A₀ : Over (Spec ↧K)) (n : ℤ)
     [IsProper A₀.hom] [GeometricallyIntegral A₀.hom] [AddGrpObj A₀]
     : Over (Spec ↧K) := (pullback (n[A₀]) ζ[A₀])
 
 notation:50 A:51 "[" n:51 "]" => ker_int A n
 
-#synth IsCommAddMonObj (A[19])
+def ker_int_hom {m n : ℤ} (A₀ : Over (Spec ↧K))
+    [IsProper A₀.hom] [GeometricallyIntegral A₀.hom] [AddGrpObj A₀]
+    (h : m ∣ n) : A₀[n] ⟶ A₀[m] := by
+  let k := n/m
+  have hk : m * k = n := by
+    exact Int.mul_ediv_cancel' h
+  have : ((pullback.fst (n[A₀]) ζ) ≫ (k[A₀])) ≫ (m[A₀]) = (pullback.snd (n[A₀]) ζ) ≫ ζ
+      := by
+    rw [← hk, Category.assoc, int_hom_comp]
+    exact pullback.condition
+  exact pullback.lift ((pullback.fst (n[A₀]) ζ) ≫ (k[A₀])) (pullback.snd (n[A₀]) ζ)
+
+
+instance {m n : ℤ} {h : m ∣ n} : IsAddMonHom (ker_int_hom A h) := by
+  apply IsAddMonHom.pullback_lift
 
 lemma isFinite_int_hom {n : ℤ} (hn : n ≠ 0)
   : IsFinite (n[A]).left := sorry
@@ -70,6 +88,9 @@ lemma step₂ {n : ℤ} (hn : n ≠ 0) : IsFinite (pullback.snd (n[A]) ζ[A]).le
     rw [← Iso.hom_inv_id φ, Category.assoc]
     infer_instance
   exact finite_comp
+
+lemma torsion_top_fintie {n : ℤ} {hn : n ≠ 0} : Finite (A[n]).left :=
+  @Finite_of_isFiniteOverField _ _ _ (pullback.snd (n[A]) ζ[A]).left (step₂ hn)
 
 lemma step₂' {n : ℤ} (hn : n ≠ 0) : IsAffine (pullback (n[A]) ζ[A]).left := by
   sorry
