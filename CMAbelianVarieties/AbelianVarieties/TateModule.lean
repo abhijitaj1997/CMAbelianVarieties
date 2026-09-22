@@ -133,15 +133,13 @@ def torsion_point_as_profinite {n : ℤ} (A : Over (Spec ↧K)) [IsProper A.hom]
 
 notation:50 A:51 "[" hn:51 "]ₚ" => torsion_point_as_profinite A hn
 
--- *This defintion was written by Claude*
--- It look wrong because it does not make use of the fact that `n ≠ 0`
--- So, its probably not the defintion we want.
 def torsion_point_as_profinite_map {m n : ℤ} (A : Over (Spec ↧K)) [IsProper A.hom]
     [GeometricallyIntegral A.hom] [AddGrpObj A] (h : m ∣ n) (hn : n ≠ 0) :
     let hm : m ≠ 0 := fun hm0 => hn (by obtain ⟨c, hc⟩ := h; subst hc; simp [hm0])
-    A[hn]ₚ ⟶ A[hm]ₚ :=
-  ProfiniteAddGrp.ofFiniteAddGrpHom (InducedCategory.homMk
-  (AddGrpCat.ofHom (IsAddMonHom.addMonoidHom (ker_int_hom A h) (specᵤ K))))
+    A[hn]ₚ ⟶ A[hm]ₚ := sorry
+-- This was claude's suggestion. But, it looks wrong because it does not use `hn`
+/-  ProfiniteAddGrp.ofFiniteAddGrpHom (InducedCategory.homMk
+  (AddGrpCat.ofHom (IsAddMonHom.addMonoidHom (ker_int_hom A h) (specᵤ K))))-/
 
 open Opposite
 
