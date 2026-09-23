@@ -1,0 +1,69 @@
+ToDo — unfinished results (still containing `sorry`)
+====================================================
+Line numbers refer to the files at commit 3cda701 and will drift as files change.
+
+
+AbstractNonsense/PullbackAddGrp.lean
+------------------------------------
+[ ] AddGrpObj (pullback f g)                                         (l.43)
+      The pullback of two group homomorphisms f : G → T, g : H → T is
+      again a group object (addition and zero taken componentwise).
+      Still missing: zero_add, add_zero, add_assoc, neg, left_neg, right_neg.
+
+[ ] IsCommAddMonObj (pullback f g)                                   (l.66)
+      If G and H are commutative, so is their pullback.
+
+[ ] IsAddMonHom (pullback.fst f g)                                   (l.71)
+      The projection G ×_T H → G is a group homomorphism.
+
+[ ] IsAddMonHom (pullback.snd f g)                                   (l.73)
+      The projection G ×_T H → H is a group homomorphism.
+
+[ ] IsAddMonHom.pullback_lift                                        (l.77)
+      A map into the pullback built from two group homomorphisms is
+      itself a group homomorphism.
+
+
+AbstractNonsense/Kernels.lean
+-----------------------------
+[ ] HasPullbacks (AddGrp C)                                          (l.25)
+      The category of group objects in C has pullbacks. (Probably belongs
+      in Mathlib; this file may not be needed.)
+
+
+AlgebraicGeometry/Finite.lean
+-----------------------------
+[ ] isArtinianScheme_of_isFiniteOverField                            (l.47)
+      A scheme that is finite over Spec K is Artinian.
+      Last step: move the Artinian property along X ≅ Spec Γ(X, ⊤).
+
+
+AbelianVarieties/Homomorphisms/IntHom.lean
+------------------------------------------
+[ ] IsCommAddMonObj A                                                (l.35)
+      Abelian varieties are commutative.
+
+[ ] isFinite_int_hom                                                 (l.74)
+      [n] : A → A is a finite morphism when n ≠ 0.
+
+[ ] step₂'                                                           (l.95)
+      The n-torsion A[n] is an affine scheme when n ≠ 0.
+
+
+AbelianVarieties/TateModule.lean
+--------------------------------
+[ ] int_hom_rational                                                 (l.31)
+      On points, [n] is multiplication by n: n • g = g ≫ [n].
+
+[ ] rational_torsion                                                 (l.34)
+      Every K-point of A[n] is killed by n.
+      Still missing: the inductive step and the final goal.
+
+[ ] torsion_map_comp                                                 (l.155)
+      The maps A[n](K) → A[m](K) compose correctly: going n → m → k
+      equals going n → k directly (for k ∣ m ∣ n).
+
+[ ] tate_module_chain, map_comp field                                (l.196–197)
+      The system (A[p^n](K))ₙ is a functor, i.e. the transition maps
+      compose correctly. Only two divisibility facts p^m ∣ p^n are
+      missing; the same argument is already in the `map` field.
