@@ -133,13 +133,33 @@ def torsion_point_as_profinite {n : ℤ} (A : Over (Spec ↧K)) [IsProper A.hom]
 
 notation:50 A:51 "[" hn:51 "]ₚ" => torsion_point_as_profinite A hn
 
+
+/-
+This was definition was given by Claude too. I am pretty sure it is correcy. But, I need to check
+-/
 def torsion_point_as_profinite_map {m n : ℤ} (A : Over (Spec ↧K)) [IsProper A.hom]
     [GeometricallyIntegral A.hom] [AddGrpObj A] (h : m ∣ n) (hn : n ≠ 0) :
-    let hm : m ≠ 0 := fun hm0 => hn (by obtain ⟨c, hc⟩ := h; subst hc; simp [hm0])
-    A[hn]ₚ ⟶ A[hm]ₚ := sorry
--- This was claude's suggestion. But, it looks wrong because it does not use `hn`
-/-  ProfiniteAddGrp.ofFiniteAddGrpHom (InducedCategory.homMk
-  (AddGrpCat.ofHom (IsAddMonHom.addMonoidHom (ker_int_hom A h) (specᵤ K))))-/
+  A[hn]ₚ ⟶ A[(ne_zero_of_dvd_ne_zero hn h)]ₚ := ProfiniteAddGrp.ofFiniteAddGrpHom (InducedCategory.homMk
+  (AddGrpCat.ofHom (IsAddMonHom.addMonoidHom (ker_int_hom A h) (specᵤ K))))
+
+lemma torsion_map_id {n : ℤ} (A : Over (Spec ↧K)) [IsProper A.hom]
+    [GeometricallyIntegral A.hom] [AddGrpObj A] (hn : n ≠ 0) :
+    torsion_point_as_profinite_map A (Int.dvd_refl n) hn = 𝟙 (A[hn]ₚ) := by
+  have : ker_int_hom A (Int.dvd_refl n) = 𝟙 (A[n]) := by
+    have : (1[A]) = 𝟙 A := by
+      simp [int_hom]
+    simp [ker_int_hom, Int.ediv_self hn, this]
+  simp only [torsion_point_as_profinite_map, this]
+  rfl
+
+lemma torsion_map_comp {k m n : ℤ} (A : Over (Spec ↧K)) [IsProper A.hom]
+    [GeometricallyIntegral A.hom] [AddGrpObj A] (hn : n ≠ 0) (hkm : k ∣ m)
+    (hmn : m ∣ n) :
+    (torsion_point_as_profinite_map A hmn hn) ≫ (torsion_point_as_profinite_map A hkm
+    (ne_zero_of_dvd_ne_zero hn hmn)) = (torsion_point_as_profinite_map A (Int.dvd_trans hkm hmn) hn)
+    := by
+
+  sorry
 
 open Opposite
 
@@ -153,21 +173,33 @@ def tate_module_chain (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyInte
     exact A[this]ₚ
   map φ := by
     rename_i n m
-    have : unop m ≤ unop n := by
-      exact le_of_op_hom φ
     have hn : (p ^ (unop n) : ℤ) ≠ 0 := by
       contrapose hp
       simp only [pow_eq_zero_iff', Int.natCast_eq_zero, ne_eq] at hp
       exact hp.1
     have : (p ^ (unop m) : ℤ) ∣ p ^ (unop n) := by
+      have : unop m ≤ unop n := by
+        exact le_of_op_hom φ
       obtain ⟨k, hk⟩ : p ^ (unop m) ∣ p ^ (unop n) := by
         exact Nat.pow_dvd_pow p this
       use k
       exact Eq.symm (Nat.ToInt.of_eq rfl rfl (id (Eq.symm hk)))
     exact torsion_point_as_profinite_map A this hn
   map_id n := by
-    sorry
-  map_comp := sorry
+    have : ((p ^ (unop n)) : ℤ) ≠ 0 := by
+      contrapose hp
+      simp only [pow_eq_zero_iff', Int.natCast_eq_zero, ne_eq] at hp
+      exact hp.1
+    exact torsion_map_id A this
+  map_comp := by
+    intro n m k hmn hmk
+    have hmn : (p ^ (unop m) : ℤ) ∣ p ^ (unop n) := sorry
+    have hkm : (p ^ (unop k) : ℤ) ∣ p ^ (unop m) := sorry
+    have hn : (p ^ (unop n) : ℤ) ≠ 0 := by
+      contrapose hp
+      simp only [pow_eq_zero_iff', Int.natCast_eq_zero, ne_eq] at hp
+      exact hp.1
+    exact (torsion_map_comp A hn hkm hmn).symm
 
 def tate_module (A : Over (Spec ↧K)) [IsProper A.hom]
     [GeometricallyIntegral A.hom] [AddGrpObj A] {p : ℕ} (hp : p.Prime) :
