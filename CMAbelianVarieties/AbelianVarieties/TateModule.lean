@@ -135,7 +135,8 @@ notation:50 A:51 "[" hn:51 "]ₚ" => torsion_point_as_profinite A hn
 
 
 /-
-This was definition was given by Claude too. I am pretty sure it is correcy. But, I need to check
+This was definition was given by Claude too.
+I am pretty confident that it is correcy. But, I need to check it again
 -/
 def torsion_point_as_profinite_map {m n : ℤ} (A : Over (Spec ↧K)) [IsProper A.hom]
     [GeometricallyIntegral A.hom] [AddGrpObj A] (h : m ∣ n) (hn : n ≠ 0) :
