@@ -6,6 +6,7 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.GrpLimits
 public import Mathlib.AlgebraicGeometry.Geometrically.Integral
 public import Mathlib.AlgebraicGeometry.Morphisms.Proper
 public import CMAbelianVarieties.AbstractNonsense.PullbackAddGrp
+public import CMAbelianVarieties.AbstractNonsense.IntHom
 
 /-!
 
@@ -25,7 +26,7 @@ _Incomplete tasks_
 @[expose] public noncomputable section
 
 open CategoryTheory AlgebraicGeometry AddGrp Limits AddMonObj MonoidalCategory
-open CartesianMonoidalCategory
+open CartesianMonoidalCategory IntHom
 
 variable {K} [Field K]
 variable {A : Over (Spec ↧K)} {B : Over (Spec ↧K)}
@@ -34,24 +35,14 @@ variable [IsProper B.hom] [GeometricallyIntegral B.hom] [AddGrpObj B]
 
 instance : IsCommAddMonObj A := sorry
 
-def int_hom (n : ℤ) (A₀ : Over (Spec ↧K))
-    [IsProper A₀.hom] [GeometricallyIntegral A₀.hom] [AddGrpObj A₀]
-    : A₀ ⟶ A₀ := (n • (1 : End (mk A₀))).hom.hom
-
-notation:50 n:51 "[" A:51 "]" => int_hom n A
-
-instance {n : ℤ} : IsAddMonHom (n[A]) := by
-  rw [int_hom]
-  infer_instance
-
 lemma int_hom_comp (n m : ℤ) (A₀ : Over (Spec ↧K))
     [IsProper A₀.hom] [GeometricallyIntegral A₀.hom] [AddGrpObj A₀]
-    : (n[A₀]) ≫ (m[A₀]) =  ((m * n)[A₀]) := by
+    : ([n]_ A₀) ≫ ([m]_ A₀) =  ([m * n]_ A₀) := by
   simp [int_hom]
 
 abbrev ker_int (A₀ : Over (Spec ↧K)) (n : ℤ)
     [IsProper A₀.hom] [GeometricallyIntegral A₀.hom] [AddGrpObj A₀]
-    : Over (Spec ↧K) := (pullback (n[A₀]) ζ[A₀])
+    : Over (Spec ↧K) := (pullback ([n]_ A₀) ζ[A₀])
 
 notation:50 A:51 "[" n:51 "]" => ker_int A n
 
@@ -61,23 +52,23 @@ def ker_int_hom {m n : ℤ} (A₀ : Over (Spec ↧K))
   let k := n/m
   have hk : m * k = n := by
     exact Int.mul_ediv_cancel' h
-  have : ((pullback.fst (n[A₀]) ζ) ≫ (k[A₀])) ≫ (m[A₀]) = (pullback.snd (n[A₀]) ζ) ≫ ζ
+  have : ((pullback.fst ([n]_ A₀) ζ) ≫ ([k]_ A₀)) ≫ ([m]_ A₀) = (pullback.snd ([n]_ A₀) ζ) ≫ ζ
       := by
     rw [← hk, Category.assoc, int_hom_comp]
     exact pullback.condition
-  exact pullback.lift ((pullback.fst (n[A₀]) ζ) ≫ (k[A₀])) (pullback.snd (n[A₀]) ζ)
+  exact pullback.lift ((pullback.fst ([n]_ A₀) ζ) ≫ ([k]_ A₀)) (pullback.snd ([n]_ A₀) ζ)
 
 def functorial_ker_int {A : Over (Spec ↧K)} [IsProper A.hom] [GeometricallyIntegral A.hom]
     [AddGrpObj A] {B : Over (Spec ↧K)} [IsProper B.hom] [GeometricallyIntegral B.hom]
     [AddGrpObj B] (n : ℤ) (f : A ⟶ B) : A[n] ⟶ B [n] := by
-  #check ((pullback.fst (n[A]) ζ) ≫ f : A[n] ⟶ B)
-  #check ((pullback.fst (n[A]) ζ) ≫ f) ≫ (n[B])
-  #check (pullback.snd (n[A]) ζ) ≫ ζ
+  #check ((pullback.fst ([n]_ A) ζ) ≫ f : A[n] ⟶ B)
+  #check ((pullback.fst ([n]_ A) ζ) ≫ f) ≫ ([n]_ B)
+  #check (pullback.snd ([n]_ A) ζ) ≫ ζ
   -- this needs `n ≫ f = f ≫ n`...but is that always true?
   -- the lemma `int_action` in TorsionFree.lean does a part of this
   -- this needs the target to be commutative. I need to do it in `AbstractNonsense`
   -- and f to be an group homomorphism (i.e., ℤ - linear)
-  have : ((pullback.fst (n[A]) ζ) ≫ f) ≫ (n[B]) = (pullback.snd (n[A]) ζ) ≫ ζ
+  have : ((pullback.fst ([n]_ A) ζ) ≫ f) ≫ ([n]_ B) = (pullback.snd ([n]_ A) ζ) ≫ ζ
       := by
 
     sorry
@@ -96,30 +87,30 @@ instance {m n : ℤ} {h : m ∣ n} : IsAddMonHom (ker_int_hom A h) := by
   apply IsAddMonHom.pullback_lift
 
 lemma isFinite_int_hom {n : ℤ} (hn : n ≠ 0)
-  : IsFinite (n[A]).left := sorry
+  : IsFinite ([n]_ A).left := sorry
 
-lemma step₁ {n : ℤ} (hn : n ≠ 0) : IsFinite (pullback.snd (n[A]).left ζ[A].left) := by
-  have : IsFinite (n[A]).left := isFinite_int_hom hn
-  exact IsFinite.instSndScheme (n[A]).left ζ[A].left
+lemma step₁ {n : ℤ} (hn : n ≠ 0) : IsFinite (pullback.snd ([n]_ A).left ζ[A].left) := by
+  have : IsFinite ([n]_ A).left := isFinite_int_hom hn
+  exact IsFinite.instSndScheme ([n]_ A).left ζ[A].left
 
-lemma step₂ {n : ℤ} (hn : n ≠ 0) : IsFinite (pullback.snd (n[A]) ζ[A]).left := by
-  let φ := (PreservesPullback.iso (Over.forget (Spec ↧K)) (n[A]) ζ)
-  let φ' := (Over.forget (Spec ↧K)).map (pullback.snd (n[A]) ζ)
+lemma step₂ {n : ℤ} (hn : n ≠ 0) : IsFinite (pullback.snd ([n]_ A) ζ[A]).left := by
+  let φ := (PreservesPullback.iso (Over.forget (Spec ↧K)) ([n]_ A) ζ)
+  let φ' := (Over.forget (Spec ↧K)).map (pullback.snd ([n]_ A) ζ)
   have : IsFinite (φ.inv ≫ φ') := by
-    rw[PreservesPullback.iso_inv_snd (Over.forget (Spec ↧K)) (n[A]) ζ[A]]
+    rw[PreservesPullback.iso_inv_snd (Over.forget (Spec ↧K)) ([n]_ A) ζ[A]]
     exact step₁ hn
-  have finite_comp : IsFinite ((𝟙 ((Over.forget (Spec ↧K)).obj (pullback (n[A]) ζ))) ≫ φ') := by
+  have finite_comp : IsFinite ((𝟙 ((Over.forget (Spec ↧K)).obj (pullback ([n]_ A) ζ))) ≫ φ') := by
     rw [← Iso.hom_inv_id φ, Category.assoc]
     infer_instance
   exact finite_comp
 
 lemma torsion_top_fintie {n : ℤ} {hn : n ≠ 0} : Finite (A[n]).left :=
-  @Finite_of_isFiniteOverField _ _ _ (pullback.snd (n[A]) ζ[A]).left (step₂ hn)
+  @Finite_of_isFiniteOverField _ _ _ (pullback.snd ([n]_ A) ζ[A]).left (step₂ hn)
 
-lemma step₂' {n : ℤ} (hn : n ≠ 0) : IsAffine (pullback (n[A]) ζ[A]).left := by
+lemma step₂' {n : ℤ} (hn : n ≠ 0) : IsAffine (pullback ([n]_ A) ζ[A]).left := by
   sorry
 
 lemma step₃ {n : ℤ} (hn : n ≠ 0) : DiscreteTopology (A[n]).left :=
-  @discrete_of_isFiniteOverField _ _ _ (pullback.snd (n[A]) ζ[A]).left (step₂ hn)
+  @discrete_of_isFiniteOverField _ _ _ (pullback.snd ([n]_ A) ζ[A]).left (step₂ hn)
 
 #min_imports

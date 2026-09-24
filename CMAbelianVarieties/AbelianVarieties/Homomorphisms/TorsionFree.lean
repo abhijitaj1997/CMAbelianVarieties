@@ -23,7 +23,7 @@ _Incomplete tasks_
 @[expose] public noncomputable section
 
 open CategoryTheory AlgebraicGeometry AddGrp Limits CartesianMonoidalCategory
-open AddMonObj MonoidalCategory
+open AddMonObj MonoidalCategory IntHom
 
 variable {K} [Field K]
 variable {A : Over (Spec ↧K)} {B : Over (Spec ↧K)}
@@ -56,18 +56,26 @@ lemma int_action (f : mk X ⟶ mk Y) (n : ℤ) : n • f = f ≫ (n • (𝟙 (m
       apply eq_neg_of_add_eq_zero_left
       simp only [neg_add_cancel]
 
-lemma nat_action (f : mk X ⟶ mk Y) (n : ℕ) : n • f = f ≫ (n • (𝟙 (mk Y))) := by
-  have comp_add (g h : mk Y ⟶ mk Y) : f ≫ (g + h) = f ≫ g + f ≫ h
-      := by
-    have {C : Over (Spec ↧K)} [AddGrpObj C] (φ ψ : mk C ⟶ mk Y) : φ + ψ = lift φ ψ ≫ σ := rfl
-    simp [this]
-    have : f ≫ lift g h = lift (f ≫ g) (f ≫ h) := by
-        ext <;> simp
-    simp [Category.assoc', this]
+lemma nat_action (f : mk X ⟶ mk Y) (n : ℕ) : n • f = f ≫ (AddGrp.ofHom ([n]_ Y))
+    := by
   induction n with
-  | zero => simp
-  | succ d hd => simp [add_smul, comp_add, hd]
-
+  | zero =>
+      have : ofHom ([0]_ Y) = 0 := by
+        simp [int_hom]; rfl
+      simp [this]; rfl
+  | succ d hd =>
+      have : f = f ≫ ofHom ([1]_ Y) := by
+        simp only [int_hom, Int.cast_one, End.one_def, id', AddMon.id_hom']
+        exact AddGrp.hom_ext_iff.mpr rfl
+      simp only [add_smul, hd, one_smul]
+      nth_rw 2 [this]
+      simp only [← comp_add]
+      have : IsAddMonHom ([d]_ Y + [1]_ Y) := by
+        rw[← int_hom_add]
+        infer_instance
+      have : (ofHom ([↑d]_ Y) + ofHom ([1]_ Y)) = ofHom ([↑d]_ Y + [1]_ Y)
+          := rfl
+      simp [this, ← int_hom_add]
 
 section Freeness
 variable {f : (mk A) ⟶ (mk B)}
@@ -77,30 +85,29 @@ example : Γ(A.left, ⊤) ≅ Γ((𝟙_ (Over (Spec ↧K))).left, ⊤) := by
 
 -- I picked ℕ becasue that is what I need below
 lemma comp_nat_eq_zero {n : ℕ} (hn : n ≠ 0)
-    (h : f ≫ (AddGrp.ofHom (n[B])) = (0 : (mk A) ⟶ (mk B)))
+    (h : f ≫ (AddGrp.ofHom ([n]_ B)) = (0 : (mk A) ⟶ (mk B)))
     : f = (0 : mk A ⟶ mk B) := by
-  have hypo : f.hom.hom ≫ (n[B]) = 0 := by
-    have : (f ≫ (AddGrp.ofHom (n[B]))).hom.hom = f.hom.hom ≫ (n[B]) := by
+  have hypo : f.hom.hom ≫ ([n]_ B) = 0 := by
+    have : (f ≫ (AddGrp.ofHom ([n]_ B))).hom.hom = f.hom.hom ≫ ([n]_ B) := by
       simp
     simp [← this, h] ; rfl
   have : IsAddMonHom (pullback.lift f.hom.hom (toUnit A) hypo) := by
     apply IsAddMonHom.pullback_lift
-  have : IsAffine (pullback (n[B]) ζ).left := by
+  have : IsAffine (pullback ([n]_ B) ζ).left := by
     apply step₂'
     intro h; apply hn
     linarith
-  have : pullback.lift f.hom.hom (toUnit A) hypo ≫ pullback.fst (n[B]) ζ
+  have : pullback.lift f.hom.hom (toUnit A) hypo ≫ pullback.fst ([n]_ B) ζ
       = f.hom.hom := by
     exact pullback.lift_fst f.hom.hom (toUnit A) hypo
   --have : IsAddMonHom (pullback.lift f.hom.hom (toUnit A)) := by
     --apply group_hom_to_kernel
-  have _ : IsAddMonHom (pullback.fst (n[B]) ζ) := by infer_instance
-  have zero_comp₀ : 0 ≫ pullback.fst (n[B]) ζ = (0 : A ⟶ B) := by
+  have _ : IsAddMonHom (pullback.fst ([n]_ B) ζ) := by infer_instance
+  have zero_comp₀ : 0 ≫ pullback.fst ([n]_ B) ζ = (0 : A ⟶ B) := by
     apply AddMonObj.zero_comp
   rw [homomorphism_to_affine (pullback.lift f.hom.hom (toUnit A) hypo), zero_comp₀]
     at this
   exact AddGrp.hom_ext_iff.mpr (id (Eq.symm this))
-
 
 lemma tor_free_hom : IsAddTorsionFree (mk A ⟶ mk B) where
   nsmul_right_injective n hn f₁ f₂ := by
@@ -111,7 +118,6 @@ lemma tor_free_hom : IsAddTorsionFree (mk A ⟶ mk B) where
       rfl
     rw [sub_eq_zero.symm]
     rw [nat_action (f₁ - f₂) n] at this
-    rw [(@AddGrp.hom_ext_iff _ _ _ _ _ (n • (𝟙 (mk B))) (AddGrp.ofHom (n[B]))).2 rfl] at this
     exact comp_nat_eq_zero hn this
 
 lemma module_tor_free_hom : Module.IsTorsionFree ℤ (mk A ⟶ mk B) := by

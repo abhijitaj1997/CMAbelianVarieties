@@ -13,7 +13,7 @@ The main goal of this section is to define the Tate module of an Abelian Variety
 @[expose] public noncomputable section
 
 open CategoryTheory AlgebraicGeometry AddGrp Limits CartesianMonoidalCategory
-open AddMonObj MonoidalCategory
+open AddMonObj MonoidalCategory IntHom
 
 open AlgebraicGeometry Scheme Hom CategoryTheory Iso
 
@@ -25,11 +25,11 @@ variable [IsProper A.hom] [GeometricallyIntegral A.hom] [AddGrpObj A]
 the unit element in `Over (Spec ↧K)`, i.e, `Spec K`
 -/
 abbrev specᵤ (K : Type*) [Field K] := 𝟙_ (Over (Spec ↧K))
-abbrev p₁ (n : ℤ) := pullback.fst (n[A]) ζ
-abbrev p₂ (n : ℤ) := pullback.snd (n[A]) ζ
+abbrev p₁ (n : ℤ) := pullback.fst ([n]_ A) ζ
+abbrev p₂ (n : ℤ) := pullback.snd ([n]_ A) ζ
 
 lemma int_hom_rational (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyIntegral A.hom]
-    [AddGrpObj A] (n : ℕ) (X : Over (Spec ↧K)) : ∀ g : X ⟶ A, n • g = g ≫ (n[A]) := sorry
+    [AddGrpObj A] (n : ℕ) (X : Over (Spec ↧K)) : ∀ g : X ⟶ A, n • g = g ≫ ([n]_ A) := sorry
 
 lemma rational_torsion (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyIntegral A.hom]
     [AddGrpObj A] (n : ℕ) : ∀ g : (specᵤ K ⟶ A[n]), n • g = 0 := by
@@ -37,7 +37,7 @@ lemma rational_torsion (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyInt
   let p : (specᵤ K ⟶ A[n]) →ₗ[ℤ] (specᵤ K ⟶ A)
     := AddMonoidHom.toIntLinearMap (IsAddMonHom.addMonoidHom (p₁ n) (specᵤ K))
   have : p (n • g) = n • p g := LinearMap.map_smul_of_tower p n g
-  have : n • p g = p g ≫ (n[A]) := by
+  have : n • p g = p g ≫ ([n]_ A) := by
     induction n with
     | zero =>
         simp [int_hom]; rfl
@@ -57,8 +57,8 @@ Steps:
 lemma finite_torsion_points {n : ℤ} (A : Over (Spec ↧K)) [IsProper A.hom]
     [GeometricallyIntegral A.hom] [AddGrpObj A] (hn : n ≠ 0) :
     Finite (AddGrpCat.mk (specᵤ K ⟶ A[n])) := by
-  have hhom : (A[n]).hom = (pullback.snd (n[A]) ζ[A]).left := by
-    have := Over.w (pullback.snd (n[A]) ζ[A])
+  have hhom : (A[n]).hom = (pullback.snd ([n]_ A) ζ[A]).left := by
+    have := Over.w (pullback.snd ([n]_ A) ζ[A])
     simpa using this.symm
   set X := (A[n]).left with hX
   have hfin : IsFinite ((A[n]).hom) := hhom ▸ step₂ hn
@@ -147,7 +147,7 @@ lemma torsion_map_id {n : ℤ} (A : Over (Spec ↧K)) [IsProper A.hom]
     [GeometricallyIntegral A.hom] [AddGrpObj A] (hn : n ≠ 0) :
     torsion_point_as_profinite_map A (Int.dvd_refl n) hn = 𝟙 (A[hn]ₚ) := by
   have : ker_int_hom A (Int.dvd_refl n) = 𝟙 (A[n]) := by
-    have : (1[A]) = 𝟙 A := by
+    have : ([1]_ A) = 𝟙 A := by
       simp [int_hom]
     simp [ker_int_hom, Int.ediv_self hn, this]
   simp only [torsion_point_as_profinite_map, this]
