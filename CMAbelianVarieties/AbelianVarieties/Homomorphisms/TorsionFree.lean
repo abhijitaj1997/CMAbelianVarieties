@@ -80,9 +80,6 @@ lemma nat_action (f : mk X ⟶ mk Y) (n : ℕ) : n • f = f ≫ (AddGrp.ofHom (
 section Freeness
 variable {f : (mk A) ⟶ (mk B)}
 
-example : Γ(A.left, ⊤) ≅ Γ((𝟙_ (Over (Spec ↧K))).left, ⊤) := by
-  exact globalSections_iso_baseField_abelianVariety A
-
 -- I picked ℕ becasue that is what I need below
 lemma comp_nat_eq_zero {n : ℕ} (hn : n ≠ 0)
     (h : f ≫ (AddGrp.ofHom ([n]_ B)) = (0 : (mk A) ⟶ (mk B)))

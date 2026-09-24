@@ -1,6 +1,6 @@
 ToDo — unfinished results (still containing `sorry`)
 ====================================================
-Line numbers refer to the files as of 2026-09-24 (working tree on top of commit c52be6e)
+Line numbers refer to the files as of 2026-09-25 (working tree on top of commit 1050285)
 and will drift as files change.
 
 
@@ -9,9 +9,10 @@ AbstractNonsense/PullbackAddGrp.lean
 [ ] AddGrpObj (pullback f g)                                         (l.43)
       The pullback of two group homomorphisms f : G → T, g : H → T is
       again a group object (addition and zero taken componentwise).
+      zero_add is started (two `have`s left as sorry).
       Still missing: zero_add, add_zero, add_assoc, neg, left_neg, right_neg.
 
-[ ] IsCommAddMonObj (pullback f g)                                   (l.66)
+[ ] IsCommAddMonObj (pullback f g)                                   (l.65)
       If G and H are commutative, so is their pullback.
 
 [ ] IsAddMonHom (pullback.fst f g)                                   (l.71)
@@ -20,67 +21,61 @@ AbstractNonsense/PullbackAddGrp.lean
 [ ] IsAddMonHom (pullback.snd f g)                                   (l.73)
       The projection G ×_T H → H is a group homomorphism.
 
-[ ] IsAddMonHom.pullback_lift                                        (l.77)
+[ ] IsAddMonHom.pullback_lift                                        (l.75)
       A map into the pullback built from two group homomorphisms is
       itself a group homomorphism.
-
-
-AbstractNonsense/Kernels.lean
------------------------------
-[ ] HasPullbacks (AddGrp C)                                          (l.25)
-      The category of group objects in C has pullbacks. (Probably belongs
-      in Mathlib; this file may not be needed.)
 
 
 AlgebraicGeometry/Finite.lean
 -----------------------------
 [ ] isArtinianScheme_of_isFiniteOverField                            (l.47)
       A scheme that is finite over Spec K is Artinian.
-      Last step: move the Artinian property along X ≅ Spec Γ(X, ⊤).
+      Last step: move the Artinian property along X ≅ Spec Γ(X, ⊤)
+      (`IsArtinianScheme.of_isIso` does not seem to exist).
 
 
 AbelianVarieties/Homomorphisms/IntHom.lean
 ------------------------------------------
-[ ] IsCommAddMonObj A                                                (l.35)
+[ ] IsCommAddMonObj A                                                (l.36)
       Abelian varieties are commutative.
 
-[ ] functorial_ker_int                                               (l.70)
-      A homomorphism f : A → B induces A[n] → B[n].
-      Needs [n] ≫ f = f ≫ [n]. Only the half n • f = f ≫ [n] exists
-      (`int_action` in Homomorphisms/TorsionFree.lean, l.38), and it cannot
-      be used here since TorsionFree.lean imports IntHom.lean. It needs
-      moving, probably into AbstractNonsense.
-      The def is currently stated for any f : A ⟶ B. It needs
-      [IsAddMonHom f] (f commutes with [n] and sends ζ[A] to ζ[B]), and B
-      needs to be commutative.
+[ ] isFinite_int_hom                                                 (l.78)
+      [n]_ A : A → A is a finite morphism when n ≠ 0.
 
-[ ] IsAddMonHom_functorial_ker_int                                   (l.90)
-      The induced map A[n] → B[n] is a group homomorphism.
-
-[ ] isFinite_int_hom                                                 (l.98)
-      [n] : A → A is a finite morphism when n ≠ 0.
-
-[ ] step₂'                                                           (l.119)
+[ ] step₂'                                                           (l.99)
       The n-torsion A[n] is an affine scheme when n ≠ 0.
 
 
 AbelianVarieties/TateModule.lean
 --------------------------------
-[ ] int_hom_rational                                                 (l.31)
-      On points, [n] is multiplication by n: n • g = g ≫ [n].
+Points are now geometric points: morphisms from `gspec K` = Spec K̄ (with
+K̄ = `AlgebraicClosure K`), instead of K-points from `specᵤ K`.
 
-[ ] rational_torsion                                                 (l.34)
-      Every K-point of A[n] is killed by n.
+[ ] int_hom_rational                                                 (l.34)
+      On points, [n] is multiplication by n: n • g = g ≫ [n]_ A.
+
+[ ] rational_torsion                                                 (l.37)
+      Every K̄-point of A[n] is killed by n.
       Still missing: the inductive step and the final goal.
 
+[ ] finite_torsion_points                                            (l.54)
+      A[n](K̄) is finite when n ≠ 0.
+      The old proof (for K-points) is kept in a comment below the sorry.
+      It needs adapting to K̄-points: send g to Γ(X, ⊤) →ₐ[K] K̄ instead of
+      Γ(X, ⊤) →ₐ[B] B, and use that a finite K-algebra has only finitely
+      many K-algebra maps into K̄.
+
 [ ] torsion_map_comp                                                 (l.156)
-      The maps A[n](K) → A[m](K) compose correctly: going n → m → k
+      The maps A[n](K̄) → A[m](K̄) compose correctly: going n → m → k
       equals going n → k directly (for k ∣ m ∣ n).
       Done: the arithmetic n / k = (m / k) * (n / m).
       Still missing: the scheme-level identity
         ker_int_hom (k ∣ n) = ker_int_hom (m ∣ n) ≫ ker_int_hom (k ∣ m)
       (probably pullback.hom_ext + int_hom_comp).
 
-[ ] tate_module_representation                                       (l.236)
+[ ] tate_module_representation                                       (l.242)
       A homomorphism f : A → B induces T_ p (A) → T_ p (B).
-      Depends on functorial_ker_int (IntHom.lean).
+      functorial_ker_int (IntHom.lean) is now done, so this is unblocked.
+      Note: f and [IsAddMonHom f] are section variables not mentioned in
+      the statement, so they are currently NOT arguments of this def
+      (needs `include f in` or explicit binders).

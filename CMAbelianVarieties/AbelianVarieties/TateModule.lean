@@ -22,20 +22,23 @@ variable {A : Over (Spec ↧K)}
 variable [IsProper A.hom] [GeometricallyIntegral A.hom] [AddGrpObj A]
 
 /-
-the unit element in `Over (Spec ↧K)`, i.e, `Spec K`
+the cannonical geometric point in `Over (Spec ↧K)`, i.e, `Spec K̄`
 -/
-abbrev specᵤ (K : Type*) [Field K] := 𝟙_ (Over (Spec ↧K))
-abbrev p₁ (n : ℤ) := pullback.fst ([n]_ A) ζ
-abbrev p₂ (n : ℤ) := pullback.snd ([n]_ A) ζ
+abbrev gspec (K : Type*) [Field K] : (Over (Spec ↧K)) where
+  left := Spec ↧(AlgebraicClosure K)
+  right := ⟨⟨⟩⟩
+  hom := Spec.map (CommRingCat.ofHom (algebraMap K (AlgebraicClosure K)))
+private abbrev p₁ (n : ℤ) := pullback.fst ([n]_ A) ζ
+private abbrev p₂ (n : ℤ) := pullback.snd ([n]_ A) ζ
 
 lemma int_hom_rational (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyIntegral A.hom]
     [AddGrpObj A] (n : ℕ) (X : Over (Spec ↧K)) : ∀ g : X ⟶ A, n • g = g ≫ ([n]_ A) := sorry
 
 lemma rational_torsion (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyIntegral A.hom]
-    [AddGrpObj A] (n : ℕ) : ∀ g : (specᵤ K ⟶ A[n]), n • g = 0 := by
+    [AddGrpObj A] (n : ℕ) : ∀ g : (gspec K ⟶ A[n]), n • g = 0 := by
   intro g
-  let p : (specᵤ K ⟶ A[n]) →ₗ[ℤ] (specᵤ K ⟶ A)
-    := AddMonoidHom.toIntLinearMap (IsAddMonHom.addMonoidHom (p₁ n) (specᵤ K))
+  let p : (gspec K ⟶ A[n]) →ₗ[ℤ] (gspec K ⟶ A)
+    := AddMonoidHom.toIntLinearMap (IsAddMonHom.addMonoidHom (p₁ n) (gspec K))
   have : p (n • g) = n • p g := LinearMap.map_smul_of_tower p n g
   have : n • p g = p g ≫ ([n]_ A) := by
     induction n with
@@ -46,17 +49,13 @@ lemma rational_torsion (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyInt
         sorry
   sorry
 
-/-
-Steps:
-1. Define a function from `A[n](K)` to function `{pt} → |A[n]|`
-2. the above function is injective
-3. this should imply finitness.
--/
 -- *The proof was done by Claude*
 -- It probably needs to be broken down and we need to make use of older results.
 lemma finite_torsion_points {n : ℤ} (A : Over (Spec ↧K)) [IsProper A.hom]
     [GeometricallyIntegral A.hom] [AddGrpObj A] (hn : n ≠ 0) :
-    Finite (AddGrpCat.mk (specᵤ K ⟶ A[n])) := by
+    Finite (AddGrpCat.mk (gspec K ⟶ A[n])) := by
+  sorry
+  /- __Old proof for `specᵤ K` (K-points); needs adapting to `gspec K` (K̄-points):__
   have hhom : (A[n]).hom = (pullback.snd ([n]_ A) ζ[A]).left := by
     have := Over.w (pullback.snd ([n]_ A) ζ[A])
     simpa using this.symm
@@ -92,7 +91,7 @@ lemma finite_torsion_points {n : ℤ} (A : Over (Spec ↧K)) [IsProper A.hom]
     exact Finite.of_injective _ hinj
   -- Every K-point `g : specᵤ K ⟶ A[n]` gives, via global sections, an algebra map
   -- `Γ(X, ⊤) →ₐ[B] B`, and this assignment is injective since `X` is affine.
-  have step1 : Function.Injective (fun g : (specᵤ K ⟶ A[n]) =>
+  have step1 : Function.Injective (fun g : (gspec K ⟶ A[n]) =>
       (⟨g.left.appTop.hom, fun c => by
         have hw0 : g.left ≫ (A[n]).hom = 𝟙 (Spec ↧K) := Over.w g
         have hw := congrArg Scheme.Hom.appTop hw0
@@ -108,6 +107,7 @@ lemma finite_torsion_points {n : ℤ} (A : Over (Spec ↧K)) [IsProper A.hom]
     have : g1.left = g2.left := ext_of_isAffine happ
     exact Over.OverMorphism.ext this
   exact Finite.of_injective _ step1
+  -/
 
 def torsion_map_of_schemes (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyIntegral A.hom]
     [AddGrpObj A] (p : ℤ) {n m : ℕ} (h : n ≥ m) : A[p ^ n] ⟶ A[p ^ m] := by
@@ -123,12 +123,12 @@ instance {p : ℤ} {n m : ℕ} {h : n ≥ m} : IsAddMonHom (torsion_map_of_schem
   infer_instance
 
 def torsion_map (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyIntegral A.hom]
-    [AddGrpObj A] (p : ℤ) {n m : ℕ} (h : n ≥ m) : (specᵤ K ⟶ A[p ^ n]) →+ (specᵤ K ⟶ A[p ^ m]) := by
-  exact IsAddMonHom.addMonoidHom (torsion_map_of_schemes A p h) (specᵤ K)
+    [AddGrpObj A] (p : ℤ) {n m : ℕ} (h : n ≥ m) : (gspec K ⟶ A[p ^ n]) →+ (gspec K ⟶ A[p ^ m]) := by
+  exact IsAddMonHom.addMonoidHom (torsion_map_of_schemes A p h) (gspec K)
 
 def torsion_point_as_profinite {n : ℤ} (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyIntegral
     A.hom] [AddGrpObj A] (hn : n ≠ 0) : ProfiniteAddGrp :=
-  ProfiniteAddGrp.ofFiniteAddGrp (@FiniteAddGrp.mk (AddGrpCat.mk (specᵤ K ⟶ A[n]))
+  ProfiniteAddGrp.ofFiniteAddGrp (@FiniteAddGrp.mk (AddGrpCat.mk (gspec K ⟶ A[n]))
   (finite_torsion_points A hn))
 
 notation:50 A:51 "[" hn:51 "]ₚ" => torsion_point_as_profinite A hn
@@ -141,7 +141,7 @@ I am pretty confident that it is correcy. But, I need to check it again
 def torsion_point_as_profinite_map {m n : ℤ} (A : Over (Spec ↧K)) [IsProper A.hom]
     [GeometricallyIntegral A.hom] [AddGrpObj A] (h : m ∣ n) (hn : n ≠ 0) :
   A[hn]ₚ ⟶ A[(ne_zero_of_dvd_ne_zero hn h)]ₚ := ProfiniteAddGrp.ofFiniteAddGrpHom (InducedCategory.homMk
-  (AddGrpCat.ofHom (IsAddMonHom.addMonoidHom (ker_int_hom A h) (specᵤ K))))
+  (AddGrpCat.ofHom (IsAddMonHom.addMonoidHom (ker_int_hom A h) (gspec K))))
 
 lemma torsion_map_id {n : ℤ} (A : Over (Spec ↧K)) [IsProper A.hom]
     [GeometricallyIntegral A.hom] [AddGrpObj A] (hn : n ≠ 0) :
@@ -227,15 +227,19 @@ scoped macro_rules
 
 end TateModule
 
-
-
 section Representation
 
 open TateModule
 
-def tate_module_representation {A : Over (Spec ↧K)} [IsProper A.hom] [GeometricallyIntegral A.hom]
-    [AddGrpObj A] {B : Over (Spec ↧K)} [IsProper B.hom] [GeometricallyIntegral B.hom]
-    [AddGrpObj B] {p : ℕ} (hp : p.Prime) (f : A ⟶ B) [IsAddMonHom f] : T_ p (A) ⟶ T_ p (B) := sorry
+variable {A B : Over (Spec ↧K)} [IsProper A.hom] [GeometricallyIntegral A.hom]
+  [AddGrpObj A] [IsProper B.hom] [GeometricallyIntegral B.hom] [AddGrpObj B]
+variable {p : ℕ} (f : A ⟶ B) [IsAddMonHom f]
+
+-- I'll probably not keep this definition
+def blah (p n : ℕ) : A[p ^ n] ⟶ B[p ^ n] := by
+  exact functorial_ker_int (p ^ n) f
+
+def tate_module_representation (hp : p.Prime) : T_ p (A) ⟶ T_ p (B) := sorry
 
 end Representation
 

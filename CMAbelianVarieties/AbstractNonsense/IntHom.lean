@@ -1,7 +1,6 @@
 module
 
 public import CMAbelianVarieties.ForMathlib.Endomorphism
-import Mathlib
 
 /-!
 
@@ -50,7 +49,7 @@ lemma one_comp {G H : C} [AddGrpObj G] [IsCommAddMonObj G]
 
 lemma comp_neg_one {G H : C} [AddGrpObj G] [IsCommAddMonObj G]
     [AddGrpObj H] [IsCommAddMonObj H] (f : G ⟶ H) [IsAddMonHom f] :
-    f ≫ [- 1]_ H = -f := by
+    f ≫ [-1]_ H = -f := by
   apply eq_neg_of_add_eq_zero_left
   have : f ≫ [1]_ H = f := by simp [int_hom]
   nth_rw 2 [← this]
@@ -83,3 +82,5 @@ lemma int_commute {G H : C} [AddGrpObj G] [IsCommAddMonObj G]
       simp [comp_neg_one, neg_one_comp]
 
 end IntHom
+
+#min_imports
