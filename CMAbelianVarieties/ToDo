@@ -1,6 +1,7 @@
 ToDo — unfinished results (still containing `sorry`)
 ====================================================
-Line numbers refer to the files at commit 3cda701 and will drift as files change.
+Line numbers refer to the files as of 2026-09-24 (working tree on top of commit c52be6e)
+and will drift as files change.
 
 
 AbstractNonsense/PullbackAddGrp.lean
@@ -43,10 +44,23 @@ AbelianVarieties/Homomorphisms/IntHom.lean
 [ ] IsCommAddMonObj A                                                (l.35)
       Abelian varieties are commutative.
 
-[ ] isFinite_int_hom                                                 (l.74)
+[ ] functorial_ker_int                                               (l.70)
+      A homomorphism f : A → B induces A[n] → B[n].
+      Needs [n] ≫ f = f ≫ [n]. Only the half n • f = f ≫ [n] exists
+      (`int_action` in Homomorphisms/TorsionFree.lean, l.38), and it cannot
+      be used here since TorsionFree.lean imports IntHom.lean. It needs
+      moving, probably into AbstractNonsense.
+      The def is currently stated for any f : A ⟶ B. It needs
+      [IsAddMonHom f] (f commutes with [n] and sends ζ[A] to ζ[B]), and B
+      needs to be commutative.
+
+[ ] IsAddMonHom_functorial_ker_int                                   (l.90)
+      The induced map A[n] → B[n] is a group homomorphism.
+
+[ ] isFinite_int_hom                                                 (l.98)
       [n] : A → A is a finite morphism when n ≠ 0.
 
-[ ] step₂'                                                           (l.95)
+[ ] step₂'                                                           (l.119)
       The n-torsion A[n] is an affine scheme when n ≠ 0.
 
 
@@ -59,11 +73,14 @@ AbelianVarieties/TateModule.lean
       Every K-point of A[n] is killed by n.
       Still missing: the inductive step and the final goal.
 
-[ ] torsion_map_comp                                                 (l.155)
+[ ] torsion_map_comp                                                 (l.156)
       The maps A[n](K) → A[m](K) compose correctly: going n → m → k
       equals going n → k directly (for k ∣ m ∣ n).
+      Done: the arithmetic n / k = (m / k) * (n / m).
+      Still missing: the scheme-level identity
+        ker_int_hom (k ∣ n) = ker_int_hom (m ∣ n) ≫ ker_int_hom (k ∣ m)
+      (probably pullback.hom_ext + int_hom_comp).
 
-[ ] tate_module_chain, map_comp field                                (l.196–197)
-      The system (A[p^n](K))ₙ is a functor, i.e. the transition maps
-      compose correctly. Only two divisibility facts p^m ∣ p^n are
-      missing; the same argument is already in the `map` field.
+[ ] tate_module_representation                                       (l.236)
+      A homomorphism f : A → B induces T_ p (A) → T_ p (B).
+      Depends on functorial_ker_int (IntHom.lean).

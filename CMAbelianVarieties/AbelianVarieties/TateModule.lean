@@ -159,53 +159,85 @@ lemma torsion_map_comp {k m n : ℤ} (A : Over (Spec ↧K)) [IsProper A.hom]
     (torsion_point_as_profinite_map A hmn hn) ≫ (torsion_point_as_profinite_map A hkm
     (ne_zero_of_dvd_ne_zero hn hmn)) = (torsion_point_as_profinite_map A (Int.dvd_trans hkm hmn) hn)
     := by
-
-  sorry
+  have : ker_int_hom A (Int.dvd_trans hkm hmn) = (ker_int_hom A hmn) ≫ (ker_int_hom A hkm) := by
+    -- Claude found the sequence of rewrites in the have
+    have : (n / k) = (m / k) * (n / m) := by
+      rw [mul_comm, ← Int.mul_ediv_assoc _ hkm, Int.ediv_mul_cancel hmn]
+    simp [ker_int_hom, this, ← int_hom_comp]
+    sorry
+  simp only [torsion_point_as_profinite_map, this]
+  rfl
 
 open Opposite
 
 def tate_module_chain (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyIntegral A.hom]
-    [AddGrpObj A] {p : ℕ} (hp : p ≠ 0) : ℕᵒᵖ ⥤ ProfiniteAddGrp where
-  obj n := by
-    have : ((p ^ (unop n)) : ℤ) ≠ 0 := by
-      contrapose hp
-      simp only [pow_eq_zero_iff', Int.natCast_eq_zero, ne_eq] at hp
-      exact hp.1
-    exact A[this]ₚ
-  map φ := by
-    rename_i n m
-    have hn : (p ^ (unop n) : ℤ) ≠ 0 := by
-      contrapose hp
-      simp only [pow_eq_zero_iff', Int.natCast_eq_zero, ne_eq] at hp
-      exact hp.1
-    have : (p ^ (unop m) : ℤ) ∣ p ^ (unop n) := by
-      have : unop m ≤ unop n := by
-        exact le_of_op_hom φ
-      obtain ⟨k, hk⟩ : p ^ (unop m) ∣ p ^ (unop n) := by
-        exact Nat.pow_dvd_pow p this
-      use k
-      exact Eq.symm (Nat.ToInt.of_eq rfl rfl (id (Eq.symm hk)))
-    exact torsion_point_as_profinite_map A this hn
-  map_id n := by
-    have : ((p ^ (unop n)) : ℤ) ≠ 0 := by
-      contrapose hp
-      simp only [pow_eq_zero_iff', Int.natCast_eq_zero, ne_eq] at hp
-      exact hp.1
-    exact torsion_map_id A this
-  map_comp := by
-    intro n m k hmn hmk
-    have hmn : (p ^ (unop m) : ℤ) ∣ p ^ (unop n) := sorry
-    have hkm : (p ^ (unop k) : ℤ) ∣ p ^ (unop m) := sorry
-    have hn : (p ^ (unop n) : ℤ) ≠ 0 := by
-      contrapose hp
-      simp only [pow_eq_zero_iff', Int.natCast_eq_zero, ne_eq] at hp
-      exact hp.1
-    exact (torsion_map_comp A hn hkm hmn).symm
+    [AddGrpObj A] {p : ℕ} (hp : p ≠ 0) : ℕᵒᵖ ⥤ ProfiniteAddGrp := by
+  have h {m n : ℕᵒᵖ} (φ : n ⟶ m) : (p ^ m.unop : ℤ) ∣ (p ^ n.unop) := by
+    have : m.unop ≤ n.unop := by
+      exact le_of_op_hom φ
+    obtain ⟨k, hk⟩ : (p ^ m.unop) ∣ (p ^ n.unop) := by
+      exact Nat.pow_dvd_pow p this
+    use k
+    exact Eq.symm <| Nat.ToInt.of_eq rfl rfl <| id <| Eq.symm hk
+  exact {
+    obj n := by
+      have : ((p ^ (unop n)) : ℤ) ≠ 0 := by
+        contrapose hp
+        simp only [pow_eq_zero_iff', Int.natCast_eq_zero, ne_eq] at hp
+        exact hp.1
+      exact A[this]ₚ
+    map φ := by
+      rename_i n m
+      have hn : (p ^ (unop n) : ℤ) ≠ 0 := by
+        contrapose hp
+        simp only [pow_eq_zero_iff', Int.natCast_eq_zero, ne_eq] at hp
+        exact hp.1
+      exact torsion_point_as_profinite_map A (h φ) hn
+    map_id n := by
+      have : ((p ^ (unop n)) : ℤ) ≠ 0 := by
+        contrapose hp
+        simp only [pow_eq_zero_iff', Int.natCast_eq_zero, ne_eq] at hp
+        exact hp.1
+      exact torsion_map_id A this
+    map_comp := by
+      intro n m k hnm hmk
+      have hmn : (p ^ (unop m) : ℤ) ∣ p ^ (unop n) := h hnm
+      have hkm : (p ^ (unop k) : ℤ) ∣ p ^ (unop m) := h hmk
+      have hn : (p ^ (unop n) : ℤ) ≠ 0 := by
+        contrapose hp
+        simp only [pow_eq_zero_iff', Int.natCast_eq_zero, ne_eq] at hp
+        exact hp.1
+      exact (torsion_map_comp A hn hkm hmn).symm
+  }
 
-def tate_module (A : Over (Spec ↧K)) [IsProper A.hom]
-    [GeometricallyIntegral A.hom] [AddGrpObj A] {p : ℕ} (hp : p.Prime) :
+def tate_module {p : ℕ} (hp : p.Prime) (A : Over (Spec ↧K)) [IsProper A.hom]
+    [GeometricallyIntegral A.hom] [AddGrpObj A] :
     ProfiniteAddGrp :=
   ProfiniteAddGrp.limit (tate_module_chain A (Nat.Prime.ne_zero hp))
+
+namespace TateModule
+-- Claude helped create the notation
+
+/-- `T_ p (A)` is the `p`-adic Tate module of `A`. The primality proof of `p` is found
+automatically: from a hypothesis in context, a `Fact p.Prime` instance, or `norm_num`. -/
+scoped syntax:max "T_ " term:max " (" term ")" : term
+
+scoped macro_rules
+  | `(T_ $p ($A)) => `(tate_module (p := $p) (by first | assumption | exact Fact.out | norm_num) $A)
+
+end TateModule
+
+
+
+section Representation
+
+open TateModule
+
+def tate_module_representation {A : Over (Spec ↧K)} [IsProper A.hom] [GeometricallyIntegral A.hom]
+    [AddGrpObj A] {B : Over (Spec ↧K)} [IsProper B.hom] [GeometricallyIntegral B.hom]
+    [AddGrpObj B] {p : ℕ} (hp : p.Prime) (f : A ⟶ B) [IsAddMonHom f] : T_ p (A) ⟶ T_ p (B) := sorry
+
+end Representation
 
 
 

@@ -67,6 +67,30 @@ def ker_int_hom {m n : ℤ} (A₀ : Over (Spec ↧K))
     exact pullback.condition
   exact pullback.lift ((pullback.fst (n[A₀]) ζ) ≫ (k[A₀])) (pullback.snd (n[A₀]) ζ)
 
+def functorial_ker_int {A : Over (Spec ↧K)} [IsProper A.hom] [GeometricallyIntegral A.hom]
+    [AddGrpObj A] {B : Over (Spec ↧K)} [IsProper B.hom] [GeometricallyIntegral B.hom]
+    [AddGrpObj B] (n : ℤ) (f : A ⟶ B) : A[n] ⟶ B [n] := by
+  #check ((pullback.fst (n[A]) ζ) ≫ f : A[n] ⟶ B)
+  #check ((pullback.fst (n[A]) ζ) ≫ f) ≫ (n[B])
+  #check (pullback.snd (n[A]) ζ) ≫ ζ
+  -- this needs `n ≫ f = f ≫ n`...but is that always true?
+  -- the lemma `int_action` in TorsionFree.lean does a part of this
+  -- this needs the target to be commutative. I need to do it in `AbstractNonsense`
+  -- and f to be an group homomorphism (i.e., ℤ - linear)
+  have : ((pullback.fst (n[A]) ζ) ≫ f) ≫ (n[B]) = (pullback.snd (n[A]) ζ) ≫ ζ
+      := by
+
+    sorry
+
+  #check pullback.lift
+
+
+  sorry
+
+lemma IsAddMonHom_functorial_ker_int {A : Over (Spec ↧K)} [IsProper A.hom] [GeometricallyIntegral
+    A.hom] [AddGrpObj A] {B : Over (Spec ↧K)} [IsProper B.hom] [GeometricallyIntegral B.hom]
+    [AddGrpObj B] {n : ℤ} {f : A ⟶ B} [IsAddMonHom f] : IsAddMonHom (functorial_ker_int n f) :=
+  sorry
 
 instance {m n : ℤ} {h : m ∣ n} : IsAddMonHom (ker_int_hom A h) := by
   apply IsAddMonHom.pullback_lift
