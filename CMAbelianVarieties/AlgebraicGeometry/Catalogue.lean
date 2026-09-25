@@ -56,6 +56,7 @@ variable {ψ : α ⟶ β} [IsIso ψ]
 
 #check IsIso φ                    -- `φ` is an isomorphism
 #check asIso ψ                    -- gives the corresponding term of type `α ≅ β`
+#check Over.w                     -- definition of morphisms in the slice category
 
 -- ## FUNDAMENTAL EXAMPLES
 

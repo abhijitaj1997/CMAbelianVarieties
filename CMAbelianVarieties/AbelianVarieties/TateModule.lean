@@ -59,33 +59,41 @@ lemma rational_torsion (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyInt
         sorry
   sorry-/
 
--- *The proof was done by Claude*
+-- *A proof was done by Claude for a mildly different statement*
+-- *This needs to be inspected and redone - probably using the base change functor*
 -- It probably needs to be broken down and we need to make use of older results.
 lemma finite_torsion_points {n : ℤ} (A : Over (Spec ↧K)) [IsProper A.hom]
     [GeometricallyIntegral A.hom] [AddGrpObj A] (hn : n ≠ 0) :
     Finite (AddGrpCat.mk (gspec K ⟶ A[n])) := by
+  have hhom : (A[n]).hom = (pullback.snd ([n]_ A) ζ[A]).left := by
+    simp [ker_int, ← Over.w (pullback.snd ([n]_ A) ζ[A])]
+  have : IsFinite ((A[n]).hom) := hhom ▸ step₂ hn
+  have : IsAffine (A[n].left) := isAffine_of_isAffineHom (A[n]).hom
+  -- Do I need this?
+  set k := Γ(Spec ↧K, ⊤) with hk
+  algebraize [(A[n]).hom.appTop.hom]
+  have : Module.Finite Γ(Spec ↧K, ⊤) Γ(A[n].left, ⊤) := by
+    apply IsFinite.finite_app
+    exact isAffineOpen_top (Spec ↧K)
+  -- I might be able to remove the type here, and write `have := ....`
+  have : IsArtinianRing Γ(Spec ↧(AlgebraicClosure K), ⊤) :=
+    RingEquiv.isArtinianRing (ΓSpecIso ↧(AlgebraicClosure K)).symm.commRingCatIsoToRingEquiv
+  -- I might be able to remove the type here, and write `have := ....`
+  have : IsArtinianRing Γ(A[n].left, ⊤) :=
+    IsArtinianRing.of_finite Γ(Spec ↧K, ⊤) Γ(A[n].left, ⊤)
+  have : IsDomain Γ(Spec ↧K, ⊤) :=
+    MulEquiv.isDomain K (ΓSpecIso ↧K).commRingCatIsoToRingEquiv
+  -- `Γ(A[n].left, ⊤) →ₐ[Γ(Spec ↧K, ⊤)] Γ(Spec ↧K, ⊤)` is finite: it injects into
+  -- `PrimeSpectrum Γ(X, ⊤)` via the kernel,
+  -- since an algebra homomorphism into `B` is determined by its kernel.
+  have : Finite (Γ(A[n].left, ⊤) →ₐ[Γ(Spec ↧K, ⊤)] Γ(Spec ↧K, ⊤)) := by
+
+    sorry
   sorry
   /- __Old proof for `specᵤ K` (K-points); needs adapting to `gspec K` (K̄-points):__
-  have hhom : (A[n]).hom = (pullback.snd ([n]_ A) ζ[A]).left := by
-    have := Over.w (pullback.snd ([n]_ A) ζ[A])
-    simpa using this.symm
-  set X := (A[n]).left with hX
-  have hfin : IsFinite ((A[n]).hom) := hhom ▸ step₂ hn
-  have hAff : IsAffine X := isAffine_of_isAffineHom (A[n]).hom
-  set B := Γ(Spec ↧K, ⊤) with hB
-  let ψ := (A[n]).hom.appTop
-  algebraize [ψ.hom]
-  have hMF : Module.Finite B Γ(X, ⊤) := by
-    apply IsFinite.finite_app
-    rw [← affine_iff_top]
-    infer_instance
-  have hBAR : IsArtinianRing B :=
-    RingEquiv.isArtinianRing (ΓSpecIso ↧K).symm.commRingCatIsoToRingEquiv
-  have hAR : IsArtinianRing Γ(X, ⊤) := IsArtinianRing.of_finite B Γ(X, ⊤)
-  have hDom : IsDomain B :=
-    MulEquiv.isDomain K (ΓSpecIso ↧K).commRingCatIsoToRingEquiv
-  -- `Γ(X, ⊤) →ₐ[B] B` is finite: it injects into `PrimeSpectrum Γ(X, ⊤)` via the kernel,
-  -- since an algebra homomorphism into `B` is determined by its kernel.
+  set X := (A[n]).left with hX -- *I do not want to use X*
+  set B := Γ(Spec ↧K, ⊤) with hB -- *I do not want to use B*
+
   have step2 : Finite (Γ(X, ⊤) →ₐ[B] B) := by
     have hinj : Function.Injective (fun f : Γ(X, ⊤) →ₐ[B] B =>
         (⟨RingHom.ker f, RingHom.ker_isPrime f⟩ : PrimeSpectrum Γ(X, ⊤))) := by
