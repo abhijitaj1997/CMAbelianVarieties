@@ -12,7 +12,7 @@ Currently Mathlib does not have many results about Abelian varieties, beyond a p
 
 ## AI usage
 
-The project will try and avoid producing entire definitions/proofs simply by asking an AI agent (if and when that is done, it will be clearly mentioned as a comment above the definition/proof). Claude code is being used as a glorified search engine to find results in Mathlib. It is also being used for book keeping, cleaning up code (for instance when certain definitions, lemma, etc. are renamed, or moved to a different file) and creating the desired notations.
+Entire definitions and proofs produced by an AI agent will be kept to a minimum (if and when that is done, it will be clearly mentioned as a comment above the definition/proof). Claude code is being used as a glorified search engine to find results in Mathlib. It is also being used for book keeping, cleaning up code (for instance when certain definitions, lemma, etc. are renamed, or moved to a different file) and creating the desired notations.
 
 # Collaboration
 
