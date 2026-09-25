@@ -1,0 +1,24 @@
+End-of-session checklist for Claude Code
+=========================================
+
+When asked to run this checklist, do the following steps in order:
+
+1. Update the ToDo list (CMAbelianVarieties/ToDo) to reflect the work done
+   in this session: mark finished items as done, add any new tasks or open
+   problems that came up.
+
+2. Run mk_all to regenerate CMAbelianVarieties.lean so that it imports every
+   file in the project:
+       lake exe mk_all
+
+3. Build the whole project and check for errors:
+       lake build
+   Report any errors (and relevant warnings) back to the user.
+
+4. If `lake build` finished with no errors, commit all changes directly to
+   the master branch. DO NOT CREATE A NEW BRANCH. Make sure you are on
+   master first (`git branch --show-current`), then commit with a chore
+   message, e.g.:
+       git add -A
+       git commit -m "chore: complete end-of-session checklist"
+   If there were errors, do NOT commit; report the errors instead.

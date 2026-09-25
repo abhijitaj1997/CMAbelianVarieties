@@ -1,6 +1,6 @@
 ToDo — unfinished results (still containing `sorry`)
 ====================================================
-Line numbers refer to the files as of 2026-09-25 (working tree on top of commit 1050285)
+Line numbers refer to the files as of 2026-09-26 (commit 9dca10f)
 and will drift as files change.
 
 
@@ -51,31 +51,34 @@ AbelianVarieties/TateModule.lean
 Points are now geometric points: morphisms from `gspec K` = Spec K̄ (with
 K̄ = `AlgebraicClosure K`), instead of K-points from `specᵤ K`.
 
-[ ] int_hom_rational                                                 (l.34)
-      On points, [n] is multiplication by n: n • g = g ≫ [n]_ A.
+[x] torsion_map_comp
+      Done (9dca10f): the scheme-level identity
+        ker_int_hom (k ∣ n) = ker_int_hom (m ∣ n) ≫ ker_int_hom (k ∣ m)
+      via pullback.hom_ext + int_hom_comp.
 
-[ ] rational_torsion                                                 (l.37)
-      Every K̄-point of A[n] is killed by n.
-      Still missing: the inductive step and the final goal.
+[-] int_hom_rational, rational_torsion                               (l.42–60)
+      Commented out ("probably don't need this"). If needed after all,
+      move to AbstractNonsense / IntHom. rational_torsion still lacks the
+      inductive step and the final goal.
 
-[ ] finite_torsion_points                                            (l.54)
+[ ] finite_torsion_points                                            (l.64)
       A[n](K̄) is finite when n ≠ 0.
       The old proof (for K-points) is kept in a comment below the sorry.
       It needs adapting to K̄-points: send g to Γ(X, ⊤) →ₐ[K] K̄ instead of
       Γ(X, ⊤) →ₐ[B] B, and use that a finite K-algebra has only finitely
       many K-algebra maps into K̄.
 
-[ ] torsion_map_comp                                                 (l.156)
-      The maps A[n](K̄) → A[m](K̄) compose correctly: going n → m → k
-      equals going n → k directly (for k ∣ m ∣ n).
-      Done: the arithmetic n / k = (m / k) * (n / m).
-      Still missing: the scheme-level identity
-        ker_int_hom (k ∣ n) = ker_int_hom (m ∣ n) ≫ ker_int_hom (k ∣ m)
-      (probably pullback.hom_ext + int_hom_comp).
-
-[ ] tate_module_representation                                       (l.242)
+[ ] tate_module_representation                                       (l.263)
       A homomorphism f : A → B induces T_ p (A) → T_ p (B).
       functorial_ker_int (IntHom.lean) is now done, so this is unblocked.
       Note: f and [IsAddMonHom f] are section variables not mentioned in
       the statement, so they are currently NOT arguments of this def
       (needs `include f in` or explicit binders).
+      The placeholder `blah` (l.260) should be removed or replaced.
+
+[ ] Cleanup (see module docstring "Fixes")
+      torsion_point_as_profinite and AddGrpCatHom_of_torsion_map view
+      A[n](K̄) as an object of AddGrpCat / FiniteAddGrp ad hoc. Add
+      definitions giving A[n](K̄) as an object of AddGrpCat and of
+      FiniteAddGrp, and use them. AddGrpCatHom_of_torsion_map may be
+      unnecessary.
