@@ -1,13 +1,21 @@
 module
 
-public import Mathlib
 public import CMAbelianVarieties.AbelianVarieties.Homomorphisms.IntHom
-public import CMAbelianVarieties.AbstractNonsense.PullbackAddGrp
+public import Mathlib.Algebra.Ring.IsFormallyReal
+public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+public import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
 
 /-!
 ## Main goal
 
 The main goal of this section is to define the Tate module of an Abelian Variety
+
+Fixes:
+Some things below look weird. Both `torsion_point_as_profinite` and `AddGrpCatHom_of_torsion_map`
+require us to view `A[n](K)` an an object in the category `FiniteAddGrp`. But I never define
+it an an object there. That makes the definitions look weird. Maybe I should create definitions
+to view it an an element of `AddGrpCate` and then also `FiniteAddGrp`. So that it look much
+neater in the two things mentioned above!
 -/
 
 @[expose] public noncomputable section
@@ -31,6 +39,8 @@ abbrev gspec (K : Type*) [Field K] : (Over (Spec ↧K)) where
 private abbrev p₁ (n : ℤ) := pullback.fst ([n]_ A) ζ
 private abbrev p₂ (n : ℤ) := pullback.snd ([n]_ A) ζ
 
+/-
+_PROBABLY DON'T NEED THIS - AT LEAST MOVE IT TO ABSTRACTNONSENCE/INTHOM IF NEEDED_
 lemma int_hom_rational (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyIntegral A.hom]
     [AddGrpObj A] (n : ℕ) (X : Over (Spec ↧K)) : ∀ g : X ⟶ A, n • g = g ≫ ([n]_ A) := sorry
 
@@ -47,7 +57,7 @@ lemma rational_torsion (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyInt
     | succ k hk =>
 
         sorry
-  sorry
+  sorry-/
 
 -- *The proof was done by Claude*
 -- It probably needs to be broken down and we need to make use of older results.
@@ -109,39 +119,42 @@ lemma finite_torsion_points {n : ℤ} (A : Over (Spec ↧K)) [IsProper A.hom]
   exact Finite.of_injective _ step1
   -/
 
-def torsion_map_of_schemes (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyIntegral A.hom]
-    [AddGrpObj A] (p : ℤ) {n m : ℕ} (h : n ≥ m) : A[p ^ n] ⟶ A[p ^ m] := by
-  have : p  ^ m ∣ p ^ n := by
-    have : n = m + (n - m) := by
-      exact Eq.symm (Nat.add_sub_of_le h)
-    rw [Eq.symm (Nat.add_sub_of_le h), Int.pow_add]
-    use p ^ (n - m)
-  exact ker_int_hom A this
-
-instance {p : ℤ} {n m : ℕ} {h : n ≥ m} : IsAddMonHom (torsion_map_of_schemes A p h) := by
-  simp only [torsion_map_of_schemes]
-  infer_instance
-
+/--
+For `m ∣ n`, we have a map abelian groups `A[n](K) →+ A[m](K)`
+-/
 def torsion_map (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyIntegral A.hom]
-    [AddGrpObj A] (p : ℤ) {n m : ℕ} (h : n ≥ m) : (gspec K ⟶ A[p ^ n]) →+ (gspec K ⟶ A[p ^ m]) := by
-  exact IsAddMonHom.addMonoidHom (torsion_map_of_schemes A p h) (gspec K)
+    [AddGrpObj A] {n m : ℤ} (h : m ∣ n) : (gspec K ⟶ A[n]) →+ (gspec K ⟶ A[m]) := by
+  exact IsAddMonHom.addMonoidHom (ker_int_hom A h) (gspec K)
+
+
+-- I probably do not need this
+/--
+For `m ∣ n`, we have a morphism `A[n](K) ⟶ A[m](K)` in the category `AddGrpCat`
+-/
+def AddGrpCatHom_of_torsion_map (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyIntegral A.hom]
+    [AddGrpObj A] {n m : ℤ} (h : m ∣ n) : (↧(gspec K ⟶ A[n]) : AddGrpCat) ⟶ ↧(gspec K ⟶ A[m])
+    := AddGrpCat.ofHom (torsion_map A h)
 
 def torsion_point_as_profinite {n : ℤ} (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyIntegral
     A.hom] [AddGrpObj A] (hn : n ≠ 0) : ProfiniteAddGrp :=
-  ProfiniteAddGrp.ofFiniteAddGrp (@FiniteAddGrp.mk (AddGrpCat.mk (gspec K ⟶ A[n]))
+  ProfiniteAddGrp.ofFiniteAddGrp (@FiniteAddGrp.mk (↧(gspec K ⟶ A[n]) : AddGrpCat)
   (finite_torsion_points A hn))
 
 notation:50 A:51 "[" hn:51 "]ₚ" => torsion_point_as_profinite A hn
 
-
-/-
-This was definition was given by Claude too.
-I am pretty confident that it is correcy. But, I need to check it again
+/--
+For `m ∣ n`, we have a morphism `A[n](K) ⟶ A[m](K)` in the category `FiniteAddGrp`
 -/
+def FiniteAddGrpHom_of_torsion_map (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyIntegral
+    A.hom] [AddGrpObj A] {n m : ℤ} (h : m ∣ n) (hn : n ≠ 0) :=
+  @FiniteAddGrp.ofHom _ _ _ (finite_torsion_points A hn) _ (finite_torsion_points A
+    (ne_zero_of_dvd_ne_zero hn h)) (torsion_map A h)
+
 def torsion_point_as_profinite_map {m n : ℤ} (A : Over (Spec ↧K)) [IsProper A.hom]
     [GeometricallyIntegral A.hom] [AddGrpObj A] (h : m ∣ n) (hn : n ≠ 0) :
-  A[hn]ₚ ⟶ A[(ne_zero_of_dvd_ne_zero hn h)]ₚ := ProfiniteAddGrp.ofFiniteAddGrpHom (InducedCategory.homMk
-  (AddGrpCat.ofHom (IsAddMonHom.addMonoidHom (ker_int_hom A h) (gspec K))))
+    A[hn]ₚ ⟶ A[(ne_zero_of_dvd_ne_zero hn h)]ₚ := by
+  exact ProfiniteAddGrp.ofFiniteAddGrpHom
+    (FiniteAddGrpHom_of_torsion_map A h hn)
 
 lemma torsion_map_id {n : ℤ} (A : Over (Spec ↧K)) [IsProper A.hom]
     [GeometricallyIntegral A.hom] [AddGrpObj A] (hn : n ≠ 0) :
@@ -150,7 +163,7 @@ lemma torsion_map_id {n : ℤ} (A : Over (Spec ↧K)) [IsProper A.hom]
     have : ([1]_ A) = 𝟙 A := by
       simp [int_hom]
     simp [ker_int_hom, Int.ediv_self hn, this]
-  simp only [torsion_point_as_profinite_map, this]
+  simp only [torsion_point_as_profinite_map, FiniteAddGrpHom_of_torsion_map, torsion_map, this]
   rfl
 
 lemma torsion_map_comp {k m n : ℤ} (A : Over (Spec ↧K)) [IsProper A.hom]
@@ -160,15 +173,23 @@ lemma torsion_map_comp {k m n : ℤ} (A : Over (Spec ↧K)) [IsProper A.hom]
     (ne_zero_of_dvd_ne_zero hn hmn)) = (torsion_point_as_profinite_map A (Int.dvd_trans hkm hmn) hn)
     := by
   have : ker_int_hom A (Int.dvd_trans hkm hmn) = (ker_int_hom A hmn) ≫ (ker_int_hom A hkm) := by
-    -- Claude found the sequence of rewrites in the have
-    have : (n / k) = (m / k) * (n / m) := by
-      rw [mul_comm, ← Int.mul_ediv_assoc _ hkm, Int.ediv_mul_cancel hmn]
-    simp [ker_int_hom, this, ← int_hom_comp]
-    sorry
-  simp only [torsion_point_as_profinite_map, this]
+    have fst : ker_int_hom A (Int.dvd_trans hkm hmn) ≫ p₁ k
+        = ((ker_int_hom A hmn) ≫ (ker_int_hom A hkm)) ≫ p₁ k
+        := by
+      have {s t : ℤ} (hst : s ∣ t) : (ker_int_hom A hst) ≫ p₁ s = p₁ t ≫ [t/s]_ A := by
+        simp [ker_int_hom]
+      -- Claude found the last three rewrites in the below sequence
+      rw [Category.assoc, this hkm, Category.assoc', this hmn, this (Int.dvd_trans hkm hmn),
+        Category.assoc, int_hom_comp, mul_comm, ← Int.mul_ediv_assoc _ hkm, Int.ediv_mul_cancel hmn]
+    have snd : ker_int_hom A (Int.dvd_trans hkm hmn) ≫ p₂ k
+        = ((ker_int_hom A hmn) ≫ (ker_int_hom A hkm)) ≫ p₂ k
+        := by
+      have {s t : ℤ} (hst : s ∣ t) : (ker_int_hom A hst) ≫ p₂ s = p₂ t := by
+        simp [ker_int_hom]
+      rw [Category.assoc, this hkm, this hmn, this (Int.dvd_trans hkm hmn)]
+    exact pullback.hom_ext fst snd
+  simp only [torsion_point_as_profinite_map, FiniteAddGrpHom_of_torsion_map, torsion_map, this]
   rfl
-
-open Opposite
 
 def tate_module_chain (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyIntegral A.hom]
     [AddGrpObj A] {p : ℕ} (hp : p ≠ 0) : ℕᵒᵖ ⥤ ProfiniteAddGrp := by
@@ -181,29 +202,29 @@ def tate_module_chain (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyInte
     exact Eq.symm <| Nat.ToInt.of_eq rfl rfl <| id <| Eq.symm hk
   exact {
     obj n := by
-      have : ((p ^ (unop n)) : ℤ) ≠ 0 := by
+      have : ((p ^ (n.unop)) : ℤ) ≠ 0 := by
         contrapose hp
         simp only [pow_eq_zero_iff', Int.natCast_eq_zero, ne_eq] at hp
         exact hp.1
       exact A[this]ₚ
     map φ := by
       rename_i n m
-      have hn : (p ^ (unop n) : ℤ) ≠ 0 := by
+      have hn : (p ^ (n.unop) : ℤ) ≠ 0 := by
         contrapose hp
         simp only [pow_eq_zero_iff', Int.natCast_eq_zero, ne_eq] at hp
         exact hp.1
       exact torsion_point_as_profinite_map A (h φ) hn
     map_id n := by
-      have : ((p ^ (unop n)) : ℤ) ≠ 0 := by
+      have : ((p ^ (n.unop)) : ℤ) ≠ 0 := by
         contrapose hp
         simp only [pow_eq_zero_iff', Int.natCast_eq_zero, ne_eq] at hp
         exact hp.1
       exact torsion_map_id A this
     map_comp := by
       intro n m k hnm hmk
-      have hmn : (p ^ (unop m) : ℤ) ∣ p ^ (unop n) := h hnm
-      have hkm : (p ^ (unop k) : ℤ) ∣ p ^ (unop m) := h hmk
-      have hn : (p ^ (unop n) : ℤ) ≠ 0 := by
+      have hmn : (p ^ (m.unop) : ℤ) ∣ p ^ (n.unop) := h hnm
+      have hkm : (p ^ (k.unop) : ℤ) ∣ p ^ (m.unop) := h hmk
+      have hn : (p ^ (n.unop) : ℤ) ≠ 0 := by
         contrapose hp
         simp only [pow_eq_zero_iff', Int.natCast_eq_zero, ne_eq] at hp
         exact hp.1
