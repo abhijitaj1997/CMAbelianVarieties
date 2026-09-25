@@ -1,6 +1,6 @@
 ToDo — unfinished results (still containing `sorry`)
 ====================================================
-Line numbers refer to the files as of 2026-09-26 (commit 9dca10f)
+Line numbers refer to the files as of 2026-09-26 (commit 2b5817e)
 and will drift as files change.
 
 
@@ -61,20 +61,29 @@ K̄ = `AlgebraicClosure K`), instead of K-points from `specᵤ K`.
       move to AbstractNonsense / IntHom. rational_torsion still lacks the
       inductive step and the final goal.
 
-[ ] finite_torsion_points                                            (l.64)
+[ ] finite_torsion_points                                            (l.65)
       A[n](K̄) is finite when n ≠ 0.
-      The old proof (for K-points) is kept in a comment below the sorry.
-      It needs adapting to K̄-points: send g to Γ(X, ⊤) →ₐ[K] K̄ instead of
-      Γ(X, ⊤) →ₐ[B] B, and use that a finite K-algebra has only finitely
-      many K-algebra maps into K̄.
+      In progress (2b5817e): the proof now gets IsFinite A[n].hom, IsAffine
+      A[n].left, Module.Finite Γ(Spec K, ⊤) Γ(A[n].left, ⊤), and that
+      Γ(A[n].left, ⊤) is Artinian.
+      Note: `have := hhom ▸ step₂ hn` needs the explicit type
+      `IsFinite (A[n]).hom`, otherwise the hidden source/target stay as
+      (pullback …).left / (𝟙_ _).left and instance search fails.
+      Still missing:
+        - Finite (Γ(A[n].left, ⊤) →ₐ[Γ(Spec K, ⊤)] Γ(Spec K, ⊤))   (l.89)
+        - the final goal (l.92).
+      These are still stated for K-points; they need changing to K̄-points
+      (algebra maps into K̄, finitely many because the algebra is finite
+      over K), probably using the base change functor.
+      The old proof is kept in a comment below the sorry.
 
-[ ] tate_module_representation                                       (l.263)
+[ ] tate_module_representation                                       (l.271)
       A homomorphism f : A → B induces T_ p (A) → T_ p (B).
       functorial_ker_int (IntHom.lean) is now done, so this is unblocked.
       Note: f and [IsAddMonHom f] are section variables not mentioned in
       the statement, so they are currently NOT arguments of this def
       (needs `include f in` or explicit binders).
-      The placeholder `blah` (l.260) should be removed or replaced.
+      The placeholder `blah` (l.268) should be removed or replaced.
 
 [ ] Cleanup (see module docstring "Fixes")
       torsion_point_as_profinite and AddGrpCatHom_of_torsion_map view
