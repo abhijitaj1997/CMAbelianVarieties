@@ -16,4 +16,3 @@ public import CMAbelianVarieties.AlgebraicGeometry.InvertibleSheaf
 public import CMAbelianVarieties.AlgebraicGeometry.TheCube
 public import CMAbelianVarieties.Basic
 public import CMAbelianVarieties.ForMathlib.Endomorphism
-public import CMAbelianVarieties.Test.Test
