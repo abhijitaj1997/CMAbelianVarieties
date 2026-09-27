@@ -1,7 +1,8 @@
 ToDo — unfinished results (still containing `sorry`)
 ====================================================
-Line numbers refer to the files as of 2026-09-26 (commit 2b5817e)
-and will drift as files change.
+Line numbers refer to the files as of 2026-09-26 (commit 2b5817e),
+except the Homomorphisms / InvertibleSheaf / TheCube sections, which
+refer to 2026-09-27 (commit 7305ad4). They will drift as files change.
 
 
 AbstractNonsense/PullbackAddGrp.lean
@@ -91,3 +92,37 @@ K̄ = `AlgebraicClosure K`), instead of K-points from `specᵤ K`.
       definitions giving A[n](K̄) as an object of AddGrpCat and of
       FiniteAddGrp, and use them. AddGrpCatHom_of_torsion_map may be
       unnecessary.
+
+
+AbelianVarieties/Homomorphisms/FiniteGen.lean
+---------------------------------------------
+[ ] fin_gen_hom                                                      (l.23)
+      Hom(A, B) is a finitely generated abelian group.
+      Leftover `#check @Module.Finite.iff_addGroup_fg` to remove.
+
+
+AbelianVarieties/Homomorphisms/TorsionFree.lean
+-----------------------------------------------
+[x] tor_free_hom, module_tor_free_hom
+      Done; now stated as `theorem` (7305ad4).
+
+
+AbelianVarieties/Homomorphisms/EndomorphismRing.lean
+----------------------------------------------------
+New file (7305ad4): defines RationalEnd A = ℚ ⊗[ℤ] End (mk A),
+notation `End_ℚ A` (scoped in RationalEnd).
+[ ] Module.Finite ℚ (End_ℚ A)                                        (l.36)
+      Should follow from fin_gen_hom (FiniteGen.lean).
+[ ] Collect the remaining instances from the Hom files for End A.
+
+
+AlgebraicGeometry/InvertibleSheaf.lean
+--------------------------------------
+[ ] New file (7305ad4), only #checks so far. Basic facts about
+      invertible sheaves / line bundles, built on
+      SheafOfModules.IsLocallyFree for X.Modules.
+
+
+AlgebraicGeometry/TheCube.lean
+------------------------------
+[ ] New file (7305ad4), empty. Theorem of the cube.
