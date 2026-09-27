@@ -106,7 +106,7 @@ lemma comp_nat_eq_zero {n : ℕ} (hn : n ≠ 0)
     at this
   exact AddGrp.hom_ext_iff.mpr (id (Eq.symm this))
 
-lemma tor_free_hom : IsAddTorsionFree (mk A ⟶ mk B) where
+theorem tor_free_hom : IsAddTorsionFree (mk A ⟶ mk B) where
   nsmul_right_injective n hn f₁ f₂ := by
     simp only
     intro h
@@ -117,7 +117,7 @@ lemma tor_free_hom : IsAddTorsionFree (mk A ⟶ mk B) where
     rw [nat_action (f₁ - f₂) n] at this
     exact comp_nat_eq_zero hn this
 
-lemma module_tor_free_hom : Module.IsTorsionFree ℤ (mk A ⟶ mk B) := by
+theorem module_tor_free_hom : Module.IsTorsionFree ℤ (mk A ⟶ mk B) := by
   rw [Module.isTorsionFree_int_iff_isAddTorsionFree]
   exact tor_free_hom
 
