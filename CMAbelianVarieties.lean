@@ -15,4 +15,5 @@ public import CMAbelianVarieties.AlgebraicGeometry.Finite
 public import CMAbelianVarieties.AlgebraicGeometry.InvertibleSheaf
 public import CMAbelianVarieties.AlgebraicGeometry.TheCube
 public import CMAbelianVarieties.Basic
+public import CMAbelianVarieties.CMTypes.Algebra
 public import CMAbelianVarieties.ForMathlib.Endomorphism
