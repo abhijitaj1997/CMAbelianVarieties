@@ -1,9 +1,10 @@
 module
 
-public import Mathlib.Algebra.Central.Defs
+public import Mathlib.Algebra.Algebra.Subalgebra.Centralizer
+public import Mathlib.Algebra.Central.Basic
 public import Mathlib.RingTheory.SimpleModule.IsAlgClosed
-public import Mathlib.RingTheory.SimpleRing.Principal -- probably not needed!
 public import Mathlib.RingTheory.TotallySplit
+
 
 /-!
 ## Goal
@@ -51,13 +52,8 @@ instance {R : Type*} [Ring R] [Algebra ℚ R] : Algebra ℚ (center R) where
 open scoped TensorProduct
 open Module Algebra Subring
 
-#check IsCentral
-#check center
-
 /- the center of a simple ring is a field -/
-#check IsSimpleRing.isField_center
-#check Decidable.or_not_self
-#check Classical.dec
+--#check IsSimpleRing.isField_center
 
 lemma IsCentral_basechange (F K R : Type*) [Field K] [Field F] [Algebra K F] [Ring R]
     [Algebra K R] [IsCentral K R] : IsCentral F
@@ -144,7 +140,7 @@ lemma IsCentral_basechange (F K R : Type*) [Field K] [Field F] [Algebra K F] [Ri
           rw [mem_center_iff]
           exact fun g ↦ Eq.symm (commutes' x g)
         · apply (IsCentral.out : Subalgebra.center K R ≤ (⊥ : Subalgebra K R)) h
-      simpa [this]
+      simpa only [this, Subalgebra.center_toSubring]
     simp only [← hb, RingHom.mem_range, TensorProduct.algebraMap_apply, algebraMap_self,
       RingHom.id_apply]
     let x (i : I) : K := if hi : i ∈ b.support then (this i hi).choose else 0
@@ -170,6 +166,27 @@ lemma IsCentral_basechange (F K R : Type*) [Field K] [Field F] [Algebra K F] [Ri
     out := fun x hx => Algebra.mem_bot.mpr (this x hx)
   }
 
+-- A really short proof given by Claude
+lemma IsCentral_basechange' (F K R : Type*) [Field K] [Field F] [Algebra K F] [Ring R]
+    [Algebra K R] [IsCentral K R] : IsCentral F (F ⊗[K] R) where
+  out x hx := by
+    have hx' : x ∈ Subalgebra.centralizer K
+        (Algebra.TensorProduct.includeRight : R →ₐ[K] F ⊗[K] R).range := by
+      rintro _ ⟨r, rfl⟩
+      exact Subalgebra.mem_center_iff.mp hx _ ▸ rfl
+    rw [Subalgebra.centralizer_range_includeRight_eq_center_tensorProduct,
+      IsCentral.center_eq_bot] at hx'
+    obtain ⟨y, rfl⟩ := hx'
+    clear hx
+    induction y using TensorProduct.inductionOn with
+    | tmul f r =>
+      obtain ⟨k, hk⟩ := Algebra.mem_bot.mp r.2
+      refine Algebra.mem_bot.mpr ⟨k • f, ?_⟩
+      rw [Algebra.TensorProduct.algebraMap_apply, algebraMap_self, RingHom.id_apply]
+      simp [← hk, Algebra.algebraMap_eq_smul_one, TensorProduct.smul_tmul]
+    | add a b ha hb => simpa using add_mem ha hb
+
+
 lemma IsSimpleRing_basechange (F K R : Type*) [Field K] [Field F] [Algebra K F] [Ring R]
     [Algebra K R] [IsSimpleRing R] [IsCentral K R] : IsSimpleRing (F ⊗[K] R) := by
   have eq_bot_or_eq_top : ∀ (J : TwoSidedIdeal (F ⊗[K] R)), J = ⊥ ∨ J = ⊤ := by
@@ -185,7 +202,6 @@ lemma IsSimpleRing_basechange (F K R : Type*) [Field K] [Field F] [Algebra K F] 
         constructor <;> intro h <;> simp only [TwoSidedIdeal.mem_bot] at *
         · exact hJ x h
         · simp [h]
-
       sorry
   exact {
     simple := {
