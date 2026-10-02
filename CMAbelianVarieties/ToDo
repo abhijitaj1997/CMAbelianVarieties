@@ -165,3 +165,22 @@ of 2026-10-02 (commit 45007ad).
 
 [ ] Cleanup: remove the trailing `#min_imports` and the commented-out
       `--#check IsSimpleRing.isField_center` (l.56).
+
+
+CMTypes/Defn.lean
+-----------------
+New file (19bb4f6), line numbers as of that commit. No sorries yet.
+[x] preCMType K                                                      (l.16)
+      A set Φ ⊆ (K →+* ℂ) containing exactly one of each conjugate
+      pair: φ ∈ Φ ↔ conj ∘ φ ∉ Φ (composition via RingHom.comp;
+      equivalently NumberField.ComplexEmbedding.conjugate φ).
+
+[ ] Natural map from a preCMType to the infinite places of K         (l.21)
+      Idea noted in the file. φ ↦ InfinitePlace.mk φ should be a
+      bijection Φ ≃ InfinitePlace K, giving
+      card Φ = nrComplexPlaces K = finrank ℚ K / 2
+      (NumberField.Embeddings.card, IsTotallyComplex.finrank).
+
+[ ] Cleanup: the file is mostly #check / #synth exploration and ends
+      with `#min_imports`; replace `public import Mathlib` by the
+      minimal imports once the definitions settle.
