@@ -172,7 +172,21 @@ lemma IsCentral_basechange (F K R : Type*) [Field K] [Field F] [Algebra K F] [Ri
 
 lemma IsSimpleRing_basechange (F K R : Type*) [Field K] [Field F] [Algebra K F] [Ring R]
     [Algebra K R] [IsSimpleRing R] [IsCentral K R] : IsSimpleRing (F ⊗[K] R) := by
-  have eq_bot_or_eq_top : ∀ (J : TwoSidedIdeal (F ⊗[K] R)), J = ⊥ ∨ J = ⊤ := sorry
+  have eq_bot_or_eq_top : ∀ (J : TwoSidedIdeal (F ⊗[K] R)), J = ⊥ ∨ J = ⊤ := by
+    intro J
+    by_cases hJ : J = ⊥
+    · left; assumption
+    · right
+      apply TwoSidedIdeal.eq_top
+      obtain ⟨x, hxJ, hx⟩ : ∃ x ∈ J, x ≠ 0 := by
+        contrapose hJ
+        push Not at hJ
+        ext x
+        constructor <;> intro h <;> simp only [TwoSidedIdeal.mem_bot] at *
+        · exact hJ x h
+        · simp [h]
+
+      sorry
   exact {
     simple := {
       exists_pair_ne := by
