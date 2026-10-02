@@ -131,36 +131,37 @@ AlgebraicGeometry/TheCube.lean
 CMTypes/Algebra.lean
 --------------------
 New file (70f2e46): algebraic background for CM types. Line numbers as
-of 2026-10-02 (commit 3313b04).
-[x] Algebra ℚ (center R)                                             (l.17–46)
+of 2026-10-02 (commit 45007ad).
+[x] Algebra ℚ (center R)                                             (l.18–47)
       SMul, center_algebra_map and the Algebra instance are done.
 
-[ ] IsCentral_basechange                                             (l.62)
-      Base change of a central algebra is central. Now needed (used for
-      IsSimpleRing_basechange / fact₁). Not in Mathlib
-      (Algebra.IsCentral.left_of_tensor goes the other way).
-      In progress (3313b04): writes x = Σ e i ⊗ b i over a K-basis e of F
-      (TensorProduct.eq_repr_basis_left), shows
-      Σ e i ⊗ (a * b i - b i * a) = 0 for all a : R, and that each central
-      b i lies in (algebraMap K R).range (done, via IsCentral.out).
-      Still missing:
-        - a * b i = b i * a for i ∈ b.support                        (l.88)
-          The finsupp b' is half-built (support / mem_support_toFun
-          sorries). Simpler: Finsupp.mapRange (fun r ↦ a * r - r * a)
-          applied to b, then TensorProduct.sum_tmul_basis_left_eq_zero;
-          or apply TensorProduct.equivFinsuppOfBasisLeft e to the sum.
-        - the final goal x ∈ range (algebraMap F _)                  (l.125)
-      Also: remove the leftover #checks and the
-      [DecidableEq (Basis.ofVectorSpaceIndex K F)] hypothesis if unused.
+[x] IsCentral_basechange, IsCentral_basechange'                      (l.58, l.170)
+      Base change of a central algebra is central. Done (45007ad), two
+      proofs: the long one over a K-basis of F, and a short one via
+      Subalgebra.centralizer_range_includeRight_eq_center_tensorProduct.
+      Could keep only the short one.
 
-[ ] IsSimpleRing_basechange                                          (l.133)
-      F ⊗[K] R is simple. Now has [IsCentral K R] (it is false without it:
-      ℂ ⊗[ℝ] ℂ ≅ ℂ × ℂ). Not in Mathlib. Standard proof: take an element of
-      minimal length Σ aᵢ ⊗ bᵢ in a nonzero ideal and use simplicity +
-      centrality to reduce it to 1 ⊗ b.
+[ ] IsSimpleRing_basechange                                          (l.190)
+      F ⊗[K] R is simple. Has [IsCentral K R] (false without it:
+      ℂ ⊗[ℝ] ℂ ≅ ℂ × ℂ). Not in Mathlib. Started: a nonzero x ∈ J is
+      obtained; the rest is sorry (l.205).
+      A complete ~55-line proof was worked out (2026-10-02) but not
+      inserted:
+        - φ := TensorProduct.equivFinsuppOfBasisLeft (chooseBasis K F);
+          φ((1⊗r)x) i = r * φ x i and φ(x(1⊗r)) i = φ x i * r;
+        - pick x ∈ I, x ≠ 0, with minimal (φ x).support.card (Nat.find);
+        - the i₀-coefficients of elements of I supported in supp x form
+          a TwoSidedIdeal of R (TwoSidedIdeal.mk'), so contain 1
+          (IsSimpleRing.one_mem_of_ne_zero_mem): get y with φ y i₀ = 1;
+        - by minimality (1⊗r)y = y(1⊗r), so y is central, so
+          y = algebraMap F _ f (IsCentral_basechange'), f ≠ 0;
+        - (f⁻¹⊗1)·y = 1 ∈ I, so I = ⊤ (TwoSidedIdeal.eq_top).
 
-[ ] fact₁ / dimension_IsSimple_algebra                               (l.136, l.149)
-      Proved modulo IsSimpleRing_basechange; both now carry
-      [IsCentral K R]. finrank K R = n * n should follow via
-      Module.finrank_baseChange; the reduced degree could then be defined
-      directly as Nat.sqrt (finrank K R) instead of via choose.
+[ ] fact₁ / dimension_IsSimple_algebra                               (l.215, l.228)
+      Proved modulo IsSimpleRing_basechange; both carry [IsCentral K R].
+      finrank K R = n * n should follow via Module.finrank_baseChange;
+      the reduced degree could then be defined directly as
+      Nat.sqrt (finrank K R) instead of via choose.
+
+[ ] Cleanup: remove the trailing `#min_imports` and the commented-out
+      `--#check IsSimpleRing.isField_center` (l.56).
