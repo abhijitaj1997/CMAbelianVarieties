@@ -1,0 +1,70 @@
+Why `classical` instead of `[DecidableEq ...]` in `IsCentral_basechange`
+=======================================================================
+(file: CMAbelianVarieties/CMTypes/Algebra.lean)
+
+The warning
+-----------
+The lemma used to have the hypothesis
+
+    [DecidableEq (Basis.ofVectorSpaceIndex K F)]
+
+and Mathlib's linter `linter.unusedDecidableInType` complained:
+
+    `IsCentral_basechange` does not use the following hypothesis in its type:
+      • [DecidableEq ↑(Basis.ofVectorSpaceIndex K F)]
+    Consider removing this hypothesis and using `classical` in the proof instead.
+
+The statement `IsCentral F (F ⊗[K] R)` is a `Prop` and has nothing to do with
+deciding equality. The hypothesis was only used inside the proof.
+
+Why the proof needs decidability
+--------------------------------
+The definition
+
+    let x (i : I) : K := if hi : i ∈ b.support then (this i hi).choose else 0
+
+uses a dependent `if`. To build it, Lean needs a `Decidable (i ∈ b.support)`
+instance, i.e. a way to decide which branch holds. Lean finds this via
+`Finset.decidableMem`, which in turn needs `DecidableEq I`. That is why simply
+deleting the hypothesis caused the error
+
+    failed to synthesize Decidable (i ∈ b.support)
+
+(The later `split_ifs` / `intro` errors were knock-on failures from this.)
+
+Two ways to provide decidability
+--------------------------------
+1. As a hypothesis in the statement (the old version):
+   anyone who applies the lemma must supply a `DecidableEq` instance for the
+   basis index type, a type with no computable decidable equality. That is a
+   strange requirement for a purely mathematical statement, so the linter
+   flags it.
+
+2. With `classical` at the start of the proof (the current version):
+   inside the proof every proposition is treated as decidable (via the law of
+   excluded middle). The statement stays clean and the `if` still works.
+
+The extra change
+----------------
+With `classical`, the step
+
+    have h : x i = (this i hb).choose := by
+      simp [x]
+      split_ifs
+      rfl
+
+broke. `simp [x]` rewrote the condition `i ∈ b.support` to `b i = 0`, and
+`split_ifs` could no longer match it against `hb : i ∈ b.support`, leaving an
+impossible branch with goal `0 = Exists.choose ⋯`. Rewriting the `if` directly
+with `hb` avoids this:
+
+    have h : x i = (this i hb).choose := by
+      simp only [x, hb, dite_true]
+
+(`exact dif_pos hb` also works but is deprecated in this Mathlib version.)
+
+Rule of thumb
+-------------
+If a `Decidable...` / `DecidableEq ...` hypothesis is only needed in the proof
+and not in the statement, remove it and write `classical` at the start of the
+proof.

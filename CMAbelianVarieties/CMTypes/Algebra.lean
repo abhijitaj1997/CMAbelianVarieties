@@ -2,7 +2,7 @@ module
 
 public import Mathlib.Algebra.Central.Defs
 public import Mathlib.RingTheory.SimpleModule.IsAlgClosed
-public import Mathlib.RingTheory.SimpleRing.Principal
+public import Mathlib.RingTheory.SimpleRing.Principal -- probably not needed!
 public import Mathlib.RingTheory.TotallySplit
 
 /-!
@@ -60,53 +60,77 @@ open Module Algebra Subring
 #check Classical.dec
 
 lemma IsCentral_basechange (F K R : Type*) [Field K] [Field F] [Algebra K F] [Ring R]
-    [Algebra K R] [DecidableEq (Basis.ofVectorSpaceIndex K F)] [IsCentral K R] : IsCentral F
+    [Algebra K R] [IsCentral K R] : IsCentral F
     (F ⊗[K] R) := by
-  have : ∀ (x : F ⊗[K] R), x ∈  Subalgebra.center F (F ⊗[K] R) →
-      (x : F ⊗[K] R) ∈ (algebraMap F (F ⊗[K] R)).range := by
+  classical
+  have : ∀ x ∈  Subalgebra.center F (F ⊗[K] R), x ∈ (algebraMap F (F ⊗[K] R)).range := by
     intro x hx
     let I := Basis.ofVectorSpaceIndex K F
     let e := Basis.ofVectorSpace K F
     -- the `obtain` below was an `rcases`. Claude helped change that.
     obtain ⟨b, hb⟩ : ∃ b : I →₀ R, ∑ i ∈ b.support, e i ⊗ₜ[K] b i = x :=
       TensorProduct.eq_repr_basis_left e x
-    have : ∀ a : R, (1 ⊗ₜ a) * x = x * (1 ⊗ₜ a) := by
-      intro a
-      exact Subalgebra.mem_center_iff.mp hx (1 ⊗ₜ a)
-    have h (a : R) : ∑ i ∈ b.support, e i ⊗ₜ[K] (a * b i)
+    have h1 (a : R) : ∑ i ∈ b.support, e i ⊗ₜ[K] (a * b i)
         = ∑ i ∈ b.support, e i ⊗ₜ[K] (b i * a) := by
-      -- credit to Claude for this `have`
       have hl (a : R) : (1 ⊗ₜ[K] a * ∑ i ∈ b.support, e i ⊗ₜ[K] b i)
           = ∑ i ∈ b.support, e i ⊗ₜ[K] (a * b i) := by
         simp [Finset.mul_sum]
-      rw [← hl a, hb, this, ← hb]
-      simp [Finset.sum_mul]
+      simp_rw [← hl a, hb, Subalgebra.mem_center_iff.mp hx (1 ⊗ₜ a), ← hb,
+        Finset.sum_mul, TensorProduct.tmul_mul_tmul, mul_one]
     -- got Claude to do the `calc` below
-    have (a : R) : ∑ i ∈ b.support, e i ⊗ₜ[K] (a * b i - b i * a) = 0 := by
+    have h2 (a : R) : ∑ i ∈ b.support, e i ⊗ₜ[K] (a * b i - b i * a) = 0 := by
       calc ∑ i ∈ b.support, e i ⊗ₜ[K] (a * b i - b i * a)
           _ = ∑ i ∈ b.support, e i ⊗ₜ[K] (a * b i) - ∑ i ∈ b.support, e i ⊗ₜ[K] (b i * a) := by
             simp [TensorProduct.tmul_sub, Finset.sum_sub_distrib]
-          _ = 0 := by rw [h a, sub_self]
+          _ = 0 := by rw [h1 a, sub_self]
     have (a : R) (i : I) : i ∈ b.support → a * b i = b i * a := by
       intro hi
-      specialize this a
+      specialize h2 a
       let b' : I →₀ R := {
-        support := by sorry
+        support := by
+          have : Finite {i : I | (a * b i - b i * a) ≠ 0 } := by
+            have : {i : I | (a * b i - b i * a) ≠ 0 }.Finite := by
+              apply @Set.Finite.subset I b.support _ {i : I | (a * b i - b i * a) ≠ 0 }
+              · intro i hi
+                by_cases hb : b i ≠ 0
+                · simp [hb]
+                · simp at hi
+                  push Not at hb
+                  simp [hb] at hi
+              · simp
+            exact Set.Finite.to_subtype this
+          have := Fintype.ofFinite {i : I | (a * b i - b i * a) ≠ 0 }
+          exact @Set.toFinset _ {i : I | (a * b i - b i * a) ≠ 0 } _
         toFun i := (a * b i - b i * a)
         mem_support_toFun := by
           intro i
           constructor <;> intro hi
-          · #check Finsupp.mem_support_toFun b i
-            sorry
-          · sorry
-      }
-      have hypo : ∑ i ∈ b.support, e i ⊗ₜ[K] (a * b i - b i * a)
-          = (b.sum fun i n ↦ e i ⊗ₜ[K] (a * n - n * a)) := by
-        rfl
-      rw [hypo] at this
-      #check TensorProduct.sum_tmul_basis_left_eq_zero e b
-      sorry
-    -- simp will get it to the final needed form
+          · simp only [ne_eq, Set.mem_toFinset, Set.mem_ofPred_eq] at hi
+            push Not at hi
+            assumption
+          · simpa }
+      have h₁ (i : I) : b' i = b'.toFun i := rfl
+      have h₂ (i : I) : b'.toFun = fun i => a * b i - b i * a := rfl
+      have rewrite : ∑ i ∈ b'.support, e i ⊗ₜ[K] (a * b i - b i * a) = ∑ i ∈ b.support, e i ⊗ₜ[K]
+          (a * b i - b i * a) := by
+        have sub : b'.support ⊆ b.support := by
+          intro i hi
+          simp only [Finsupp.mem_support_iff, ne_eq, Subtype.forall] at *
+          contrapose hi
+          simp [h₁, h₂ i, hi]
+        apply Finset.sum_subset sub
+        intro i hi hi'
+        simp [h₁, h₂ i] at hi'
+        simp [hi']
+      rw [← rewrite] at h2
+      have : b' = 0 → (a * b i = b i * a) := by
+        intro h
+        by_cases hb : i ∈ b'.support
+        · simp [h] at hb
+        · simp only [Finsupp.mem_support_iff, ne_eq, not_not, h₁] at hb
+          exact eq_of_sub_eq_zero hb
+      apply this
+      exact (TensorProduct.sum_tmul_basis_left_eq_zero e b' h2)
     have (i : I) (hi : i ∈ b.support ): b i ∈ (algebraMap K R).range := by
       have : b i ∈ center R := by
         rw [Subring.mem_center_iff]
@@ -121,17 +145,42 @@ lemma IsCentral_basechange (F K R : Type*) [Field K] [Field F] [Algebra K F] [Ri
           exact fun g ↦ Eq.symm (commutes' x g)
         · apply (IsCentral.out : Subalgebra.center K R ≤ (⊥ : Subalgebra K R)) h
       simpa [this]
-    simp [← hb]
-    sorry
+    simp only [← hb, RingHom.mem_range, TensorProduct.algebraMap_apply, algebraMap_self,
+      RingHom.id_apply]
+    let x (i : I) : K := if hi : i ∈ b.support then (this i hi).choose else 0
+    have (i : I) : e i ⊗ₜ[K] b i = (x i • e i) ⊗ₜ[K] 1 := by
+      rw [TensorProduct.smul_tmul]
+      by_cases hb : i ∈ b.support
+      · have h : x i = (this i hb).choose := by
+          simp only [x, hb, dite_true]
+        simp only [h, smul_def' (Exists.choose (this i hb)) (1 : R), (this i hb).choose_spec,
+          mul_one]
+      · have h : x i = 0 := by
+          simp only [Finsupp.mem_support_iff, ne_eq, dite_eq_right_iff, x]
+          intro h
+          simp [h] at hb
+        have : b i = 0 := by
+          contrapose hb
+          simp only [b.mem_support_toFun i, ne_eq]
+          exact hb
+        simp [h, this]
+    use (∑ i ∈ b.support, (x i • e i))
+    simp [this, TensorProduct.sum_tmul]
   exact {
-    out := by
-      intro x hx
-      specialize this x hx
-      exact Algebra.mem_bot.mpr this
+    out := fun x hx => Algebra.mem_bot.mpr (this x hx)
   }
 
 lemma IsSimpleRing_basechange (F K R : Type*) [Field K] [Field F] [Algebra K F] [Ring R]
-    [Algebra K R] [IsSimpleRing R] [IsCentral K R] : IsSimpleRing (F ⊗[K] R) := sorry
+    [Algebra K R] [IsSimpleRing R] [IsCentral K R] : IsSimpleRing (F ⊗[K] R) := by
+  have eq_bot_or_eq_top : ∀ (J : TwoSidedIdeal (F ⊗[K] R)), J = ⊥ ∨ J = ⊤ := sorry
+  exact {
+    simple := {
+      exists_pair_ne := by
+        use ⊥, ⊤
+        simp
+      eq_bot_or_eq_top := eq_bot_or_eq_top
+    }
+  }
 
 lemma fact₁ (K R : Type*) [Ring R] [Field K] [Algebra K R] [IsSimpleRing R] [IsCentral K R]
     [FiniteDimensional K R] : ∃ n : ℕ, ∃ _ : NeZero n, Nonempty (AlgebraicClosure K ⊗[K] R
