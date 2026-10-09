@@ -1,13 +1,7 @@
-/-
-Copyright (c) 2025 Abhijit A J. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Abhijit A J
--/
 module
 
-public import CMAbelianVarieties.AbelianVarieties.Homomorphisms.IntHom
 public import CMAbelianVarieties.AbelianVarieties.GlobalSections
-public import CMAbelianVarieties.AbstractNonsense.PullbackAddGrp
+public import CMAbelianVarieties.AbelianVarieties.Homomorphisms.IntHom
 
 /-!
 ## Main goal
@@ -42,7 +36,7 @@ lemma int_action (f : mk X ⟶ mk Y) (n : ℤ) : n • f = f ≫ (n • (𝟙 (m
     simp [this]
     have : f ≫ lift g h = lift (f ≫ g) (f ≫ h) := by
         ext <;> simp
-    simp [Category.assoc', this]
+    simp [reassoc_of% this]
   induction n using Int.induction_on with
   | zero => simp
   | succ d hd =>
@@ -65,7 +59,7 @@ lemma nat_action (f : mk X ⟶ mk Y) (n : ℕ) : n • f = f ≫ (AddGrp.ofHom (
       simp [this]; rfl
   | succ d hd =>
       have : f = f ≫ ofHom ([1]_ Y) := by
-        simp only [int_hom, Int.cast_one, End.one_def, id', AddMon.id_hom']
+        simp only [int_hom, Int.cast_one, End.one_asHom, id', AddMon.id_hom']
         exact AddGrp.hom_ext_iff.mpr rfl
       simp only [add_smul, hd, one_smul]
       nth_rw 2 [this]
@@ -106,7 +100,7 @@ lemma comp_nat_eq_zero {n : ℕ} (hn : n ≠ 0)
     at this
   exact AddGrp.hom_ext_iff.mpr (id (Eq.symm this))
 
-theorem tor_free_hom : IsAddTorsionFree (mk A ⟶ mk B) where
+theorem tor_free_hom : HasUniqueDiv (mk A ⟶ mk B) where
   nsmul_right_injective n hn f₁ f₂ := by
     simp only
     intro h
@@ -118,7 +112,7 @@ theorem tor_free_hom : IsAddTorsionFree (mk A ⟶ mk B) where
     exact comp_nat_eq_zero hn this
 
 theorem module_tor_free_hom : Module.IsTorsionFree ℤ (mk A ⟶ mk B) := by
-  rw [Module.isTorsionFree_int_iff_isAddTorsionFree]
+  rw [Module.isTorsionFree_int_iff_hasUniqueDiv]
   exact tor_free_hom
 
 end Freeness

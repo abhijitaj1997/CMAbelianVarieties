@@ -17,7 +17,7 @@ we will define `(End A) ⊗[ℤ] ℚ`
 @[expose] public section
 
 open CategoryTheory AlgebraicGeometry AddGrp
-open scoped TensorProduct
+open scoped TensorProduct End
 
 variable {K} [Field K]
 variable {A : Over (Spec ↧K)} {B : Over (Spec ↧K)}
@@ -30,9 +30,9 @@ abbrev RationalEnd (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyIntegra
 
 namespace RationalEnd
 
-scoped notation "End_ℚ " A:max => RationalEnd A
+scoped notation "End⁰ " A:max => RationalEnd A
 
 instance {A : Over (Spec ↧K)} [IsProper A.hom] [GeometricallyIntegral A.hom] [AddGrpObj A] :
-    Module.Finite ℚ (End_ℚ A) := sorry
+    Module.Finite ℚ (End⁰ A) := sorry
 
 end RationalEnd

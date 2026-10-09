@@ -27,6 +27,7 @@ _Incomplete tasks_
 
 open CategoryTheory AlgebraicGeometry AddGrp Limits AddMonObj MonoidalCategory
 open CartesianMonoidalCategory IntHom
+open scoped AddGrp.End
 
 variable {K} [Field K]
 variable {A : Over (Spec ↧K)} {B : Over (Spec ↧K)}
@@ -38,7 +39,7 @@ instance : IsCommAddMonObj A := sorry
 lemma int_hom_comp (n m : ℤ) (A₀ : Over (Spec ↧K))
     [IsProper A₀.hom] [GeometricallyIntegral A₀.hom] [AddGrpObj A₀]
     : ([n]_ A₀) ≫ ([m]_ A₀) =  ([m * n]_ A₀) := by
-  simp [int_hom]
+  simp [int_hom, Int.cast_mul, End.mul_asHom]
 
 abbrev ker_int (A₀ : Over (Spec ↧K)) (n : ℤ)
     [IsProper A₀.hom] [GeometricallyIntegral A₀.hom] [AddGrpObj A₀]

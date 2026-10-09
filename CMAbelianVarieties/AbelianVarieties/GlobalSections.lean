@@ -14,6 +14,7 @@ variety over `K` is isomorphic to `K`.
 
 One major consequence of this result is that any additive group homomorphism
 to an affine scheme is trivial.
+
 -/
 
 @[expose] public noncomputable section

@@ -17,7 +17,7 @@ without it. Something similar can be done for `ℕ` and monoid objects
 
 @[expose] public noncomputable section
 
-open CategoryTheory AddGrp
+open CategoryTheory AddGrp End
 
 variable {C : Type*} [Category* C] [CartesianMonoidalCategory C] [BraidedCategory C]
 
@@ -25,7 +25,7 @@ variable {C : Type*} [Category* C] [CartesianMonoidalCategory C] [BraidedCategor
 for `n : ℤ` and a commutative group object `G`, we have an group endomorphism `[n]_ G`
 -/
 def int_hom (n : ℤ) (G : C) [AddGrpObj G] [IsCommAddMonObj G] :
-    G ⟶ G := (n : End (mk G)).hom.hom
+    G ⟶ G := (n : End (mk G)).asHom.hom.hom
 
 namespace IntHom
 
@@ -54,9 +54,8 @@ lemma comp_neg_one {G H : C} [AddGrpObj G] [IsCommAddMonObj G]
   have : f ≫ [1]_ H = f := by simp [int_hom]
   nth_rw 2 [← this]
   rw [← comp_add, ← int_hom_add]
-  simp only [int_hom, Int.reduceNeg, neg_add_cancel, Int.cast_zero, zero_hom, AddMon.zero_hom,
-    SemiCartesianMonoidalCategory.comp_toUnit_assoc]
-  exact Eq.symm Hom.zero_def
+  simp only [int_hom, Int.reduceNeg, neg_add_cancel, Int.cast_zero, AddGrp.End.zero_asHom,
+    zero_hom, AddMon.zero_hom, SemiCartesianMonoidalCategory.comp_toUnit_assoc, Hom.zero_def]
 
 lemma neg_one_comp {G H : C} [AddGrpObj G] [IsCommAddMonObj G]
     [AddGrpObj H] [IsCommAddMonObj H] (f : G ⟶ H) [IsAddMonHom f] :
@@ -65,15 +64,14 @@ lemma neg_one_comp {G H : C} [AddGrpObj G] [IsCommAddMonObj G]
   have : [1]_ G ≫ f = f := by simp [int_hom]
   nth_rw 2 [← this]
   rw [← add_comp, ← int_hom_add]
-  simp only [int_hom, Int.reduceNeg, neg_add_cancel, Int.cast_zero, zero_hom, AddMon.zero_hom,
-    Category.assoc, IsAddMonHom.zero_hom]
-  exact Eq.symm Hom.zero_def
+  simp [int_hom, Int.reduceNeg, neg_add_cancel, Int.cast_zero, AddGrp.End.zero_asHom,
+    Hom.zero_def]
 
 lemma int_commute {G H : C} [AddGrpObj G] [IsCommAddMonObj G]
     [AddGrpObj H] [IsCommAddMonObj H] (f : G ⟶ H) [IsAddMonHom f] (n : ℤ) :
     f ≫ [n]_ H = [n]_ G ≫ f := by
   induction n using Int.induction_on with
-  | zero => simp [int_hom]
+  | zero => simp [int_hom, Int.cast_zero, AddGrp.End.zero_asHom]
   | succ d hd =>
       simp only [int_hom_add, comp_add, add_comp, hd]
       simp [int_hom]
