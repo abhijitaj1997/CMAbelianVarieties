@@ -3,8 +3,8 @@ module
 public import CMAbelianVarieties.AbstractNonsense.IntHom
 public import CMAbelianVarieties.AbstractNonsense.PullbackAddGrp
 public import CMAbelianVarieties.AlgebraicGeometry.Finite
-public import CMAbelianVarieties.ForMathlib.AddGrpObjToGrpObj
 public import Mathlib.AlgebraicGeometry.Group.Abelian
+import all Mathlib.AlgebraicGeometry.Group.Abelian
 /-!
 
 ## Properties of [n]
@@ -31,11 +31,17 @@ variable [IsProper A.hom] [GeometricallyIntegral A.hom] [AddGrpObj A]
 variable [IsProper B.hom] [GeometricallyIntegral B.hom] [AddGrpObj B]
 
 -- Claude solved this problem!
-/-- Abelian varieties are commutative. This transfers Mathlib's multiplicative
-`isCommMonObj_of_isProper_of_geometricallyIntegral` to additive notation. -/
-instance : IsCommAddMonObj A :=
-  letI := AddGrpObj.toGrpObj A
-  .of_isCommMonObj A (isCommMonObj_of_isProper_of_geometricallyIntegral A)
+/- Mathlib proves commutativity of abelian varieties only for `GrpObj`. `to_additive` skips it
+because `Scheme` counts as a "fixed type", so we mark `Scheme` as translatable and additivize the
+proof (see the `to_additive` docstring, section Troubleshooting). -/
+attribute [to_additive_do_translate] Scheme Scheme.instCategory
+attribute [to_additive (attr := instance) isClosedImmersion_zero_left]
+  instIsClosedImmersionLeftSchemeOneOverSpecOf
+attribute [to_additive] isCommMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed
+attribute [to_additive] isCommMonObj_of_isProper_of_geometricallyIntegral
+
+/-- Abelian varieties are commutative. -/
+instance : IsCommAddMonObj A := isCommAddMonObj_of_isProper_of_geometricallyIntegral A
 
 lemma int_hom_comp (n m : ℤ) (A₀ : Over (Spec ↧K))
     [IsProper A₀.hom] [GeometricallyIntegral A₀.hom] [AddGrpObj A₀]

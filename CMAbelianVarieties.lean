@@ -17,5 +17,4 @@ public import CMAbelianVarieties.AlgebraicGeometry.TheCube
 public import CMAbelianVarieties.Basic
 public import CMAbelianVarieties.CMTypes.Algebra
 public import CMAbelianVarieties.CMTypes.Defn
-public import CMAbelianVarieties.ForMathlib.AddGrpObjToGrpObj
 public import CMAbelianVarieties.ForMathlib.Endomorphism
