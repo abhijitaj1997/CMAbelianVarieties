@@ -13,6 +13,7 @@ public import CMAbelianVarieties.AbstractNonsense.PullbackAddGrp
 public import CMAbelianVarieties.AlgebraicGeometry.Catalogue
 public import CMAbelianVarieties.AlgebraicGeometry.Finite
 public import CMAbelianVarieties.AlgebraicGeometry.InvertibleSheaf
+public import CMAbelianVarieties.AlgebraicGeometry.LieAlgebra
 public import CMAbelianVarieties.AlgebraicGeometry.TheCube
 public import CMAbelianVarieties.Basic
 public import CMAbelianVarieties.CMTypes.Algebra

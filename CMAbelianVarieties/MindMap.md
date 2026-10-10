@@ -41,6 +41,7 @@ graph TD
     Finite["<b>Finite</b><br/><i>finite over a field ⇒ Artinian</i>"]
     InvertibleSheaf["<b>InvertibleSheaf</b><br/><i>line bundles</i>"]
     TheCube["<b>TheCube</b><br/><i>theorem of the cube</i>"]
+    LieAlgebra["<b>LieAlgebra</b><br/><i>Lie G, End G acts on Lie G</i>"]
     AGCatalogue["<b>Catalogue</b><br/><i>#check cheat sheet</i>"]
   end
 
@@ -76,6 +77,8 @@ graph TD
   IntHomAV --> PullbackAddGrp
   IntHomAV --> Finite
   IntHomAN --> Endomorphism
+  LieAlgebra --> Endomorphism
+  Test --> Defn
 
   %% ---------- colours ----------
   classDef goal fill:#fde2e4,stroke:#c0392b,stroke-width:2px,color:#000
@@ -85,8 +88,8 @@ graph TD
 
   class Defn goal
   class IntHomAV hub
-  class EndomorphismRing,FiniteGen,TorsionFree,HomBasic,TateModule,GlobalSections,IntHomAN,PullbackAddGrp,Finite,Endomorphism connected
-  class Basic,AVCatalogue,InvertibleSheaf,TheCube,AGCatalogue,CMDefn,CMAlgebra,Test unused
+  class EndomorphismRing,FiniteGen,TorsionFree,HomBasic,TateModule,GlobalSections,IntHomAN,PullbackAddGrp,Finite,Endomorphism,LieAlgebra,Test connected
+  class Basic,AVCatalogue,InvertibleSheaf,TheCube,AGCatalogue,CMDefn,CMAlgebra unused
 ```
 
 **Legend**

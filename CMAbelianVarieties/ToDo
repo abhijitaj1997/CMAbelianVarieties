@@ -35,6 +35,27 @@ AlgebraicGeometry/Finite.lean
       (`IsArtinianScheme.of_isIso` does not seem to exist).
 
 
+AlgebraicGeometry/LieAlgebra.lean
+---------------------------------
+New file (d13a8ab), line numbers as of 2026-10-10. Defines the identity
+point e G, the Lie algebra Lie G = Dual (m/m²) of a group scheme G over K,
+stalkEnd / cotangentEnd, and the representation of End (mk G) on Lie G.
+[x] lie_algebra_represenation : End (mk G) →+* Module.End _ (Lie G)   (l.192)
+      map_one', map_mul', map_zero' done (via stalkEnd_one/_mul,
+      cotangentEnd_one/_mul/_zero; zero endomorphism factors through
+      Spec K, whose stalks are fields). map_add' reduces to:
+[ ] cotangentEnd_add                                                 (l.187)
+      cotangentEnd (f + g) = cotangentEnd f + cotangentEnd g. Needs the
+      differential of μ at (e, e) to be addition: for x ∈ m,
+      μ^*x − p₁^*x − p₂^*x ∈ n² in the stalk of G ×_K G at (e, e). Standard
+      proof: both restrictions G → G × G (x ↦ (x, e), x ↦ (e, x)) kill it,
+      and the cotangent space of G ×_K G at (e, e) is spanned by p₁^*m and
+      p₂^*m. Requires describing stalks of fibre products as localized
+      tensor products over K — no Mathlib API for this found.
+[ ] Cleanup: fix the typos in the names lie_algebra_repsentation' /
+      lie_algebra_represenation (and use lowerCamelCase for defs).
+
+
 AbelianVarieties/Homomorphisms/IntHom.lean
 ------------------------------------------
 Line numbers as of 2026-10-10 (commit a93522c).
@@ -54,8 +75,8 @@ Line numbers as of 2026-10-10 (commit a93522c).
 [ ] isFinite_int_hom                                                 (l.86)
       [n]_ A : A → A is a finite morphism when n ≠ 0.
 
-[ ] step₂'                                                           (l.107)
-      The n-torsion A[n] is an affine scheme when n ≠ 0.
+[x] step₂'                                                           (l.107)
+      The n-torsion A[n] is an affine scheme when n ≠ 0. Done (48b28db).
 
 
 AbstractNonsense/IntHom.lean, ForMathlib/Endomorphism.lean
@@ -177,24 +198,13 @@ of 2026-10-02 (commit 45007ad).
       Subalgebra.centralizer_range_includeRight_eq_center_tensorProduct.
       Could keep only the short one.
 
-[ ] IsSimpleRing_basechange                                          (l.190)
-      F ⊗[K] R is simple. Has [IsCentral K R] (false without it:
-      ℂ ⊗[ℝ] ℂ ≅ ℂ × ℂ). Not in Mathlib. Started: a nonzero x ∈ J is
-      obtained; the rest is sorry (l.205).
-      A complete ~55-line proof was worked out (2026-10-02) but not
-      inserted:
-        - φ := TensorProduct.equivFinsuppOfBasisLeft (chooseBasis K F);
-          φ((1⊗r)x) i = r * φ x i and φ(x(1⊗r)) i = φ x i * r;
-        - pick x ∈ I, x ≠ 0, with minimal (φ x).support.card (Nat.find);
-        - the i₀-coefficients of elements of I supported in supp x form
-          a TwoSidedIdeal of R (TwoSidedIdeal.mk'), so contain 1
-          (IsSimpleRing.one_mem_of_ne_zero_mem): get y with φ y i₀ = 1;
-        - by minimality (1⊗r)y = y(1⊗r), so y is central, so
-          y = algebraMap F _ f (IsCentral_basechange'), f ≠ 0;
-        - (f⁻¹⊗1)·y = 1 ∈ I, so I = ⊤ (TwoSidedIdeal.eq_top).
+[x] IsSimpleRing_basechange                                          (l.187)
+      F ⊗[K] R is simple (needs [IsCentral K R]). Done (d551456), no
+      sorries left in this file.
 
-[ ] fact₁ / dimension_IsSimple_algebra                               (l.215, l.228)
-      Proved modulo IsSimpleRing_basechange; both carry [IsCentral K R].
+[x] fact₁ / dimension_IsSimple_algebra                               (l.304, l.317)
+      Now fully proved (IsSimpleRing_basechange done); both carry
+      [IsCentral K R]. Possible improvement:
       finrank K R = n * n should follow via Module.finrank_baseChange;
       the reduced degree could then be defined directly as
       Nat.sqrt (finrank K R) instead of via choose.
