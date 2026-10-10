@@ -52,10 +52,7 @@ instance {R : Type*} [Ring R] [Algebra ℚ R] : Algebra ℚ (center R) where
 open scoped TensorProduct
 open Module Algebra Subring
 
-/- the center of a simple ring is a field -/
---#check IsSimpleRing.isField_center
-
-lemma IsCentral_basechange (F K R : Type*) [Field K] [Field F] [Algebra K F] [Ring R]
+lemma IsCentral_basechange' (F K R : Type*) [Field K] [Field F] [Algebra K F] [Ring R]
     [Algebra K R] [IsCentral K R] : IsCentral F
     (F ⊗[K] R) := by
   classical
@@ -167,7 +164,7 @@ lemma IsCentral_basechange (F K R : Type*) [Field K] [Field F] [Algebra K F] [Ri
   }
 
 -- A really short proof given by Claude
-lemma IsCentral_basechange' (F K R : Type*) [Field K] [Field F] [Algebra K F] [Ring R]
+lemma IsCentral_basechange (F K R : Type*) [Field K] [Field F] [Algebra K F] [Ring R]
     [Algebra K R] [IsCentral K R] : IsCentral F (F ⊗[K] R) where
   out x hx := by
     have hx' : x ∈ Subalgebra.centralizer K
@@ -186,7 +183,7 @@ lemma IsCentral_basechange' (F K R : Type*) [Field K] [Field F] [Algebra K F] [R
       simp [← hk, Algebra.algebraMap_eq_smul_one, TensorProduct.smul_tmul]
     | add a b ha hb => simpa using add_mem ha hb
 
-
+-- mostly written by Claude
 lemma IsSimpleRing_basechange (F K R : Type*) [Field K] [Field F] [Algebra K F] [Ring R]
     [Algebra K R] [IsSimpleRing R] [IsCentral K R] : IsSimpleRing (F ⊗[K] R) := by
   have eq_bot_or_eq_top : ∀ (J : TwoSidedIdeal (F ⊗[K] R)), J = ⊥ ∨ J = ⊤ := by
@@ -202,7 +199,99 @@ lemma IsSimpleRing_basechange (F K R : Type*) [Field K] [Field F] [Algebra K F] 
         constructor <;> intro h <;> simp only [TwoSidedIdeal.mem_bot] at *
         · exact hJ x h
         · simp [h]
-      sorry
+      classical
+      -- write elements of `F ⊗[K] R` as `∑ e i ⊗ c i` for a `K`-basis `e` of `F`
+      let e := Basis.ofVectorSpace K F
+      let Φ := Finsupp.lsum K fun i ↦ TensorProduct.mk K F R (e i)
+      have hΦ_inj : Function.Injective Φ := TensorProduct.sum_tmul_basis_left_injective e
+      have hΦ_single (i) (r : R) : Φ (Finsupp.single i r) = e i ⊗ₜ r := by
+        simp [Φ]
+      have hL (a : R) (c) : (1 ⊗ₜ a) * Φ c = Φ (c.mapRange (a * ·) (mul_zero a)) := by
+        induction c using Finsupp.induction_linear with
+        | zero => simp
+        | add f g hf hg =>
+          rw [map_add, mul_add, hf, hg, Finsupp.mapRange_add (mul_add a), map_add]
+        | single i r => simp [hΦ_single]
+      have hR (b : R) (c) : Φ c * (1 ⊗ₜ b) = Φ (c.mapRange (· * b) (zero_mul b)) := by
+        induction c using Finsupp.induction_linear with
+        | zero => simp
+        | add f g hf hg =>
+          rw [map_add, add_mul, hf, hg, Finsupp.mapRange_add (fun x y ↦ add_mul x y b), map_add]
+        | single i r => simp [hΦ_single]
+      -- choose a nonzero element of `J` with the fewest basis terms
+      have hex : ∃ n, ∃ c, Φ c ∈ J ∧ c ≠ 0 ∧ c.support.card = n := by
+        obtain ⟨c, hc⟩ := TensorProduct.eq_repr_basis_left e x
+        have hc : Φ c = x := hc
+        exact ⟨_, c, hc ▸ hxJ, by rintro rfl; simp [← hc] at hx, rfl⟩
+      obtain ⟨c, hcJ, hc0, hcn⟩ := Nat.find_spec hex
+      have hmin : ∀ d, Φ d ∈ J → d.support.card < c.support.card → d = 0 := by
+        intro d hdJ hd
+        by_contra hd0
+        exact Nat.find_min hex (hcn ▸ hd) ⟨d, hdJ, hd0, rfl⟩
+      obtain ⟨i₀, hi₀⟩ := Finsupp.support_nonempty_iff.mpr hc0
+      -- the coefficients at `i₀` of elements of `J` supported in `c.support` form an ideal
+      let T : TwoSidedIdeal R := TwoSidedIdeal.mk'
+        {s | ∃ d, Φ d ∈ J ∧ d.support ⊆ c.support ∧ d i₀ = s}
+        ⟨0, by simp [J.zero_mem], by simp, rfl⟩
+        (by
+          rintro _ _ ⟨d, hdJ, hds, rfl⟩ ⟨d', hdJ', hds', rfl⟩
+          refine ⟨d + d', ?_, Finsupp.support_add.trans (Finset.union_subset hds hds'), rfl⟩
+          rw [map_add]
+          exact J.add_mem hdJ hdJ')
+        (by
+          rintro _ ⟨d, hdJ, hds, rfl⟩
+          refine ⟨-d, ?_, by simpa using hds, rfl⟩
+          rw [map_neg]
+          exact J.neg_mem hdJ)
+        (by
+          rintro a _ ⟨d, hdJ, hds, rfl⟩
+          refine ⟨d.mapRange (a * ·) (mul_zero a), ?_, Finsupp.support_mapRange.trans hds, rfl⟩
+          rw [← hL]
+          exact J.mul_mem_left _ _ hdJ)
+        (by
+          rintro _ b ⟨d, hdJ, hds, rfl⟩
+          refine ⟨d.mapRange (· * b) (zero_mul b), ?_, Finsupp.support_mapRange.trans hds, rfl⟩
+          rw [← hR]
+          exact J.mul_mem_right _ _ hdJ)
+      -- since `R` is simple, we can normalise the coefficient at `i₀` to `1`
+      have h1 : (1 : R) ∈ T := IsSimpleRing.one_mem_of_ne_zero_mem T
+        (Finsupp.mem_support_iff.mp hi₀)
+        ((TwoSidedIdeal.mem_mk' _ _ _ _ _ _ _).mpr ⟨c, hcJ, subset_rfl, rfl⟩)
+      obtain ⟨d, hdJ, hds, hd1⟩ := (TwoSidedIdeal.mem_mk' _ _ _ _ _ _ _).mp h1
+      -- by minimality, `Φ d` commutes with every `1 ⊗ a`
+      have hcomm (a : R) : (1 ⊗ₜ a) * Φ d = Φ d * (1 ⊗ₜ a) := by
+        set d' := d.mapRange (a * ·) (mul_zero a) - d.mapRange (· * a) (zero_mul a) with hd'
+        have hΦd' : (1 ⊗ₜ a) * Φ d - Φ d * (1 ⊗ₜ a) = Φ d' := by
+          rw [hL, hR, ← map_sub]
+        have hd'J : Φ d' ∈ J :=
+          hΦd' ▸ J.sub_mem (J.mul_mem_left _ _ hdJ) (J.mul_mem_right _ _ hdJ)
+        have hd's : d'.support ⊆ c.support := fun i hi ↦ hds <| by
+          have := Finsupp.support_sub hi
+          simp only [Finset.mem_union] at this
+          exact this.elim (fun h ↦ Finsupp.support_mapRange h) (fun h ↦ Finsupp.support_mapRange h)
+        have hd'i₀ : i₀ ∉ d'.support := by simp [hd', hd1]
+        have := hmin d' hd'J <| Finset.card_lt_card <|
+          (Finset.ssubset_iff_of_subset hd's).mpr ⟨i₀, hi₀, hd'i₀⟩
+        rw [← sub_eq_zero, hΦd', this, map_zero]
+      -- hence `Φ d` is central, so it is `f ⊗ 1` for some nonzero `f : F`
+      have hcenter : Φ d ∈ Subalgebra.center F (F ⊗[K] R) := by
+        rw [Subalgebra.mem_center_iff]
+        intro y
+        induction y using TensorProduct.inductionOn with
+        | tmul f r =>
+          have : f ⊗ₜ[K] r = algebraMap F (F ⊗[K] R) f * (1 ⊗ₜ r) := by
+            simp [Algebra.TensorProduct.tmul_mul_tmul]
+          rw [this, mul_assoc, hcomm, ← mul_assoc, Algebra.commutes, mul_assoc]
+        | add y z hy hz => rw [add_mul, mul_add, hy, hz]
+      have : IsCentral F (F ⊗[K] R) := IsCentral_basechange' F K R
+      obtain ⟨f, hf⟩ := Algebra.mem_bot.mp (IsCentral.out hcenter)
+      have hf0 : f ≠ 0 := by
+        rintro rfl
+        have : d = 0 := hΦ_inj (by rw [← hf, map_zero, map_zero])
+        simp [this] at hd1
+      have : algebraMap F (F ⊗[K] R) f⁻¹ * Φ d = 1 := by
+        rw [← hf, ← map_mul, inv_mul_cancel₀ hf0, map_one]
+      exact this ▸ J.mul_mem_left _ _ hdJ
   exact {
     simple := {
       exists_pair_ne := by
