@@ -19,12 +19,10 @@ we will define `(End A) ⊗[ℤ] ℚ`
 open CategoryTheory AlgebraicGeometry AddGrp
 open scoped TensorProduct End
 
-variable {K} [Field K]
-variable {A : Over (Spec ↧K)} {B : Over (Spec ↧K)}
+variable {K : Type*} [Field K]
+variable {A : Over (Spec ↧K)}
 variable [IsProper A.hom] [GeometricallyIntegral A.hom] [AddGrpObj A]
-variable [IsProper B.hom] [GeometricallyIntegral B.hom] [AddGrpObj B]
 
--- notation: End_ℚ
 abbrev RationalEnd (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyIntegral A.hom] [AddGrpObj A]
   := ℚ ⊗[ℤ] (End (mk A))
 

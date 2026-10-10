@@ -1,13 +1,10 @@
 module
 
-public import CMAbelianVarieties.AlgebraicGeometry.Finite
-public import CMAbelianVarieties.ForMathlib.Endomorphism
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.GrpLimits
-public import Mathlib.AlgebraicGeometry.Geometrically.Integral
-public import Mathlib.AlgebraicGeometry.Morphisms.Proper
-public import CMAbelianVarieties.AbstractNonsense.PullbackAddGrp
 public import CMAbelianVarieties.AbstractNonsense.IntHom
-
+public import CMAbelianVarieties.AbstractNonsense.PullbackAddGrp
+public import CMAbelianVarieties.AlgebraicGeometry.Finite
+public import CMAbelianVarieties.ForMathlib.AddGrpObjToGrpObj
+public import Mathlib.AlgebraicGeometry.Group.Abelian
 /-!
 
 ## Properties of [n]
@@ -17,7 +14,6 @@ main result is that when `n ≠ 0` `A[n]` is finite over `K` and hence discrete
 as a topological space.
 
 _Incomplete tasks_
-• commutativity of abelian varieties
 • finiteness of `[n]`
 • finiteness of `A[n]`
 
@@ -34,7 +30,12 @@ variable {A : Over (Spec ↧K)} {B : Over (Spec ↧K)}
 variable [IsProper A.hom] [GeometricallyIntegral A.hom] [AddGrpObj A]
 variable [IsProper B.hom] [GeometricallyIntegral B.hom] [AddGrpObj B]
 
-instance : IsCommAddMonObj A := sorry
+-- Claude solved this problem!
+/-- Abelian varieties are commutative. This transfers Mathlib's multiplicative
+`isCommMonObj_of_isProper_of_geometricallyIntegral` to additive notation. -/
+instance : IsCommAddMonObj A :=
+  letI := AddGrpObj.toGrpObj A
+  .of_isCommMonObj A (isCommMonObj_of_isProper_of_geometricallyIntegral A)
 
 lemma int_hom_comp (n m : ℤ) (A₀ : Over (Spec ↧K))
     [IsProper A₀.hom] [GeometricallyIntegral A₀.hom] [AddGrpObj A₀]
