@@ -71,7 +71,7 @@ def functorial_ker_int {A : Over (Spec ↧K)} [IsProper A.hom] [GeometricallyInt
     [AddGrpObj B] (n : ℤ) (f : A ⟶ B) [IsAddMonHom f] : A[n] ⟶ B [n] := by
   have : ((pullback.fst ([n]_ A) ζ) ≫ f) ≫ ([n]_ B) = (pullback.snd ([n]_ A) ζ) ≫ ζ
       := by
-    rw [Category.assoc, int_commute, Category.assoc', pullback.condition]
+    rw [Category.assoc, int_commute, reassoc_of% pullback.condition]
     simp
   exact pullback.lift ((pullback.fst ([n]_ A) ζ ≫ f)) (pullback.snd ([n]_ A) ζ)
 
@@ -104,8 +104,11 @@ lemma step₂ {n : ℤ} (hn : n ≠ 0) : IsFinite (pullback.snd ([n]_ A) ζ[A]).
 lemma torsion_top_fintie {n : ℤ} {hn : n ≠ 0} : Finite (A[n]).left :=
   @Finite_of_isFiniteOverField _ _ _ (pullback.snd ([n]_ A) ζ[A]).left (step₂ hn)
 
+-- Filled in by claude
 lemma step₂' {n : ℤ} (hn : n ≠ 0) : IsAffine (pullback ([n]_ A) ζ[A]).left := by
-  sorry
+  have : IsFinite (pullback.snd ([n]_ A) ζ[A]).left := step₂ hn
+  have : IsAffine (𝟙_ (Over (Spec ↧K))).left := inferInstanceAs (IsAffine (Spec ↧K))
+  exact isAffine_of_isAffineHom (pullback.snd ([n]_ A) ζ[A]).left
 
 lemma step₃ {n : ℤ} (hn : n ≠ 0) : DiscreteTopology (A[n]).left :=
   @discrete_of_isFiniteOverField _ _ _ (pullback.snd ([n]_ A) ζ[A]).left (step₂ hn)
