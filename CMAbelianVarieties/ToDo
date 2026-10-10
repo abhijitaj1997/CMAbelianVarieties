@@ -37,14 +37,38 @@ AlgebraicGeometry/Finite.lean
 
 AbelianVarieties/Homomorphisms/IntHom.lean
 ------------------------------------------
-[ ] IsCommAddMonObj A                                                (l.36)
-      Abelian varieties are commutative.
+Line numbers as of 2026-10-10 (commit a93522c).
+[x] IsCommAddMonObj A                                                (l.44)
+      Abelian varieties are commutative. Done (a93522c): additive copy of
+      Mathlib's isCommMonObj_of_isProper_of_geometricallyIntegral made with
+      to_additive (Scheme, Scheme.instCategory marked
+      to_additive_do_translate; l.37–41).
+[ ] Get rid of `import all Mathlib.AlgebraicGeometry.Group.Abelian` (l.7)
+      Needed only so that to_additive can see the proof. Options:
+        - upstream: put @[to_additive] on the theorems in
+          Mathlib/AlgebraicGeometry/Group/Abelian.lean (+ do_translate on
+          Scheme) — the clean fix, needs a Mathlib PR;
+        - go back to the statement-only bridge AddGrpObj.toGrpObj
+          (commit 556c906), which needs no import all.
 
-[ ] isFinite_int_hom                                                 (l.78)
+[ ] isFinite_int_hom                                                 (l.86)
       [n]_ A : A → A is a finite morphism when n ≠ 0.
 
-[ ] step₂'                                                           (l.99)
+[ ] step₂'                                                           (l.107)
       The n-torsion A[n] is an affine scheme when n ≠ 0.
+
+
+AbstractNonsense/IntHom.lean, ForMathlib/Endomorphism.lean
+----------------------------------------------------------
+[x] Port to Mathlib v4.35.0-rc4 (1eaa5b5, 556c906)
+      `End X` is now a structure (use .of / .asHom); the ring instances on
+      End G are `scoped` in AddMon.End / AddGrp.End, so files using
+      `[n]_` need `open scoped AddGrp.End`. int_hom is now
+      (n : End (mk G)).asHom.hom.hom. No sorries left in
+      AbstractNonsense/IntHom.lean.
+      Pitfall: `open … End` opens both CategoryTheory.End and AddGrp.End,
+      so bare `zero_asHom` / `add_asHom` are ambiguous and simp silently
+      picks Mathlib's Preadditive version. Use AddGrp.End.zero_asHom.
 
 
 AbelianVarieties/TateModule.lean
@@ -110,8 +134,8 @@ AbelianVarieties/Homomorphisms/TorsionFree.lean
 AbelianVarieties/Homomorphisms/EndomorphismRing.lean
 ----------------------------------------------------
 New file (7305ad4): defines RationalEnd A = ℚ ⊗[ℤ] End (mk A),
-notation `End_ℚ A` (scoped in RationalEnd).
-[ ] Module.Finite ℚ (End_ℚ A)                                        (l.36)
+notation `End⁰ A` (scoped in RationalEnd).
+[ ] Module.Finite ℚ (End⁰ A)                                         (l.34)
       Should follow from fin_gen_hom (FiniteGen.lean).
 [ ] Collect the remaining instances from the Hom files for End A.
 
@@ -126,6 +150,18 @@ AlgebraicGeometry/InvertibleSheaf.lean
 AlgebraicGeometry/TheCube.lean
 ------------------------------
 [ ] New file (7305ad4), empty. Theorem of the cube.
+
+
+Defn.lean (CM abelian varieties)
+--------------------------------
+New file (556c906). No sorries; CMStructure is sorry-free
+(#print axioms: propext, Classical.choice, Quot.sound).
+[x] CMStructure A F                                                  (l.22)
+      incl : F →+* End⁰ A, and finrank ℚ F = 2 * dim A.
+[ ] Check the dimension condition: Module.finrank ℚ F : ℕ is compared
+      with topologicalKrullDim A.left : WithBot ℕ∞ (via a cast). Decide
+      whether to state dim A as a natural number instead.
+[ ] Cleanup: trailing `#min_imports`.
 
 
 CMTypes/Algebra.lean
