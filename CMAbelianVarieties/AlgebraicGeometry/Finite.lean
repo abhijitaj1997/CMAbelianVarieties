@@ -5,7 +5,7 @@ public import Mathlib.AlgebraicGeometry.Artinian
 public import Mathlib.AlgebraicGeometry.Morphisms.Finite
 public import Mathlib.Combinatorics.Quiver.ReflQuiver
 
-/-
+/-!
 ## Goal
 
 If `f : X ⟶ (Spec K)` is a finite morphism, then `X` is a discrete and finite topological space
