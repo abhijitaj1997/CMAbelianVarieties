@@ -2,7 +2,6 @@ module  -- shake: keep-all --deprecated_module: ignore
 
 public import CMAbelianVarieties.AbelianVarieties.Catalogue
 public import CMAbelianVarieties.AbelianVarieties.GlobalSections
-public import CMAbelianVarieties.AbelianVarieties.Homomorphisms.Basic
 public import CMAbelianVarieties.AbelianVarieties.Homomorphisms.EndomorphismRing
 public import CMAbelianVarieties.AbelianVarieties.Homomorphisms.FiniteGen
 public import CMAbelianVarieties.AbelianVarieties.Homomorphisms.IntHom
@@ -15,7 +14,6 @@ public import CMAbelianVarieties.AlgebraicGeometry.Finite
 public import CMAbelianVarieties.AlgebraicGeometry.InvertibleSheaf
 public import CMAbelianVarieties.AlgebraicGeometry.LieAlgebra
 public import CMAbelianVarieties.AlgebraicGeometry.TheCube
-public import CMAbelianVarieties.Basic
 public import CMAbelianVarieties.CMTypes.Algebra
 public import CMAbelianVarieties.CMTypes.Defn
 public import CMAbelianVarieties.Defn

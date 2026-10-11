@@ -37,21 +37,16 @@ AlgebraicGeometry/Finite.lean
 
 AlgebraicGeometry/LieAlgebra.lean
 ---------------------------------
-New file (d13a8ab), line numbers as of 2026-10-10. Defines the identity
-point e G, the Lie algebra Lie G = Dual (m/m²) of a group scheme G over K,
-stalkEnd / cotangentEnd, and the representation of End (mk G) on Lie G.
-[x] lie_algebra_represenation : End (mk G) →+* Module.End _ (Lie G)   (l.192)
-      map_one', map_mul', map_zero' done (via stalkEnd_one/_mul,
-      cotangentEnd_one/_mul/_zero; zero endomorphism factors through
-      Spec K, whose stalks are fields). map_add' reduces to:
-[ ] cotangentEnd_add                                                 (l.187)
-      cotangentEnd (f + g) = cotangentEnd f + cotangentEnd g. Needs the
-      differential of μ at (e, e) to be addition: for x ∈ m,
-      μ^*x − p₁^*x − p₂^*x ∈ n² in the stalk of G ×_K G at (e, e). Standard
-      proof: both restrictions G → G × G (x ↦ (x, e), x ↦ (e, x)) kill it,
-      and the cotangent space of G ×_K G at (e, e) is spanned by p₁^*m and
-      p₂^*m. Requires describing stalks of fibre products as localized
-      tensor products over K — no Mathlib API for this found.
+New file (d13a8ab), line numbers as of 2026-10-12 (commit c4f93e5).
+Defines the identity point e G, the Lie algebra Lie G = Dual (m/m²) of a
+group scheme G over K, stalkEnd / cotangentEnd, and the representation of
+End (mk G) on Lie G. No sorries left in this file.
+[x] lie_algebra_represenation : End (mk G) →+* Module.End _ (Lie G)   (l.605)
+      map_one', map_mul', map_zero' via stalkEnd_one/_mul,
+      cotangentEnd_one/_mul/_zero; map_add' via cotangentEnd_add.
+[x] cotangentEnd_add                                                 (l.571)
+      cotangentEnd (f + g) = cotangentEnd f + cotangentEnd g, i.e. the
+      differential of μ at (e, e) is addition. Done (c4f93e5).
 [ ] Cleanup: fix the typos in the names lie_algebra_repsentation' /
       lie_algebra_represenation (and use lowerCamelCase for defs).
 
@@ -230,3 +225,16 @@ New file (19bb4f6), line numbers as of that commit. No sorries yet.
 [ ] Cleanup: the file is mostly #check / #synth exploration and ends
       with `#min_imports`; replace `public import Mathlib` by the
       minimal imports once the definitions settle.
+
+
+Project housekeeping
+--------------------
+[x] Removed the unused files Basic.lean (lake placeholder) and
+      AbelianVarieties/Homomorphisms/Basic.lean (re-exports only), and
+      their imports in CMAbelianVarieties.lean (2026-10-12).
+[ ] Add a LICENSE file (e.g. Apache 2.0, to match Mathlib). The repo has
+      none, so it is currently "all rights reserved".
+[ ] Header linter warnings ("Copyright too short!"): files lack a
+      Mathlib-style copyright header. Either add headers (needed for
+      anything upstreamed to Mathlib) or set
+      `weak.linter.style.header = false` in lakefile.toml.

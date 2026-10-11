@@ -10,7 +10,6 @@ An arrow `A --> B` means "A imports B". `CMAbelianVarieties.lean` imports every 
 graph TD
   %% ---------- top level ----------
   Defn["<b>Defn</b><br/><i>CM abelian varieties</i>"]
-  Basic["<b>Basic</b><br/><i>placeholder</i>"]
 
   %% ---------- AbelianVarieties ----------
   subgraph AV["AbelianVarieties/"]
@@ -23,7 +22,6 @@ graph TD
       EndomorphismRing["<b>EndomorphismRing</b><br/><i>End A, End A ⊗ ℚ</i>"]
       FiniteGen["<b>FiniteGen</b><br/><i>Hom(A, B) finitely generated</i>"]
       TorsionFree["<b>TorsionFree</b><br/><i>Hom(A, B) torsion free</i>"]
-      HomBasic["<b>Basic</b><br/><i>re-exports</i>"]
       IntHomAV["<b>IntHom</b> ★<br/><i>[n], A[n] finite & discrete</i>"]
     end
   end
@@ -71,8 +69,6 @@ graph TD
   TateModule --> IntHomAV
   TorsionFree --> GlobalSections
   TorsionFree --> IntHomAV
-  HomBasic --> TorsionFree
-  HomBasic --> IntHomAV
   IntHomAV --> IntHomAN
   IntHomAV --> PullbackAddGrp
   IntHomAV --> Finite
@@ -88,8 +84,8 @@ graph TD
 
   class Defn goal
   class IntHomAV hub
-  class EndomorphismRing,FiniteGen,TorsionFree,HomBasic,TateModule,GlobalSections,IntHomAN,PullbackAddGrp,Finite,Endomorphism,LieAlgebra,Test connected
-  class Basic,AVCatalogue,InvertibleSheaf,TheCube,AGCatalogue,CMDefn,CMAlgebra unused
+  class EndomorphismRing,FiniteGen,TorsionFree,TateModule,GlobalSections,IntHomAN,PullbackAddGrp,Finite,Endomorphism,LieAlgebra,Test connected
+  class AVCatalogue,InvertibleSheaf,TheCube,AGCatalogue,CMDefn,CMAlgebra unused
 ```
 
 **Legend**
@@ -97,6 +93,6 @@ graph TD
 | Colour | Meaning |
 |---|---|
 | Red, thick border | the main goal (`Defn`) |
-| Yellow, thick border ★ | the hub (`Homomorphisms/IntHom`, imported by 3 files) |
+| Yellow, thick border ★ | the hub (`Homomorphisms/IntHom`, imported by 2 files) |
 | Blue | part of the dependency chain |
 | Grey, dashed | not connected to the rest yet |
