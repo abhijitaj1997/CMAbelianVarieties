@@ -126,10 +126,9 @@ K̄ = `AlgebraicClosure K`), instead of K-points from `specᵤ K`.
       (needs `include f in` or explicit binders).
       The placeholder `blah` (l.268) should be removed or replaced.
 
-[ ] Deprecation warning at l.195 (2026-10-13): `Category.assoc'` is
-      deprecated (Mathlib, since 2026-09-15). It is `assoc` in reverse,
-      so replace it by `← Category.assoc` (not by `Category.assoc`).
-      (The same use in PullbackAddGrp.lean l.40 is already fixed.)
+[x] Deprecation warning at l.195: `Category.assoc'` (deprecated in
+      Mathlib since 2026-09-15) replaced by `← Category.assoc`
+      (2026-10-13). The project now builds without non-sorry warnings.
 
 [ ] Cleanup (see module docstring "Fixes")
       torsion_point_as_profinite and AddGrpCatHom_of_torsion_map view
@@ -276,3 +275,6 @@ Project housekeeping
 [x] Test file moved from CMAbelianVarieties/Test/ to the top-level
       Test/Test.lean (outside the lean_lib), so mk_all no longer imports
       it and `lake build` does not build it (2026-10-13).
+[x] MindMap.md moved from CMAbelianVarieties/ to the repo root (c46db84).
+[x] ClaudeCodeChecklist: new step 2 stops the checklist on any warning
+      that is not a `sorry` warning (c46db84).

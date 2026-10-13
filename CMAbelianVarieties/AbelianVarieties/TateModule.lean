@@ -192,7 +192,7 @@ lemma torsion_map_comp {k m n : ℤ} (A : Over (Spec ↧K)) [IsProper A.hom]
       have {s t : ℤ} (hst : s ∣ t) : (ker_int_hom A hst) ≫ p₁ s = p₁ t ≫ [t/s]_ A := by
         simp [ker_int_hom]
       -- Claude found the last three rewrites in the below sequence
-      rw [Category.assoc, this hkm, Category.assoc', this hmn, this (Int.dvd_trans hkm hmn),
+      rw [Category.assoc, this hkm, ← Category.assoc, this hmn, this (Int.dvd_trans hkm hmn),
         Category.assoc, int_hom_comp, mul_comm, ← Int.mul_ediv_assoc _ hkm, Int.ediv_mul_cancel hmn]
     have snd : ker_int_hom A (Int.dvd_trans hkm hmn) ≫ p₂ k
         = ((ker_int_hom A hmn) ≫ (ker_int_hom A hkm)) ≫ p₂ k
