@@ -1,7 +1,7 @@
 # Mind map of file dependencies
 
 Only imports between files of this project are shown (Mathlib is omitted).
-An arrow `A --> B` means "A imports B". `CMAbelianVarieties.lean` imports every file below.
+An arrow `A --> B` means "A imports B". `CMAbelianVarieties.lean` imports every file below except `Test`.
 
 > **How to view this as a picture (VS Code):** open this file and press
 > **`Ctrl + Shift + V`** to see the rendered diagram.
@@ -9,7 +9,7 @@ An arrow `A --> B` means "A imports B". `CMAbelianVarieties.lean` imports every 
 ```mermaid
 graph TD
   %% ---------- top level ----------
-  Defn["<b>Defn</b><br/><i>CM abelian varieties</i>"]
+  Defn["<b>Defn</b><br/><i>CMStructure, CMType</i>"]
 
   %% ---------- AbelianVarieties ----------
   subgraph AV["AbelianVarieties/"]
@@ -40,6 +40,7 @@ graph TD
     InvertibleSheaf["<b>InvertibleSheaf</b><br/><i>line bundles</i>"]
     TheCube["<b>TheCube</b><br/><i>theorem of the cube</i>"]
     LieAlgebra["<b>LieAlgebra</b><br/><i>Lie G, End G acts on Lie G</i>"]
+    Dimension["<b>Dimension</b><br/><i>dim X = sup of dim 𝒪_{X,x}</i>"]
     AGCatalogue["<b>Catalogue</b><br/><i>#check cheat sheet</i>"]
   end
 
@@ -56,12 +57,13 @@ graph TD
   end
 
   %% ---------- Test ----------
-  subgraph T["Test/"]
+  subgraph T["Test/ (top level, outside the library)"]
     Test["<b>Test</b><br/><i>scratch</i>"]
   end
 
   %% ---------- imports ----------
   Defn --> EndomorphismRing
+  Defn --> CMDefn
   EndomorphismRing --> FiniteGen
   EndomorphismRing --> TorsionFree
   EndomorphismRing --> Endomorphism
@@ -84,8 +86,8 @@ graph TD
 
   class Defn goal
   class IntHomAV hub
-  class EndomorphismRing,FiniteGen,TorsionFree,TateModule,GlobalSections,IntHomAN,PullbackAddGrp,Finite,Endomorphism,LieAlgebra,Test connected
-  class AVCatalogue,InvertibleSheaf,TheCube,AGCatalogue,CMDefn,CMAlgebra unused
+  class EndomorphismRing,FiniteGen,TorsionFree,TateModule,GlobalSections,IntHomAN,PullbackAddGrp,Finite,Endomorphism,LieAlgebra,CMDefn,Test connected
+  class AVCatalogue,InvertibleSheaf,TheCube,AGCatalogue,Dimension,CMAlgebra unused
 ```
 
 **Legend**

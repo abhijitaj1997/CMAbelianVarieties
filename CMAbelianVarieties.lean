@@ -10,6 +10,7 @@ public import CMAbelianVarieties.AbelianVarieties.TateModule
 public import CMAbelianVarieties.AbstractNonsense.IntHom
 public import CMAbelianVarieties.AbstractNonsense.PullbackAddGrp
 public import CMAbelianVarieties.AlgebraicGeometry.Catalogue
+public import CMAbelianVarieties.AlgebraicGeometry.Dimension
 public import CMAbelianVarieties.AlgebraicGeometry.Finite
 public import CMAbelianVarieties.AlgebraicGeometry.InvertibleSheaf
 public import CMAbelianVarieties.AlgebraicGeometry.LieAlgebra

@@ -126,6 +126,11 @@ K̄ = `AlgebraicClosure K`), instead of K-points from `specᵤ K`.
       (needs `include f in` or explicit binders).
       The placeholder `blah` (l.268) should be removed or replaced.
 
+[ ] Deprecation warning at l.195 (2026-10-13): `Category.assoc'` is
+      deprecated (Mathlib, since 2026-09-15). It is `assoc` in reverse,
+      so replace it by `← Category.assoc` (not by `Category.assoc`).
+      (The same use in PullbackAddGrp.lean l.40 is already fixed.)
+
 [ ] Cleanup (see module docstring "Fixes")
       torsion_point_as_profinite and AddGrpCatHom_of_torsion_map view
       A[n](K̄) as an object of AddGrpCat / FiniteAddGrp ad hoc. Add
@@ -163,6 +168,19 @@ AlgebraicGeometry/InvertibleSheaf.lean
       SheafOfModules.IsLocallyFree for X.Modules.
 
 
+AlgebraicGeometry/Dimension.lean
+--------------------------------
+New file (00aaa88). No sorries.
+[x] topologicalKrullDim_eq_iSup_ringKrullDim_stalk                  (l.22)
+      dim X = ⨆ x, dim 𝒪_{X,x} for every scheme X, no assumptions.
+      Via ringKrullDim_stalk_eq_coheight, krullDim_eq_iSup_coheight and
+      irreducibleSetEquivPoints (points of X carry the specialization
+      preorder: a ≤ b ↔ b ⤳ a).
+[ ] Module docstring ("Dimension of a group scheme") is a placeholder.
+      Intended: dim of a group scheme, e.g. via dim of Lie G / the local
+      ring at e (needed for step 1 of CMType).
+
+
 AlgebraicGeometry/TheCube.lean
 ------------------------------
 [ ] New file (7305ad4), empty. Theorem of the cube.
@@ -170,10 +188,29 @@ AlgebraicGeometry/TheCube.lean
 
 Defn.lean (CM abelian varieties)
 --------------------------------
-New file (556c906). No sorries; CMStructure is sorry-free
-(#print axioms: propext, Classical.choice, Quot.sound).
-[x] CMStructure A F                                                  (l.22)
+New file (556c906). Line numbers as of 2026-10-13 (commit 00aaa88).
+CMStructure is sorry-free (#print axioms: propext, Classical.choice,
+Quot.sound).
+[x] CMStructure A F                                                  (l.39)
       incl : F →+* End⁰ A, and finrank ℚ F = 2 * dim A.
+[x] Coercion CMStructure A F → (F →+* End⁰ A)                        (l.45–50)
+      `attribute [coe] CMStructure.incl` + a `Coe` instance (2026-10-13).
+      Pitfall: `(ι : F →+* End⁰ A)` fails with "Type mismatch" when ι is
+      a constant whose A, F are implicit (coercion search does not run
+      on CMStructure ?A ?F); write `((ι : CMStructure A F) : F →+* End⁰ A)`.
+      `ι x` does not work; making CMStructure a FunLike/RingHomClass
+      would allow it.
+[ ] CMType ι : preCMType F, given [Algebra K ℂ]                      (l.55)
+      Currently `sorry`. Plan (see the file `Pondering`):
+        1. Lie A is a (dim A)-dimensional vector space over the residue
+           field k of e (k ≅ K);
+        2. transfer algebraMap K ℂ to an embedding k →+* ℂ;
+        3. from F →+* End⁰ A get F →+* (Lie A →ₗ[k] Lie A);
+        4. base change to ℂ: F →+* End_ℂ (ℂ ⊗ Lie A);
+        5. this gives dim A embeddings F →+* ℂ, which form a preCMType.
+      Useful: IsAlgClosed.lift gives F →ₐ[ℚ] ℂ for a number field F;
+      there is no Mathlib class "K is a subfield of ℂ", [Algebra K ℂ] is
+      the idiom.
 [ ] Check the dimension condition: Module.finrank ℚ F : ℕ is compared
       with topologicalKrullDim A.left : WithBot ℕ∞ (via a cast). Decide
       whether to state dim A as a natural number instead.
@@ -232,9 +269,10 @@ Project housekeeping
 [x] Removed the unused files Basic.lean (lake placeholder) and
       AbelianVarieties/Homomorphisms/Basic.lean (re-exports only), and
       their imports in CMAbelianVarieties.lean (2026-10-12).
-[ ] Add a LICENSE file (e.g. Apache 2.0, to match Mathlib). The repo has
-      none, so it is currently "all rights reserved".
-[ ] Header linter warnings ("Copyright too short!"): files lack a
-      Mathlib-style copyright header. Either add headers (needed for
-      anything upstreamed to Mathlib) or set
-      `weak.linter.style.header = false` in lakefile.toml.
+[x] Add a LICENSE file: Apache 2.0 (ad21018).
+[x] Copyright headers: every file now has the Mathlib-style header
+      (a509425). The root CMAbelianVarieties.lean has none, like
+      Mathlib.lean; that is fine.
+[x] Test file moved from CMAbelianVarieties/Test/ to the top-level
+      Test/Test.lean (outside the lean_lib), so mk_all no longer imports
+      it and `lake build` does not build it (2026-10-13).
