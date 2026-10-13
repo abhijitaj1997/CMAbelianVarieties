@@ -6,6 +6,8 @@ Authors: Abhijit A J
 module
 
 public import CMAbelianVarieties.AbelianVarieties.Homomorphisms.EndomorphismRing
+public import CMAbelianVarieties.CMTypes.Defn
+
 
 /-!
 ## CM Abelian varieties
@@ -39,5 +41,19 @@ structure CMStructure (F : Type*) [Field F] [NumberField F] [IsCMField F] where
   incl : F →+* End⁰ A
   /-- The dimension of the CM field is twice the Krull dimension of the abelian variety -/
   finrank_of_CM_field : Module.finrank ℚ F = 2 * topologicalKrullDim A.left
+
+attribute [coe] CMStructure.incl
+
+/-- A CM structure `ι` can be used as its inclusion `F →+* End⁰ A`. -/
+instance {F : Type*} [Field F] [NumberField F] [IsCMField F] :
+    Coe (CMStructure A F) (F →+* End⁰ A) :=
+  ⟨CMStructure.incl⟩
+
+/-- Given a CM strucutre on an Abelian variety `A` over a field `K`, such that `K` is
+a subfield of `ℂ`, and `F` is the CM Field in the CM Structure. The, we have a preCMType
+on the field `F`. -/
+def CMType {A : Over (Spec ↧K)} [IsProper A.hom] [GeometricallyIntegral A.hom] [AddGrpObj A]
+    {F : Type*} [Field F] [NumberField F] [IsCMField F] (ι : CMStructure A F) [Algebra K ℂ] :
+    preCMType F := sorry
 
 #min_imports

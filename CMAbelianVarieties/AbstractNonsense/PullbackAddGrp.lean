@@ -37,7 +37,7 @@ lemma zero_lift_condition {C : Type*} [Category* C] [CartesianMonoidalCategory C
 lemma add_lift_condition {C : Type*} [Category* C] [HasPullbacks C] [CartesianMonoidalCategory C]
     {G H T : C} (f : G ⟶ T) (g : H ⟶ T) [AddGrpObj G] [AddGrpObj T] [AddGrpObj H] [IsAddMonHom f]
     [IsAddMonHom g] : ((φ₁ f g ⊗ₘ φ₁ f g) ≫ σ) ≫ f = ((φ₂ f g ⊗ₘ φ₂ f g) ≫ σ) ≫ g := by
-  simp_rw [Category.assoc, IsAddMonHom.add_hom, Category.assoc']
+  simp_rw [Category.assoc, IsAddMonHom.add_hom, ← Category.assoc]
   have : (φ₁ f g ⊗ₘ φ₁ f g) ≫ (f ⊗ₘ f) = (φ₂ f g ⊗ₘ φ₂ f g) ≫ (g ⊗ₘ g) := by
     have hf : (φ₁ f g ⊗ₘ φ₁ f g) ≫ (f ⊗ₘ f) = ((φ₁ f g ≫ f) ⊗ₘ (φ₁ f g ≫ f)) := by ext <;> simp
     have hg : (φ₂ f g ⊗ₘ φ₂ f g) ≫ (g ⊗ₘ g) = ((φ₂ f g ≫ g) ⊗ₘ (φ₂ f g ≫ g)) := by ext <;> simp
@@ -52,9 +52,10 @@ instance : AddGrpObj (pullback f g) := by
     add := by
       exact pullback.lift ((φ₁ f g ⊗ₘ φ₁ f g) ≫ σ) ((φ₂ f g ⊗ₘ φ₂ f g) ≫ σ) (add_lift_condition f g)
     zero_add := by
-      simp
+      simp only
       set z := pullback.lift ζ ζ (zero_lift_condition f g) with hz
-      set mul := pullback.lift ((φ₁ f g ⊗ₘ φ₁ f g) ≫ σ) ((φ₂ f g ⊗ₘ φ₂ f g) ≫ σ) (add_lift_condition f g) with hmul
+      set mul := pullback.lift ((φ₁ f g ⊗ₘ φ₁ f g) ≫ σ) ((φ₂ f g ⊗ₘ φ₂ f g) ≫ σ) (add_lift_condition
+          f g) with hmul
       have : (z ▷ (pullback f g)) ≫ mul ≫ φ₁ f g = ((𝟙_ C) ◁ φ₁ f g) ≫ (λ_ G).hom := sorry
       have : (z ▷ (pullback f g)) ≫ mul ≫ φ₂ f g = ((𝟙_ C) ◁ φ₂ f g) ≫ (λ_ H).hom := sorry
 

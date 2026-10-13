@@ -1,0 +1,7 @@
+I am currently trying to define the CM Type associated to a CM Abelian variety. Where `A/K` is the abelian variety, and I have an instance `[Algebra K ℂ]`
+Steps I need to accomplish:
+1. I need to show that that `Lie A` is a `dim A` - dimensional vector space over  the residue field of `e`, let's call that `k` (which is obviously isomorphic to `K`).
+2. I need to transfer the `algebraMap : K →+* ℂ` into an inclusion `k →+* ℂ`.
+3. Using the inclusion `F →+* End⁰ A`, we get a map `F →+* (Lie A →[k] Lie A)`
+4. after base change to `ℂ`, we have a morphism `F →+* (ℂ ⊗ Lie A →[ℂ] ℂ ⊗ Lie A)`
+5. The above map should give `dim A` many inclusions into `ℂ` which should be a `preCMType`. 
