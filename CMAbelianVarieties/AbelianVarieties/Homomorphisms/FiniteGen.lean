@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2026 Abhijit A J. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Abhijit A J
+-/
 module
 
 public import CMAbelianVarieties.AbelianVarieties.TateModule
@@ -10,6 +15,8 @@ The goal of this file is to show that `Hom A B` for abelian varieties
 `A` and `B` are finitely generated
 
 -/
+
+@[expose] public section
 
 open CategoryTheory AlgebraicGeometry AddGrp
 
