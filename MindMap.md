@@ -16,6 +16,7 @@ graph TD
     direction TB
     GlobalSections["<b>GlobalSections</b><br/><i>Γ(A) ≅ K</i>"]
     TateModule["<b>TateModule</b><br/><i>torsion points, Tate module</i>"]
+    BaseFieldChange["<b>BaseFieldChange</b><br/><i>A _ K₁, base change to K₁</i>"]
     AVCatalogue["<b>Catalogue</b><br/><i>#check cheat sheet</i>"]
     subgraph HOM["Homomorphisms/"]
       direction TB
@@ -31,6 +32,7 @@ graph TD
     direction TB
     IntHomAN["<b>IntHom</b><br/><i>[n] on group objects</i>"]
     PullbackAddGrp["<b>PullbackAddGrp</b><br/><i>group structure on pullbacks</i>"]
+    EndBaseChange["<b>EndBaseChange</b><br/><i>End G →ₐ[ℤ] End (F.obj G)</i>"]
   end
 
   %% ---------- AlgebraicGeometry ----------
@@ -47,6 +49,7 @@ graph TD
   %% ---------- ForMathlib ----------
   subgraph FM["ForMathlib/"]
     Endomorphism["<b>Endomorphism</b><br/><i>End G is a (semi)ring</i>"]
+    FunctorCommAddObj["<b>FunctorCommAddObj</b><br/><i>F preserves comm. add. monoid objects</i>"]
   end
 
   %% ---------- CMTypes ----------
@@ -64,6 +67,11 @@ graph TD
   %% ---------- imports ----------
   Defn --> EndomorphismRing
   Defn --> CMDefn
+  Defn --> BaseFieldChange
+  Defn --> EndBaseChange
+  BaseFieldChange --> FunctorCommAddObj
+  EndBaseChange --> Endomorphism
+  EndBaseChange --> FunctorCommAddObj
   EndomorphismRing --> FiniteGen
   EndomorphismRing --> TorsionFree
   EndomorphismRing --> Endomorphism
@@ -86,7 +94,7 @@ graph TD
 
   class Defn goal
   class IntHomAV hub
-  class EndomorphismRing,FiniteGen,TorsionFree,TateModule,GlobalSections,IntHomAN,PullbackAddGrp,Finite,Endomorphism,LieAlgebra,CMDefn,Test connected
+  class EndomorphismRing,FiniteGen,TorsionFree,TateModule,GlobalSections,IntHomAN,PullbackAddGrp,Finite,Endomorphism,LieAlgebra,CMDefn,Test,BaseFieldChange,EndBaseChange,FunctorCommAddObj connected
   class AVCatalogue,InvertibleSheaf,TheCube,AGCatalogue,Dimension,CMAlgebra unused
 ```
 

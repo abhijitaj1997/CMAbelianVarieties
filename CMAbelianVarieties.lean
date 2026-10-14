@@ -1,5 +1,6 @@
 module  -- shake: keep-all --deprecated_module: ignore
 
+public import CMAbelianVarieties.AbelianVarieties.BaseFieldChange
 public import CMAbelianVarieties.AbelianVarieties.Catalogue
 public import CMAbelianVarieties.AbelianVarieties.GlobalSections
 public import CMAbelianVarieties.AbelianVarieties.Homomorphisms.EndomorphismRing
@@ -7,6 +8,7 @@ public import CMAbelianVarieties.AbelianVarieties.Homomorphisms.FiniteGen
 public import CMAbelianVarieties.AbelianVarieties.Homomorphisms.IntHom
 public import CMAbelianVarieties.AbelianVarieties.Homomorphisms.TorsionFree
 public import CMAbelianVarieties.AbelianVarieties.TateModule
+public import CMAbelianVarieties.AbstractNonsense.EndBaseChange
 public import CMAbelianVarieties.AbstractNonsense.IntHom
 public import CMAbelianVarieties.AbstractNonsense.PullbackAddGrp
 public import CMAbelianVarieties.AlgebraicGeometry.Catalogue
@@ -19,3 +21,4 @@ public import CMAbelianVarieties.CMTypes.Algebra
 public import CMAbelianVarieties.CMTypes.Defn
 public import CMAbelianVarieties.Defn
 public import CMAbelianVarieties.ForMathlib.Endomorphism
+public import CMAbelianVarieties.ForMathlib.FunctorCommAddObj

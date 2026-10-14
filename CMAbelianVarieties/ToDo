@@ -199,7 +199,9 @@ Quot.sound).
       on CMStructure ?A ?F); write `((ι : CMStructure A F) : F →+* End⁰ A)`.
       `ι x` does not work; making CMStructure a FunLike/RingHomClass
       would allow it.
-[ ] CMType ι : preCMType F, given [Algebra K ℂ]                      (l.55)
+      Update (2026-10-15): in CMStructure.basechange, plain `.comp ι`
+      now works without the ascription.
+[ ] CMType ι : preCMType F, given [Algebra K ℂ]                      (l.58)
       Currently `sorry`. Plan (see the file `Pondering`):
         1. Lie A is a (dim A)-dimensional vector space over the residue
            field k of e (k ≅ K);
@@ -213,7 +215,69 @@ Quot.sound).
 [ ] Check the dimension condition: Module.finrank ℚ F : ℕ is compared
       with topologicalKrullDim A.left : WithBot ℕ∞ (via a cast). Decide
       whether to state dim A as a natural number instead.
-[ ] Cleanup: trailing `#min_imports`.
+[x] End.algHom_ofBaseChange : End (mk A) →ₐ[ℤ] End (mk (A _ K₁))    (l.71)
+      Done (2026-10-15) via AddGrp.End.algHom_ofBaseChange applied to the
+      pullback functor. Lives in namespace CMStructure, but is a general
+      fact about endomorphisms; could be moved out.
+[x] rational_end_morphism : End⁰ A →+* End⁰ (A _ K₁)                 (l.75)
+[ ] dimension_isStableUnderBasechange                                (l.81)
+      dim X = dim (X _ K₁) for X locally of finite type over K.
+      [LocallyOfFiniteType X.hom] added (2026-10-15): without it the
+      statement is false (X = Spec K(t), K₁ = K(t)). Nothing in Mathlib
+      proves it; smoothOfRelativeDimension_isStableUnderBaseChange does
+      not help (no link between relative dimension and Krull dimension).
+      Possible proof: reduce to affines, Noether normalization
+      (exists_integral_inj_algHom_of_fg) and "finite injective extensions
+      preserve Krull dimension" (not found in Mathlib). Should be moved
+      to AlgebraicGeometry/ (e.g. Dimension.lean).
+[x] CMStructure.basechange ι K₁ : CMStructure (A _ K₁) F             (l.88)
+      Done modulo dimension_isStableUnderBasechange.
+      Note: writing (Over.pullback …).obj A instead of A _ K₁ broke
+      instance search while basechange_over_Over was a `def`; it is now
+      an `abbrev` (BaseFieldChange.lean), which fixes this.
+[ ] Cleanup: trailing `#min_imports`, the `#check
+      smoothOfRelativeDimension_isStableUnderBaseChange` (l.79) and the
+      answered "hey claude" comment (l.85–87).
+
+
+AbelianVarieties/BaseFieldChange.lean
+-------------------------------------
+New file (1ff4cac), no sorries. Base change of X : Over (Spec K) along
+a field extension K → K₁, `abbrev basechange_over_Over`, notation
+`X _ K₁`, and instances IsProper, GeometricallyIntegral, AddGrpObj,
+IsCommAddMonObj for X _ K₁.
+[x] IsProper (X _ K₁).hom: via IsProper.isStableUnderBaseChange
+      .of_isPullback (MorphismProperty.pullback_snd fails to find
+      IsStableUnderBaseChangeAlong; Mathlib uses
+      `set_option backward.isDefEq.respectTransparency.types false` there).
+[x] GeometricallyIntegral (X _ K₁).hom: Mathlib's instance for
+      pullback.snd, via inferInstanceAs.
+[x] AddGrpObj (G _ K₁) := Functor.addGrpObjObj. Pitfall: any AddGrpObj
+      on a base change must come from Functor.addGrpObjObj, otherwise End
+      of the base change does not match AddGrp.End.algHom_ofBaseChange.
+[ ] Cleanup: unused `variable {A …}` (l.27); typo "Them" in docstring;
+      the notation uses `_`, which is also the placeholder token.
+
+
+AbstractNonsense/EndBaseChange.lean
+-----------------------------------
+New file (f660978), no sorries.
+[x] AddGrp.End.algHom_ofBaseChange : End (mk G) →ₐ[ℤ] End (mk (F.obj G))
+      for a braided F and a commutative additive group object G.
+      Done (2026-10-15).
+[ ] Cleanup: trailing `#min_imports`; the module docstring still says
+      the file shows that F preserves commutative group objects (that is
+      now in ForMathlib/FunctorCommAddObj.lean); could add a
+      `zsmul_asHom` lemma to ForMathlib/Endomorphism.lean and drop the
+      local `have h h'` in commutes'.
+
+
+ForMathlib/FunctorCommAddObj.lean
+---------------------------------
+New file (1ff4cac), no sorries.
+[x] Functor.isCommAddMonObj_obj: a lax braided functor preserves
+      commutative additive monoid objects (additive version of Mathlib's
+      Functor.isCommMonObj_obj). Candidate for a Mathlib PR.
 
 
 CMTypes/Algebra.lean
