@@ -29,7 +29,7 @@ variable (F : C ⥤ D) [F.Braided]
 variable {G : C} [AddGrpObj G] [IsCommAddMonObj G]
 
 
-attribute [local instance] addMonObjObj addGrpObjObj
+attribute [local instance] addGrpObjObj
 
 open AddGrp End AddMonObj Hom
 
