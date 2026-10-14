@@ -6,14 +6,16 @@ Authors: Abhijit A J
 module
 
 public import CMAbelianVarieties.ForMathlib.Endomorphism
+public import CMAbelianVarieties.ForMathlib.FunctorCommAddObj
 public import Mathlib.Algebra.Algebra.Hom
 
 /-!
 ## Goal
 
-In this section we will show that if we base change from one slice category to
-another, the group objects, will go to group objects, and it also gives a
-ring homomorphisms of the endomorphism ring
+Let `F : C ⥤ D` be a braided functor between braided cartesian monoidal categories. We show
+that `F` takes commutative additive group objects to commutative additive group objects, and
+that for such an object `G`, applying `F` to endomorphisms gives a `ℤ`-algebra homomorphism
+`End G →ₐ[ℤ] End (F.obj G)` of endomorphism rings.
 
 -/
 
@@ -24,23 +26,14 @@ open CategoryTheory Limits Functor
 variable {C : Type*} [Category* C] [CartesianMonoidalCategory C] [BraidedCategory C]
 variable {D : Type*} [Category* D] [CartesianMonoidalCategory D] [BraidedCategory D]
 variable (F : C ⥤ D) [F.Braided]
+variable {G : C} [AddGrpObj G] [IsCommAddMonObj G]
+
 
 attribute [local instance] addMonObjObj addGrpObjObj
 
--- this was initally created by Claude, and shortened by me (not a major update)
-/-- The additive version of `Functor.isCommMonObj_obj`, which is missing from Mathlib:
-a lax braided functor takes commutative additive monoid objects to commutative additive
-monoid objects. -/
-instance Functor.isCommAddMonObj_obj {M : C} [AddMonObj M]
-    [IsCommAddMonObj M] : IsCommAddMonObj (F.obj M) where
-  add_comm := by
-    simp only [obj.σ_def, ← LaxBraided.braided_assoc, ← map_comp, IsCommAddMonObj.add_comm]
+open AddGrp End AddMonObj Hom
 
-variable {G : C} [AddGrpObj G] [IsCommAddMonObj G]
-
-open AddGrp End AddMonObj
-
-def AddMon.End.algHom_ofBaseChange : End (mk G) →ₐ[ℤ] End (mk (F.obj G)) where
+def AddGrp.End.algHom_ofBaseChange : End (mk G) →ₐ[ℤ] End (mk (F.obj G)) where
   toFun f := {
     asHom := {
       hom := {
@@ -60,8 +53,19 @@ def AddMon.End.algHom_ofBaseChange : End (mk G) →ₐ[ℤ] End (mk (F.obj G)) w
     simp only [this, Functor.map_zero' F]
     rfl
   map_add' f g := by
-    sorry
+    have : (f + g).asHom.hom.hom = f.asHom.hom.hom + g.asHom.hom.hom := rfl
+    simp only [this, Functor.map_add' F f.asHom.hom.hom g.asHom.hom.hom]
+    rfl
+  -- the next one was written by Claude
   commutes' n := by
-    sorry
+    have h (X : AddGrp C) [IsCommAddMonObj X.X] (f : End X) : (n • f).asHom = n • f.asHom := rfl
+    have h' (X : AddGrp D) [IsCommAddMonObj X.X] (f : End X) : (n • f).asHom = n • f.asHom := rfl
+    simp only [algebraMap_int_eq, eq_intCast, ← zsmul_one]
+    apply End.ext
+    ext
+    simp only [h, h', hom_hom_zsmul]
+    have := map_zsmul (F.homAddMonoidHom (X := G) (M := G)) n (𝟙 G)
+    simp only [homAddMonoidHom_apply, CategoryTheory.Functor.map_id] at this
+    exact this
 
 #min_imports
