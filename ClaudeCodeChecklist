@@ -32,15 +32,15 @@ When asked to run this checklist, do the following steps in order:
    (Test files live in the top-level Test/ folder, outside the library, so
    mk_all does not import them.)
 
-5. Build the whole project and check for errors:
-       lake build
-   Report any errors (and relevant warnings) back to the user.
-
-6. Check whether the mind map (MindMap.md) is still up to
+5. Check whether the mind map (MindMap.md) is still up to
    date: compare it with the project's own imports (ignore Mathlib), e.g.:
        grep -rnE "^(public )?import (all )?CMAbelianVarieties" CMAbelianVarieties
    If files were added, removed or renamed, imports changed, or a file's
    purpose changed, update the mind map to match.
+
+6. Build the whole project and check for errors:
+       lake build
+   Report any errors (and relevant warnings) back to the user.
 
 7. If `lake build` finished with no errors, commit all changes directly to
    the master branch. DO NOT CREATE A NEW BRANCH. Make sure you are on

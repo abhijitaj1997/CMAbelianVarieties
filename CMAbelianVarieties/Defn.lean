@@ -8,7 +8,6 @@ module
 public import CMAbelianVarieties.AbelianVarieties.Homomorphisms.EndomorphismRing
 public import CMAbelianVarieties.CMTypes.Defn
 
-
 /-!
 ## CM Abelian varieties
 
@@ -16,14 +15,14 @@ In this section, we will define CM Abelian varieties
 
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
 open CategoryTheory AlgebraicGeometry AddGrp NumberField
 open scoped TensorProduct End RationalEnd
 
-variable {K : Type*} [Field K]
-variable (A : Over (Spec ↧K))
-variable [IsProper A.hom] [GeometricallyIntegral A.hom] [AddGrpObj A]
+universe u
+
+variable {K : Type u} [Field K]
 
 /-- A complex multiplication structure `ι : CMStructure A F` for an abelian variety `A` over a
 field `K` and a CM field `F`, is made of an inclusion `F →+* End⁰ A` together with a proof
@@ -36,7 +35,8 @@ definition, in fact it is weaker).
 3. In characteristic zero, some authors define a CM abelian variety of CM type `(F, Φ)`, where
 `Φ` is read off of the action of `F` on the Lie algebra of `A` (this definition is equivalent
 to our definition in characteristic zero). -/
-structure CMStructure (F : Type*) [Field F] [NumberField F] [IsCMField F] where
+structure CMStructure (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyIntegral A.hom]
+    [AddGrpObj A] (F : Type*) [Field F] [NumberField F] [IsCMField F] where
   /-- The inclusion of the CM field into the algebra of rational endomorphisms -/
   incl : F →+* End⁰ A
   /-- The dimension of the CM field is twice the Krull dimension of the abelian variety -/
@@ -45,7 +45,8 @@ structure CMStructure (F : Type*) [Field F] [NumberField F] [IsCMField F] where
 attribute [coe] CMStructure.incl
 
 /-- A CM structure `ι` can be used as its inclusion `F →+* End⁰ A`. -/
-instance {F : Type*} [Field F] [NumberField F] [IsCMField F] :
+instance {A : Over (Spec ↧K)} [IsProper A.hom] [GeometricallyIntegral A.hom]
+    [AddGrpObj A] {F : Type*} [Field F] [NumberField F] [IsCMField F] :
     Coe (CMStructure A F) (F →+* End⁰ A) :=
   ⟨CMStructure.incl⟩
 
@@ -55,5 +56,75 @@ on the field `F`. -/
 def CMType {A : Over (Spec ↧K)} [IsProper A.hom] [GeometricallyIntegral A.hom] [AddGrpObj A]
     {F : Type*} [Field F] [NumberField F] [IsCMField F] (ι : CMStructure A F) [Algebra K ℂ] :
     preCMType F := sorry
+
+namespace CMStructure
+
+section BaseChange
+
+open CommRingCat Spec
+
+variable {A : Over (Spec ↧K)} [IsProper A.hom] [GeometricallyIntegral A.hom] [AddGrpObj A]
+variable {F : Type*} [Field F] [NumberField F] [IsCMField F]
+
+def basechange_over_Over (X : Over (Spec ↧K)) (K₁ : Type u) [Field K₁] [Algebra K K₁] :
+    Over (Spec ↧K₁) := ((Over.pullback (map (ofHom (Algebra.algebraMap K K₁)))).obj X)
+
+-- hey claude, if you every see this comment, remind me of it. I do not understand
+-- what the `arg` is doing below
+notation X "_" E:arg => basechange_over_Over X E
+
+
+-- The next few statements have nothing to do with CMStructures. So, they should be moved
+-- to a different file
+instance {X : Over (Spec ↧K)} [IsProper X.hom] {K₁ : Type u} [Field K₁] [Algebra K K₁] :
+    IsProper (X _ K₁).hom := by
+  sorry
+
+instance {X : Over (Spec ↧K)} [GeometricallyIntegral X.hom] {K₁ : Type u} [Field K₁]
+    [Algebra K K₁] : GeometricallyIntegral (X _ K₁).hom := by
+  sorry
+
+instance {G : Over (Spec ↧K)} [AddGrpObj G] {K₁ : Type u} [Field K₁] [Algebra K K₁] :
+    AddGrpObj (G _ K₁) := by
+  sorry
+
+instance {G : Over (Spec ↧K)} [AddGrpObj G] [IsCommAddMonObj G] {K₁ : Type u} [Field K₁]
+    [Algebra K K₁] : IsCommAddMonObj (G _ K₁) := by
+  sorry
+
+
+section
+variable (K₁ : Type u) [Field K₁] [Algebra K K₁]
+#synth (Over.pullback (map (ofHom (Algebra.algebraMap K K₁)))).Braided
+end
+
+-- should this be moved to `ForMathlib`?
+def End.algHom_ofBaseChange (A : Over (Spec ↧K)) [AddGrpObj A] [IsCommAddMonObj A] (K₁ : Type u)
+    [Field K₁] [Algebra K K₁] : End (AddGrp.mk A) →ₐ[ℤ] End (AddGrp.mk (A _ K₁)) := by
+
+  #check Over.pullback (map (ofHom (Algebra.algebraMap K K₁)))
+
+  sorry
+
+def rational_end_morphism (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyIntegral A.hom]
+    [AddGrpObj A] (K₁ : Type u) [Field K₁] [Algebra K K₁] : End⁰ A →+* End⁰ ((A _ K₁)) :=
+  (Algebra.TensorProduct.map (AlgHom.id ℤ ℚ) (End.algHom_ofBaseChange A K₁)).toRingHom
+
+#check smoothOfRelativeDimension_isStableUnderBaseChange
+lemma dimension_isStableUnderBasechange (X : Over (Spec ↧K)) (K₁ : Type u) [Field K₁]
+    [Algebra K K₁] : topologicalKrullDim X.left = topologicalKrullDim (X _ K₁).left := sorry
+
+-- hey claude, remind me of this commnet to. If I replace the `A _ K₁` below with
+-- `(Over.pullback (map (ofHom (Algebra.algebraMap K K₁)))).obj A` - why?
+-- and, a second comment, why do I need to type `ι : F →+* End⁰ A` instead of `ι`
+def basechange (ι : CMStructure A F) (K₁ : Type u) [Field K₁] [Algebra K K₁] :
+    CMStructure (A _ K₁) F where
+      incl := (rational_end_morphism A K₁).comp (ι : F →+* End⁰ A)
+      finrank_of_CM_field := by
+        rw [ι.finrank_of_CM_field, dimension_isStableUnderBasechange A K₁]
+
+end BaseChange
+
+end CMStructure
 
 #min_imports
