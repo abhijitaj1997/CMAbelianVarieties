@@ -38,4 +38,8 @@ scoped notation "End⁰ " A:max => RationalEnd A
 instance {A : Over (Spec ↧K)} [IsProper A.hom] [GeometricallyIntegral A.hom] [AddGrpObj A] :
     Module.Finite ℚ (End⁰ A) := sorry
 
+def conjRingEquiv {A : Over (Spec ↧K)} [IsProper A.hom] [GeometricallyIntegral A.hom] [AddGrpObj A]
+    {B : Over (Spec ↧K)} [IsProper B.hom] [GeometricallyIntegral B.hom] [AddGrpObj B]
+    (φ : mk A ≅ mk B) : End⁰ A ≃+* End⁰ B := sorry
+
 end RationalEnd
