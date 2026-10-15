@@ -34,4 +34,4 @@ theorem CMStructure.exists_numberField_model (ι : CMStructure A F) :
     ∃ (E : Type u) (_ : Field E) (_ : NumberField E) (_ : Algebra E K)
     (A₀ : Over (Spec ↧E)) (_ : IsProper A₀.hom) (_ : GeometricallyIntegral A₀.hom)
     (_ : AddGrpObj A₀) (ι₀ : CMStructure A₀ F) (φ : AddGrp.mk (A₀ _ K) ≅ AddGrp.mk A),
-    (conjRingEquiv φ).toRingHom.comp (ι₀.basechange K).incl = ι := sorry
+    (conjAlgEquiv φ).toRingHom.comp (ι₀.basechange K).incl = ι := sorry

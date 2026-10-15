@@ -5,10 +5,8 @@ Authors: Abhijit A J
 -/
 module
 
-public import CMAbelianVarieties.AbelianVarieties.Homomorphisms.FiniteGen
-public import CMAbelianVarieties.AbelianVarieties.Homomorphisms.TorsionFree
-public import CMAbelianVarieties.ForMathlib.Endomorphism
-public import Mathlib
+public import CMAbelianVarieties.AbelianVarieties.Homomorphisms.IntHom
+public import CMAbelianVarieties.AbstractNonsense.EndRingIso
 
 /-!
 ## Main Goal
@@ -38,8 +36,16 @@ scoped notation "End⁰ " A:max => RationalEnd A
 instance {A : Over (Spec ↧K)} [IsProper A.hom] [GeometricallyIntegral A.hom] [AddGrpObj A] :
     Module.Finite ℚ (End⁰ A) := sorry
 
-def conjRingEquiv {A : Over (Spec ↧K)} [IsProper A.hom] [GeometricallyIntegral A.hom] [AddGrpObj A]
+/-- An isomorphism `φ : A ≅ B` of abelian varieties over `K` (as additive group objects)
+induces an isomorphism `End⁰ A ≃ₐ[ℤ] End⁰ B` of their rational endomorphism algebras, given by
+conjugation `f ↦ φ.inv ≫ f ≫ φ.hom`. It is obtained by tensoring the `ℤ`-algebra isomorphism
+`Iso.conjAlgEquiv φ : End A ≃ₐ[ℤ] End B` with `ℚ`. -/
+noncomputable def conjAlgEquiv {A : Over (Spec ↧K)} [IsProper A.hom]
+    [GeometricallyIntegral A.hom] [AddGrpObj A]
     {B : Over (Spec ↧K)} [IsProper B.hom] [GeometricallyIntegral B.hom] [AddGrpObj B]
-    (φ : mk A ≅ mk B) : End⁰ A ≃+* End⁰ B := sorry
+    (φ : mk A ≅ mk B) : End⁰ A ≃ₐ[ℤ] End⁰ B :=
+  Algebra.TensorProduct.congr AlgEquiv.refl (Iso.conjAlgEquiv φ)
 
 end RationalEnd
+
+#min_imports

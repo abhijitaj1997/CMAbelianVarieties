@@ -82,9 +82,6 @@ lemma dimension_isStableUnderBasechange (X : Over (Spec ↧K)) [LocallyOfFiniteT
     (K₁ : Type u) [Field K₁] [Algebra K K₁] :
     topologicalKrullDim X.left = topologicalKrullDim (X _ K₁).left := sorry
 
--- hey claude, remind me of this commnet to. If I replace the `A _ K₁` below with
--- `(Over.pullback (map (ofHom (Algebra.algebraMap K K₁)))).obj A` - why?
--- and, a second comment, why do I need to type `ι : F →+* End⁰ A` instead of `ι`
 def basechange (ι : CMStructure A F) (K₁ : Type u) [Field K₁] [Algebra K K₁] :
     CMStructure (A _ K₁) F where
       incl := (rational_end_morphism A K₁).comp ι
@@ -92,8 +89,6 @@ def basechange (ι : CMStructure A F) (K₁ : Type u) [Field K₁] [Algebra K K�
         rw [ι.finrank_of_CM_field, dimension_isStableUnderBasechange A K₁]
 
 end BaseChange
-
-
 
 end CMStructure
 
