@@ -49,6 +49,26 @@ End (mk G) on Lie G. No sorries left in this file.
       differential of μ at (e, e) is addition. Done (c4f93e5).
 [ ] Cleanup: fix the typos in the names lie_algebra_repsentation' /
       lie_algebra_represenation (and use lowerCamelCase for defs).
+[x] Cleanup session (2026-10-15/16, 9a1f472 + checklist commit):
+      notations 𝒪_ G / κ_ G (replacing kG); heuristic docstrings;
+      Scheme.stalkCongr_hom_stalkMap_id removed (inlined into
+      stalkEnd_one); new def Scheme.Hom.fixedStalkMap with
+      fixedStalkMap_comp (replaces stalkCongr_hom_stalkMap_comp, the
+      redundant hypothesis hψφ dropped); naming conventions: ring
+      elements r / r₁, r₂, morphisms f, g / φ (no more x, y, z, h for
+      these).
+[ ] Docstring of Scheme.SpecMap_comp_fromSpecStalk_comp is a
+      placeholder ("_No sure_ I'll update this in the future"). Could
+      also be restated with fixedStalkMap; only used in tan_comp_end.
+[ ] Remaining naming nits: the def hζ (h for "hom"); r : T ⟶ T' in
+      Spec_map_comp_tan (r is a map, not a ring element); proofs named
+      f₁ / f₂ in left_add_eq_tan (rename to hφ₁ / hφ₂).
+[ ] Typos in docstrings: "induces by" (stalkEnd_mul), "induced bt"
+      (cotangentEnd_toCotangent), "the under" (stalkCongr_hom_stalkMap_
+      comp_apply_eq_zero), lowercase "for" at the start of two docstrings.
+[ ] Possibly replace the `erw`s (stalkEnd_one, fixedStalkMap_comp,
+      residueFieldCongr_residueFieldMap_of_comp_eq, exists_eq_tan,
+      tan_closedPoint) by rw + explicit rfl lemmas / change.
 
 
 AbelianVarieties/Homomorphisms/IntHom.lean

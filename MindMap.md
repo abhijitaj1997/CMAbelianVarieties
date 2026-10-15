@@ -9,6 +9,7 @@ An arrow `A --> B` means "A imports B". `CMAbelianVarieties.lean` imports every 
 ```mermaid
 graph TD
   %% ---------- top level ----------
+  Theorem["<b>Theorem</b><br/><i>main theorem: CM abelian varieties have models over number fields</i>"]
   Defn["<b>Defn</b><br/><i>CMStructure, CMType</i>"]
 
   %% ---------- AbelianVarieties ----------
@@ -33,6 +34,7 @@ graph TD
     IntHomAN["<b>IntHom</b><br/><i>[n] on group objects</i>"]
     PullbackAddGrp["<b>PullbackAddGrp</b><br/><i>group structure on pullbacks</i>"]
     EndBaseChange["<b>EndBaseChange</b><br/><i>End G →ₐ[ℤ] End (F.obj G)</i>"]
+    EndRingIso["<b>EndRingIso</b><br/><i>G ≅ H ⇒ End G ≃+* End H</i>"]
   end
 
   %% ---------- AlgebraicGeometry ----------
@@ -65,6 +67,7 @@ graph TD
   end
 
   %% ---------- imports ----------
+  Theorem --> Defn
   Defn --> EndomorphismRing
   Defn --> CMDefn
   Defn --> BaseFieldChange
@@ -72,9 +75,9 @@ graph TD
   BaseFieldChange --> FunctorCommAddObj
   EndBaseChange --> Endomorphism
   EndBaseChange --> FunctorCommAddObj
-  EndomorphismRing --> FiniteGen
-  EndomorphismRing --> TorsionFree
-  EndomorphismRing --> Endomorphism
+  EndomorphismRing --> IntHomAV
+  EndomorphismRing --> EndRingIso
+  EndRingIso --> Endomorphism
   FiniteGen --> TateModule
   TateModule --> IntHomAV
   TorsionFree --> GlobalSections
@@ -92,9 +95,9 @@ graph TD
   classDef connected fill:#e7f5ff,stroke:#1c7ed6,color:#000
   classDef unused fill:#f1f3f5,stroke:#adb5bd,stroke-dasharray:4 3,color:#495057
 
-  class Defn goal
+  class Theorem goal
   class IntHomAV hub
-  class EndomorphismRing,FiniteGen,TorsionFree,TateModule,GlobalSections,IntHomAN,PullbackAddGrp,Finite,Endomorphism,LieAlgebra,CMDefn,Test,BaseFieldChange,EndBaseChange,FunctorCommAddObj connected
+  class EndomorphismRing,FiniteGen,TorsionFree,TateModule,GlobalSections,IntHomAN,PullbackAddGrp,Finite,Endomorphism,LieAlgebra,CMDefn,Test,BaseFieldChange,EndBaseChange,FunctorCommAddObj,Defn,EndRingIso connected
   class AVCatalogue,InvertibleSheaf,TheCube,AGCatalogue,Dimension,CMAlgebra unused
 ```
 
@@ -102,7 +105,7 @@ graph TD
 
 | Colour | Meaning |
 |---|---|
-| Red, thick border | the main goal (`Defn`) |
-| Yellow, thick border ★ | the hub (`Homomorphisms/IntHom`, imported by 2 files) |
+| Red, thick border | the main goal (`Theorem`) |
+| Yellow, thick border ★ | the hub (`Homomorphisms/IntHom`, imported by 3 files) |
 | Blue | part of the dependency chain |
 | Grey, dashed | not connected to the rest yet |

@@ -238,7 +238,7 @@ def lie_algebra_repsentation' (f : End (mk G)) :
 the morphisms `f_# ≫ φ` is equal to the morphims `Spec T ⟶ G` induced by
 
 _No sure_ I'll update this in the future.
- -/
+-/
 lemma Scheme.SpecMap_comp_fromSpecStalk_comp {X : Scheme} (x : X) (φ : X ⟶ X) (hφ : φ x = x)
     {T : CommRingCat} (f : X.presheaf.stalk x ⟶ T) :
     Spec.map f ≫ X.fromSpecStalk x ≫ φ =

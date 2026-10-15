@@ -9,6 +9,7 @@ public import CMAbelianVarieties.AbelianVarieties.Homomorphisms.IntHom
 public import CMAbelianVarieties.AbelianVarieties.Homomorphisms.TorsionFree
 public import CMAbelianVarieties.AbelianVarieties.TateModule
 public import CMAbelianVarieties.AbstractNonsense.EndBaseChange
+public import CMAbelianVarieties.AbstractNonsense.EndRingIso
 public import CMAbelianVarieties.AbstractNonsense.IntHom
 public import CMAbelianVarieties.AbstractNonsense.PullbackAddGrp
 public import CMAbelianVarieties.AlgebraicGeometry.Catalogue
@@ -22,3 +23,4 @@ public import CMAbelianVarieties.CMTypes.Defn
 public import CMAbelianVarieties.Defn
 public import CMAbelianVarieties.ForMathlib.Endomorphism
 public import CMAbelianVarieties.ForMathlib.FunctorCommAddObj
+public import CMAbelianVarieties.Theorem
