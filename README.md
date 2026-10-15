@@ -5,6 +5,8 @@
 This project aims to define CM Abelian varieties with a goal to prove:
 >If A is a CM abelian variety over an algebraically closed field of characteristic 0, then it (along with the CM structure) has a model over a number field.
 
+The statement of the theorem currently lives in CMAbelianVarieties/Theorem.lean (not yet proven).
+
 Currently Mathlib does not have many results about Abelian varieties, beyond a proof that it is abelian (this can be found in [Mathlib's Abelian varieties](https://github.com/abhijitaj1997/mathlib4/blob/master/Mathlib/AlgebraicGeometry/Group/Abelian.lean)). In the process of defining CM Abelian varieties, this project also aims to complete the following goals (the list below will be updated with time):
 1. Show torsion freeness of the Hom groups.
 2. Define the Tate module of an ableian variety.
