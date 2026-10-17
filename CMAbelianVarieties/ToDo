@@ -91,6 +91,16 @@ End (mk G) on Lie G. No sorries left in this file.
 [ ] Possibly replace the `erw`s (stalkEnd_one, fixedStalkMap_comp,
       residueFieldCongr_residueFieldMap_of_comp_eq, exists_eq_tan,
       tan_closedPoint) by rw + explicit rfl lemmas / change.
+[x] End_lie_algebra_map : (Lie G →ₗ[κ_ G] Lie G) →+*
+      (ℂ ⊗[κ_ G] Lie G →ₗ[ℂ] ℂ ⊗[κ_ G] Lie G)                        (l.745)
+      f ↦ AlgebraTensorModule.map id f (= LinearMap.baseChange ℂ f);
+      ring-hom fields via LinearMap.baseChange_one/_mul/_zero/_add
+      (2026-10-17). Could be (Module.End.baseChangeHom _ ℂ _).toRingHom.
+[x] complex_lie_algebra_represenation : End (mk G) →+* End_ℂ (ℂ ⊗ Lie G)
+      (l.757) := End_lie_algebra_map ∘ lie_algebra_represenation.
+[ ] Reminder from the "hey claude" comment (l.113): the docstring of
+      Ideal.mapCotangent (Mathlib) uses I, J while the theorem uses
+      I₁, I₂.
 
 
 AbelianVarieties/Homomorphisms/IntHom.lean
@@ -239,6 +249,8 @@ New file (00aaa88). No sorries.
       regularity and dim Lie G = topologicalKrullDim G (with homogeneity).
 [ ] smooth_of_grpObj is for GrpObj; additivize with to_additive as in
       IntHom.lean to use it for AddGrpObj.
+[x] Lint: missing space in `(G : Over (Spec ↧K))[LocallyOfFiniteType …]`
+      (topologicalKrullDim_eq_finrank_Lie) fixed (2026-10-17).
 [ ] Strategy comment l.78: write
       `Algebra.IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential`
       (namespace missing).
@@ -276,6 +288,28 @@ Quot.sound).
       Useful: IsAlgClosed.lift gives F →ₐ[ℚ] ℂ for a number field F;
       there is no Mathlib class "K is a subfield of ℂ", [Algebra K ℂ] is
       the idiom.
+      Progress (2026-10-17): steps 2–4 done.
+        [x] step 2: instance Algebra (κ_ G) ℂ given [Algebra K ℂ]   (l.58)
+            κ_ G →+* K via ResidueField.lift (stalkClosedPointTo ζ[G].left)
+            (needs `open AddMonObj in` for ζ[G]; the IsLocalHom instance
+            has to be passed explicitly with @, ↧K vs K mismatch).
+            Only the map κ_ G → K is built, not that it is an iso.
+        [x] steps 3–4: complex_lie_algebra_representation_of_CMStrucutre
+            ι : F →+* End_ℂ (ℂ ⊗[κ_ A] Lie A)                        (l.65)
+            via Algebra.TensorProduct.lift f₁ f₂ on End⁰ A = ℚ ⊗[ℤ] End,
+            f₁ = (algebraMap ℚ _).toIntAlgHom,
+            f₂ = (complex_lie_algebra_represenation A).toIntAlgHom,
+            commutation by Algebra.commutes. Typo in the name
+            ("Strucutre").
+        [ ] step 1: finrank (κ_ A) (Lie A) = dim A (Dimension.lean).
+        [ ] step 5: simultaneous eigenspace decomposition of
+            ℂ ⊗ Lie A under F. No direct Mathlib result; options:
+            Module.End.iSup_iInf_maxGenEigenspace_eq_top_of_iSup_maxGenEigenspace_eq_top_of_commute
+            + semisimplicity (IsSemisimple.iSup_eigenspace_eq_top) +
+            "a nonzero eigencharacter is a ring hom"; or
+            ℂ ⊗[ℚ] F étale ⇒ ≃ₐ PrimeSpectrum → ℂ
+            (Algebra.FormallyEtale.equivPiOfIsSepClosed), missing the
+            identification PrimeSpectrum ≃ (F →+* ℂ).
 [ ] Check the dimension condition: Module.finrank ℚ F : ℕ is compared
       with topologicalKrullDim A.left : WithBot ℕ∞ (via a cast). Decide
       whether to state dim A as a natural number instead.
@@ -300,8 +334,8 @@ Quot.sound).
       instance search while basechange_over_Over was a `def`; it is now
       an `abbrev` (BaseFieldChange.lean), which fixes this.
 [ ] Cleanup: trailing `#min_imports`, the `#check
-      smoothOfRelativeDimension_isStableUnderBaseChange` (l.79) and the
-      answered "hey claude" comment (l.85–87).
+      smoothOfRelativeDimension_isStableUnderBaseChange` (l.100) and the
+      answered "hey claude" comment.
 
 
 AbelianVarieties/BaseFieldChange.lean

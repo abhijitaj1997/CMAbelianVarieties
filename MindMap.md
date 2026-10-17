@@ -10,7 +10,7 @@ An arrow `A --> B` means "A imports B". `CMAbelianVarieties.lean` imports every 
 graph TD
   %% ---------- top level ----------
   Theorem["<b>Theorem</b><br/><i>main theorem: CM abelian varieties have models over number fields</i>"]
-  Defn["<b>Defn</b><br/><i>CMStructure, CMType</i>"]
+  Defn["<b>Defn</b><br/><i>CMStructure, κ_ A → ℂ, F acting on ℂ ⊗ Lie A, CMType</i>"]
 
   %% ---------- AbelianVarieties ----------
   subgraph AV["AbelianVarieties/"]
@@ -44,7 +44,7 @@ graph TD
     InvertibleSheaf["<b>InvertibleSheaf</b><br/><i>line bundles</i>"]
     TheCube["<b>TheCube</b><br/><i>theorem of the cube</i>"]
     subgraph LIE["LieAlgebra/"]
-      LieAlgebra["<b>Defn</b><br/><i>Lie G, End G acts on Lie G</i>"]
+      LieAlgebra["<b>Defn</b><br/><i>Lie G, End G acts on Lie G and on ℂ ⊗ Lie G</i>"]
       Dimension["<b>Dimension</b><br/><i>dim X = sup of dim 𝒪_{X,x}; dim Lie G vs dim 𝒪_{G,e}</i>"]
     end
     AGCatalogue["<b>Catalogue</b><br/><i>#check cheat sheet</i>"]
@@ -74,6 +74,7 @@ graph TD
   Defn --> CMDefn
   Defn --> BaseFieldChange
   Defn --> EndBaseChange
+  Defn --> LieAlgebra
   BaseFieldChange --> FunctorCommAddObj
   EndBaseChange --> Endomorphism
   EndBaseChange --> FunctorCommAddObj
@@ -89,6 +90,7 @@ graph TD
   IntHomAV --> Finite
   IntHomAN --> Endomorphism
   LieAlgebra --> Endomorphism
+  Dimension --> LieAlgebra
   Test --> Defn
 
   %% ---------- colours ----------
@@ -99,8 +101,8 @@ graph TD
 
   class Theorem goal
   class IntHomAV hub
-  class EndomorphismRing,FiniteGen,TorsionFree,TateModule,GlobalSections,IntHomAN,PullbackAddGrp,Finite,Endomorphism,LieAlgebra,CMDefn,Test,BaseFieldChange,EndBaseChange,FunctorCommAddObj,Defn,EndRingIso connected
-  class AVCatalogue,InvertibleSheaf,TheCube,AGCatalogue,Dimension,CMAlgebra unused
+  class EndomorphismRing,FiniteGen,TorsionFree,TateModule,GlobalSections,IntHomAN,PullbackAddGrp,Finite,Endomorphism,LieAlgebra,CMDefn,Test,BaseFieldChange,EndBaseChange,FunctorCommAddObj,Defn,EndRingIso,Dimension connected
+  class AVCatalogue,InvertibleSheaf,TheCube,AGCatalogue,CMAlgebra unused
 ```
 
 **Legend**

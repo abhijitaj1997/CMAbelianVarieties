@@ -103,7 +103,7 @@ open CategoryTheory
 variable {K : Type*} [Field K]
 
 /-- The dimension of a group scheme `G` over `K` equals the dimension of its Lie algebra. -/
-theorem topologicalKrullDim_eq_finrank_Lie (G : Over (Spec ↧K))[LocallyOfFiniteType G.hom]
+theorem topologicalKrullDim_eq_finrank_Lie (G : Over (Spec ↧K)) [LocallyOfFiniteType G.hom]
     [GeometricallyReduced G.hom] [AddGrpObj G] :
     topologicalKrullDim G.left = Module.finrank (κ_ G) (Lie G) := by
   sorry
