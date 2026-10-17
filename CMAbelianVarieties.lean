@@ -13,10 +13,10 @@ public import CMAbelianVarieties.AbstractNonsense.EndRingIso
 public import CMAbelianVarieties.AbstractNonsense.IntHom
 public import CMAbelianVarieties.AbstractNonsense.PullbackAddGrp
 public import CMAbelianVarieties.AlgebraicGeometry.Catalogue
-public import CMAbelianVarieties.AlgebraicGeometry.Dimension
 public import CMAbelianVarieties.AlgebraicGeometry.Finite
 public import CMAbelianVarieties.AlgebraicGeometry.InvertibleSheaf
-public import CMAbelianVarieties.AlgebraicGeometry.LieAlgebra
+public import CMAbelianVarieties.AlgebraicGeometry.LieAlgebra.Defn
+public import CMAbelianVarieties.AlgebraicGeometry.LieAlgebra.Dimension
 public import CMAbelianVarieties.AlgebraicGeometry.TheCube
 public import CMAbelianVarieties.CMTypes.Algebra
 public import CMAbelianVarieties.CMTypes.Defn

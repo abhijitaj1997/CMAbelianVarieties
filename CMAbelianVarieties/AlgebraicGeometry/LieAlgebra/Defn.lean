@@ -722,6 +722,7 @@ lemma cotangentEnd_add [IsCommAddMonObj G] (f g : End (mk G)) :
   rw [cotangentEnd_toCotangent, cotangentEnd_toCotangent, cotangentEnd_toCotangent]
   exact this
 
+variable (G) in
 /-- The representation of `End (mk G)` on the Lie algebra of `G`, as a ring homomorphism. -/
 def lie_algebra_represenation [IsCommAddMonObj G] :
     End (mk G) →+* (Lie G →ₗ[κ_ G] Lie G) where
@@ -738,3 +739,21 @@ def lie_algebra_represenation [IsCommAddMonObj G] :
   map_add' f g := by
     ext
     simp [lie_algebra_repsentation', cotangentEnd_add, LinearMap.dualMap_apply]
+
+variable (G) in
+open scoped TensorProduct in
+def End_lie_algebra_map [IsCommAddMonObj G] [Algebra (κ_ G) ℂ] :
+    (Lie G →ₗ[κ_ G] Lie G) →+* (ℂ ⊗[κ_ G] (Lie G) →ₗ[ℂ] ℂ ⊗[κ_ G] (Lie G)) where
+  toFun f := TensorProduct.AlgebraTensorModule.map LinearMap.id f
+  map_one' := LinearMap.baseChange_one _ _
+  map_mul' := LinearMap.baseChange_mul
+  map_zero' := LinearMap.baseChange_zero
+  map_add' := LinearMap.baseChange_add
+
+variable (G) in
+open scoped TensorProduct in
+/-- If the residue field `κ_ G` is contained in `ℂ`, the there is an representation
+of `End (mk G)` on the complexified Lie algebra of `G`, as a ring homomorphism. -/
+def complex_lie_algebra_represenation [IsCommAddMonObj G] [Algebra (κ_ G) ℂ] :
+    End (mk G) →+* (ℂ ⊗[κ_ G] (Lie G) →ₗ[ℂ] ℂ ⊗[κ_ G] (Lie G)) :=
+  (End_lie_algebra_map G).comp (lie_algebra_represenation G)

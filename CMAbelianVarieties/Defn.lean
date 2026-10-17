@@ -9,6 +9,7 @@ public import CMAbelianVarieties.AbelianVarieties.BaseFieldChange
 public import CMAbelianVarieties.AbelianVarieties.Homomorphisms.EndomorphismRing
 public import CMAbelianVarieties.AbstractNonsense.EndBaseChange
 public import CMAbelianVarieties.CMTypes.Defn
+public import CMAbelianVarieties.AlgebraicGeometry.LieAlgebra.Defn
 
 /-!
 ## CM Abelian varieties
@@ -51,6 +52,26 @@ instance {A : Over (Spec ↧K)} [IsProper A.hom] [GeometricallyIntegral A.hom]
     [AddGrpObj A] {F : Type*} [Field F] [NumberField F] [IsCMField F] :
     Coe (CMStructure A F) (F →+* End⁰ A) :=
   ⟨CMStructure.incl⟩
+
+-- Done by Claude
+open AddMonObj in
+instance {G : Over (Spec ↧K)} [AddGrpObj G] [Algebra K ℂ] : Algebra (κ_ G) ℂ :=
+  letI z : Spec ↧K ⟶ G.left := ζ[G].left
+  letI φ : κ_ G →+* K := @IsLocalRing.ResidueField.lift _ _ _ _ _ (Scheme.stalkClosedPointTo z).hom
+    (Scheme.isLocalHom_stalkClosedPointTo' z)
+  ((algebraMap K ℂ).comp φ).toAlgebra
+
+open scoped TensorProduct in
+def complex_lie_algebra_representation_of_CMStrucutre {A : Over (Spec ↧K)} [IsProper A.hom]
+    [GeometricallyIntegral A.hom] [AddGrpObj A] {F : Type*} [Field F] [NumberField F]
+    [IsCMField F] (ι : CMStructure A F) [Algebra K ℂ] :
+    F →+* (ℂ ⊗[κ_ A] (Lie A) →ₗ[ℂ] ℂ ⊗[κ_ A] (Lie A)) := by
+  let f : End⁰ A →+* (ℂ ⊗[κ_ A] (Lie A) →ₗ[ℂ] ℂ ⊗[κ_ A] (Lie A)) := by
+    let f₁ : ℚ →ₐ[ℤ] (ℂ ⊗[κ_ A] (Lie A) →ₗ[ℂ] ℂ ⊗[κ_ A] (Lie A)) :=
+      (algebraMap ℚ _).toIntAlgHom
+    let f₂ := (complex_lie_algebra_represenation A).toIntAlgHom
+    exact (Algebra.TensorProduct.lift f₁ f₂ fun x y ↦ Algebra.commutes x (f₂ y)).toRingHom
+  exact f.comp ι.incl
 
 /-- Given a CM strucutre on an Abelian variety `A` over a field `K`, such that `K` is
 a subfield of `ℂ`, and `F` is the CM Field in the CM Structure. The, we have a preCMType

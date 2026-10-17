@@ -5,10 +5,7 @@ Authors: Abhijit A J
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
-public import Mathlib.Algebra.Module.SpanRankOperations
-public import Mathlib.RingTheory.RegularLocalRing.Defs
-public import Mathlib.AlgebraicGeometry.Group.Smooth
+public import CMAbelianVarieties.AlgebraicGeometry.LieAlgebra.Defn
 
 /-!
 ## Dimension of a group scheme
@@ -57,7 +54,7 @@ maximal ideal of `R` -/
 
 Let `G` be a group scheme over `K`, and write `A = 𝒪_{G,e}`, `m = mₑ`, `κ = A / m`. The key
 point is that `e` is a `K`-rational point, so `κ = K` and `K ⟶ A ⟶ κ` is the identity
-(in `LieAlgebra.lean` this is `π_hζ : π G ≫ hζ G = 𝟙 _`).
+(in `LieAlgebra/Defn.lean` this is `π_hζ : π G ≫ hζ G = 𝟙 _`).
 
 **Step A: `m / m² ≅ κ ⊗[A] Ω[A⁄K]`.** No smoothness needed, only that `e` is rational.
 The conormal sequence of `A ↠ κ` is exact:
@@ -70,7 +67,7 @@ Hence `Lie G = (m / m²)^∨ ≅ (κ ⊗[A] Ω[A⁄K])^∨`. In Mathlib:
 * `KaehlerDifferential.exact_kerCotangentToTensor_mapBaseChange` is the exactness.
 * `retractionKerCotangentToTensorEquivSection` : retractions of `d` correspond to sections of
   `A / I² ⟶ B`.
-Note that `der φ a = φ [a - π (hζ a)]` in `LieAlgebra.lean` is this isomorphism done by hand.
+Note that `der φ a = φ [a - π (hζ a)]` in `LieAlgebra/Defn.lean` is this isomorphism done by hand.
 
 **Step B: smoothness gives `dim_κ (κ ⊗[A] Ω[A⁄K]) = n`.**
 If `G` is `SmoothOfRelativeDimension n` over `K`, then `e` has an affine neighbourhood `Spec B`
@@ -100,3 +97,13 @@ with localization, so `Ω[A⁄K]` is free of rank `n`, and `κ ⊗[A] Ω[A⁄K] 
   `GrpObj` to `AddGrpObj` with `to_additive`, as in `IntHom.lean`); `LocallyOfFiniteType` and
   `GeometricallyReduced` are inferred from `IsProper` and `GeometricallyIntegral`.
 -/
+
+open CategoryTheory
+
+variable {K : Type*} [Field K]
+
+/-- The dimension of a group scheme `G` over `K` equals the dimension of its Lie algebra. -/
+theorem topologicalKrullDim_eq_finrank_Lie (G : Over (Spec ↧K))[LocallyOfFiniteType G.hom]
+    [GeometricallyReduced G.hom] [AddGrpObj G] :
+    topologicalKrullDim G.left = Module.finrank (κ_ G) (Lie G) := by
+  sorry

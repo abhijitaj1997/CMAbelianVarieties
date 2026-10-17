@@ -35,7 +35,7 @@ AlgebraicGeometry/Finite.lean
       (`IsArtinianScheme.of_isIso` does not seem to exist).
 
 
-AlgebraicGeometry/LieAlgebra.lean
+AlgebraicGeometry/LieAlgebra/Defn.lean
 ---------------------------------
 New file (d13a8ab), line numbers as of 2026-10-12 (commit c4f93e5).
 Defines the identity point e G, the Lie algebra Lie G = Dual (m/m²) of a
@@ -209,7 +209,7 @@ AlgebraicGeometry/InvertibleSheaf.lean
       SheafOfModules.IsLocallyFree for X.Modules.
 
 
-AlgebraicGeometry/Dimension.lean
+AlgebraicGeometry/LieAlgebra/Dimension.lean
 --------------------------------
 New file (00aaa88). No sorries.
 [x] topologicalKrullDim_eq_iSup_ringKrullDim_stalk                  (l.22)
