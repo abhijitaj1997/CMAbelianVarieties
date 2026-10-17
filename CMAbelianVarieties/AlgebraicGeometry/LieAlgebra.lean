@@ -97,7 +97,7 @@ lemma stalkEnd_residue (f : End (mk G)) :
     ← Scheme.residue_residueFieldCongr _ (image_unit_of_End f).symm, Category.assoc,
     residueFieldCongr_residueFieldMap, Category.comp_id]
 
-/-- for `a : 𝒪_{G,e}`, the image of `a` in `κ_{G,e}` is the same as the image
+/-- For `a : 𝒪_{G,e}`, the image of `a` in `κ_{G,e}` is the same as the image
 of `a` along the composition `𝒪_{G,e} ⟶ 𝒪_{G,e} ⟶ κ_{G,e}`, where the first is induced
 by `f`. -/
 lemma residue_stalkEnd (f : End (mk G)) (a : 𝒪_ G) :
@@ -157,18 +157,18 @@ lemma stalkEnd_one : stalkEnd (1 : End (mk G)) = 𝟙 _ := by
   exact (Category.comp_id _).trans (TopCat.Presheaf.stalkSpecializes_refl _ _)
 
 /-- `f * g : G ⟶ G` induces the composition `𝒪_{G,e} ⟶ 𝒪_{G,e} ⟶ 𝒪_{G,e}` where the first
-is induces by `f` and the second by `g` -/
+is induced by `f` and the second by `g` -/
 lemma stalkEnd_mul (f g : End (mk G)) : stalkEnd (f * g) = stalkEnd f ≫ stalkEnd g :=
   Scheme.Hom.fixedStalkMap_comp _ _ _ (image_unit_of_End f) (image_unit_of_End g)
 
-/-- for `x : Spec K`, the local ring `𝒪ₓ` is a field -/
+/-- For `x : Spec K`, the local ring `𝒪ₓ` is a field -/
 lemma isField_stalk_Spec_field (x : Spec ↧K) : IsField ((Spec ↧K).presheaf.stalk x) := by
   refine isField_stalk_of_closure_mem_irreducibleComponents _ x ?_
   rw [Set.eq_univ_of_forall fun y ↦ subset_closure (Subsingleton.elim y x ▸ rfl)]
   simp [irreducibleComponents_eq_singleton]
 
 /-- For `r : mₑ`, the image of `r` along the map `(mₑ / mₑ^2) ⟶[κ_{G,e}] (mₑ / mₑ^2)`
-induced bt `f`, comes from the lift `𝒪_{G,e} ⟶ 𝒪_{G,e}` which is induced by `f` -/
+induced by `f`, comes from the lift `𝒪_{G,e} ⟶ 𝒪_{G,e}` which is induced by `f` -/
 lemma cotangentEnd_toCotangent (f : End (mk G)) (r : maximalIdeal (𝒪_ G)) :
     cotangentEnd f (Ideal.toCotangent _ r) =
       Ideal.toCotangent _ ⟨(stalkEnd f).hom r, map_nonunit (stalkEnd f).hom _ r.2⟩ :=

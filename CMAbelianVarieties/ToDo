@@ -57,15 +57,37 @@ End (mk G) on Lie G. No sorries left in this file.
       redundant hypothesis hψφ dropped); naming conventions: ring
       elements r / r₁, r₂, morphisms f, g / φ (no more x, y, z, h for
       these).
-[ ] Docstring of Scheme.SpecMap_comp_fromSpecStalk_comp is a
-      placeholder ("_No sure_ I'll update this in the future"). Could
-      also be restated with fixedStalkMap; only used in tan_comp_end.
-[ ] Remaining naming nits: the def hζ (h for "hom"); r : T ⟶ T' in
-      Spec_map_comp_tan (r is a map, not a ring element); proofs named
-      f₁ / f₂ in left_add_eq_tan (rename to hφ₁ / hφ₂).
-[ ] Typos in docstrings: "induces by" (stalkEnd_mul), "induced bt"
-      (cotangentEnd_toCotangent), "the under" (stalkCongr_hom_stalkMap_
-      comp_apply_eq_zero), lowercase "for" at the start of two docstrings.
+[x] Docstring of Scheme.SpecMap_comp_fromSpecStalk_comp written
+      (c15dec1). Could still be restated with fixedStalkMap; only used
+      in tan_comp_end.
+[x] Review session (2026-10-16/17, c15dec1 + 5a7dbce): all "hey claude"
+      comments resolved.
+      - structure map renamed κ → π (κ_ G stays the residue field).
+      - docstrings use 𝒪_{G,e} / κ_{G,e} throughout (except in
+        SpecMap_comp_fromSpecStalk_comp), old `k` replaced by κ_{G,e}.
+      - tan_injective no longer assumes IsLocalRing T / IsLocalHom: proof
+        is now Spec.map_injective + cancel_mono (fromSpecStalk is a
+        preimmersion, hence mono). exists_eq_tan / tan_closedPoint do
+        need their locality hypotheses.
+      - renames: T → R (square-zero extension, `RGM` in docstrings),
+        mapT → mapR, ψRingHom → derRingHom', ψ → derRingHom, section ψ
+        → section der; local names in left_add_eq_tan (f, g, hfφ₁, hgφ₂,
+        hφ₁, hφ₂).
+      - G made implicit in tan, mapR, Sp, der, derRingHom', derRingHom,
+        tanVec; φ, g implicit in Sp_comp_left; f, φ in Sp_zero_comp;
+        f, g, φ₁, φ₂ in left_add_eq_tan.
+      - comments on TrivSqZeroExt (Eᵐᵒᵖ, why Mathlib needs the right
+        action) and on section tsze; new docstrings for Sp_zero_comp and
+        left_add_eq_tan.
+      - `variable (G M) in` kept (standard in Mathlib, 3000+ uses).
+[ ] Remaining naming nits: the def hζ (h for "hom"); proofs named
+      f₁ / f₂ in left_add_eq_tan (hφ₁ / hφ₂ are now taken; e.g.
+      hφc₁ / hφc₂); section name k2 (from the old `k`).
+[x] Typos in docstrings: "induces by" (cotangentEnd_mul), "induced bt"
+      (cotangentEnd_toCotangent), lowercase "for" at the start of two
+      docstrings. Fixed (2026-10-17).
+[ ] The IsLocalHom instance for mapR has the docstring "The map
+      `κ_{G,e} ⊕ M ⟶ κ_{G,e} ⊕ N`", which does not say what it proves.
 [ ] Possibly replace the `erw`s (stalkEnd_one, fixedStalkMap_comp,
       residueFieldCongr_residueFieldMap_of_comp_eq, exists_eq_tan,
       tan_closedPoint) by rw + explicit rfl lemmas / change.
@@ -198,6 +220,28 @@ New file (00aaa88). No sorries.
 [ ] Module docstring ("Dimension of a group scheme") is a placeholder.
       Intended: dim of a group scheme, e.g. via dim of Lie G / the local
       ring at e (needed for step 1 of CMType).
+[x] #checks of the relevant Mathlib results (2026-10-17):
+      ringKrullDim_le_spanFinrank_maximalIdeal,
+      IsLocalRing.spanFinrank_maximalIdeal_eq_finrank_cotangentSpace,
+      IsRegularLocalRing.iff_finrank_cotangentSpace, smooth_of_grpObj,
+      Algebra.IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential;
+      imports minimized (#min_imports ignores #checks, so it was done by
+      hand). Big comment "Strategy: dim Lie G via Kähler differentials".
+[ ] Strategy Steps A + B: dim Lie G = n for G SmoothOfRelativeDimension n.
+      A: m/m² ≅ κ ⊗ Ω[A⁄K] since e is K-rational
+      (kerCotangentToTensor, exact_kerCotangentToTensor_mapBaseChange,
+      retractionKerCotangentToTensorEquivSection). B: Ω free of rank n.
+      Missing: the scheme-level glue (affine open around e → stalk).
+      Note: smooth_of_grpObj gives Smooth, not SmoothOfRelativeDimension n;
+      n has to be fixed near e.
+[ ] Strategy Step C: ringKrullDim 𝒪_{G,e} = n (≤ is free; ≥ needs
+      dimension theory of smooth/étale algebras, not in Mathlib). Gives
+      regularity and dim Lie G = topologicalKrullDim G (with homogeneity).
+[ ] smooth_of_grpObj is for GrpObj; additivize with to_additive as in
+      IntHom.lean to use it for AddGrpObj.
+[ ] Strategy comment l.78: write
+      `Algebra.IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential`
+      (namespace missing).
 
 
 AlgebraicGeometry/TheCube.lean

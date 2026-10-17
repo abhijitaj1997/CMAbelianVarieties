@@ -44,7 +44,7 @@ graph TD
     InvertibleSheaf["<b>InvertibleSheaf</b><br/><i>line bundles</i>"]
     TheCube["<b>TheCube</b><br/><i>theorem of the cube</i>"]
     LieAlgebra["<b>LieAlgebra</b><br/><i>Lie G, End G acts on Lie G</i>"]
-    Dimension["<b>Dimension</b><br/><i>dim X = sup of dim 𝒪_{X,x}</i>"]
+    Dimension["<b>Dimension</b><br/><i>dim X = sup of dim 𝒪_{X,x}; dim Lie G vs dim 𝒪_{G,e}</i>"]
     AGCatalogue["<b>Catalogue</b><br/><i>#check cheat sheet</i>"]
   end
 
