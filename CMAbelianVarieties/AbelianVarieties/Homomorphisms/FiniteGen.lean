@@ -5,8 +5,9 @@ Authors: Abhijit A J
 -/
 module
 
-public import CMAbelianVarieties.AbelianVarieties.TateModule
-public import Mathlib
+public import CMAbelianVarieties.AbelianVarieties.Commutativity
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
+public import Mathlib.RingTheory.Finiteness.Defs
 
 /-!
 ## Main Goal

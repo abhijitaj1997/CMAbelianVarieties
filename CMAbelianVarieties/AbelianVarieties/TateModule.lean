@@ -7,7 +7,6 @@ module
 
 public import CMAbelianVarieties.AbelianVarieties.Homomorphisms.IntHom
 public import Mathlib.Algebra.Ring.IsFormallyReal
-public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 public import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
 
 /-!
@@ -276,7 +275,3 @@ def blah (p n : ℕ) : A[p ^ n] ⟶ B[p ^ n] := by
 def tate_module_representation (hp : p.Prime) : T_ p (A) ⟶ T_ p (B) := sorry
 
 end Representation
-
-
-
-#min_imports

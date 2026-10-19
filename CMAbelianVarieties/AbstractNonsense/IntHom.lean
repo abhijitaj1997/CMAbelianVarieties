@@ -85,5 +85,3 @@ lemma int_commute {G H : C} [AddGrpObj G] [IsCommAddMonObj G]
       simp [comp_neg_one, neg_one_comp]
 
 end IntHom
-
-#min_imports

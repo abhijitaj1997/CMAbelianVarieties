@@ -6,7 +6,8 @@ Authors: Abhijit A J
 module
 
 public import CMAbelianVarieties.ForMathlib.FunctorCommAddObj
-public import Mathlib
+public import Mathlib.AlgebraicGeometry.Geometrically.Integral
+public import Mathlib.AlgebraicGeometry.Morphisms.Proper
 
 /-!
 ## Goal

@@ -44,5 +44,3 @@ def CategoryTheory.Iso.conjRingEquiv : (End G) ≃+* (End H) where
 ring isomorphism `Iso.conjRingEquiv` viewed as a `ℤ`-algebra isomorphism. -/
 noncomputable def CategoryTheory.Iso.conjAlgEquiv : (End G) ≃ₐ[ℤ] (End H) :=
   φ.conjRingEquiv.toIntAlgEquiv
-
-#min_imports

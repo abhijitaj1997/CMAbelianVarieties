@@ -85,5 +85,3 @@ lemma IsAddMonHom.pullback_lift {X : C} [AddGrpObj X] {φ : X ⟶ G} {ψ : X ⟶
 -- Important
 example (φ : G ⟶ H) [IsAddMonHom φ] {X : C} : (X ⟶ G) →+ (X ⟶ H) := by
   exact IsAddMonHom.addMonoidHom φ X
-
-#min_imports

@@ -12,11 +12,14 @@ When asked to run this checklist, do the following steps in order:
    tells you to ignore this and continue.
 
 2. Check every file of the project for warnings, ignoring the
-   "declaration uses `sorry`" warnings. Build every module explicitly, so
-   that files not yet imported by CMAbelianVarieties.lean are checked too
-   (lake also replays the warnings of files that are already built):
+   "declaration uses `sorry`" warnings and the warnings created by
+   `#check`s (e.g. the unused tactic linter's "`#check ...` does nothing").
+   Build every module explicitly, so that files not yet imported by
+   CMAbelianVarieties.lean are checked too (lake also replays the warnings
+   of files that are already built):
        lake build $(find CMAbelianVarieties -name '*.lean' | sed 's/\.lean$//; s#/#.#g') \
-         2>&1 | grep -E "^(warning|error)" | grep -v "declaration uses .sorry."
+         2>&1 | grep -E "^(warning|error)" | grep -v "declaration uses .sorry." \
+         | grep -v "#check"
    If there are any such warnings (or errors), STOP: do not continue with
    the checklist, and inform the user, listing each warning with its file
    and line. ONLY continue with the checklist if the user then tells you

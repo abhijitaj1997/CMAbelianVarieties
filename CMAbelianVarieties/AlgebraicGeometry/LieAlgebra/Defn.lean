@@ -5,7 +5,15 @@ Authors: Abhijit A J
 -/
 module
 
-public import Mathlib
+public import Mathlib.Algebra.Module.StablyFree.Basic
+public import Mathlib.Algebra.TrivSqZeroExt.Basic
+public import Mathlib.AlgebraicGeometry.ValuativeCriterion
+public import Mathlib.Basic.Complex.Basic
+public import Mathlib.Combinatorics.Quiver.ReflQuiver
+public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.RingTheory.Henselian
+public import Mathlib.RingTheory.RegularLocalRing.Defs
+public import Mathlib.RingTheory.SimpleRing.Principal
 public import CMAbelianVarieties.ForMathlib.Endomorphism
 
 /-!

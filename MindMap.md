@@ -19,12 +19,14 @@ graph TD
     TateModule["<b>TateModule</b><br/><i>torsion points, Tate module</i>"]
     BaseFieldChange["<b>BaseFieldChange</b><br/><i>A _ K₁, base change to K₁</i>"]
     AVCatalogue["<b>Catalogue</b><br/><i>#check cheat sheet</i>"]
+    Commutativity["<b>Commutativity</b> ★<br/><i>abelian varieties are commutative</i>"]
+    Complex["<b>Complex</b><br/><i>complex abelian varieties: exp, lattice</i>"]
     subgraph HOM["Homomorphisms/"]
       direction TB
       EndomorphismRing["<b>EndomorphismRing</b><br/><i>End A, End A ⊗ ℚ</i>"]
       FiniteGen["<b>FiniteGen</b><br/><i>Hom(A, B) finitely generated</i>"]
       TorsionFree["<b>TorsionFree</b><br/><i>Hom(A, B) torsion free</i>"]
-      IntHomAV["<b>IntHom</b> ★<br/><i>[n], A[n] finite & discrete</i>"]
+      IntHomAV["<b>IntHom</b><br/><i>[n], A[n] finite & discrete</i>"]
     end
   end
 
@@ -66,6 +68,7 @@ graph TD
   %% ---------- Test ----------
   subgraph T["Test/ (top level, outside the library)"]
     Test["<b>Test</b><br/><i>scratch</i>"]
+    Test1["<b>Test1</b><br/><i>scratch, Mathlib only</i>"]
   end
 
   %% ---------- imports ----------
@@ -78,16 +81,19 @@ graph TD
   BaseFieldChange --> FunctorCommAddObj
   EndBaseChange --> Endomorphism
   EndBaseChange --> FunctorCommAddObj
-  EndomorphismRing --> IntHomAV
+  EndomorphismRing --> Commutativity
   EndomorphismRing --> EndRingIso
   EndRingIso --> Endomorphism
-  FiniteGen --> TateModule
+  FiniteGen --> Commutativity
+  Complex --> LieAlgebra
+  Complex --> Commutativity
   TateModule --> IntHomAV
   TorsionFree --> GlobalSections
   TorsionFree --> IntHomAV
   IntHomAV --> IntHomAN
   IntHomAV --> PullbackAddGrp
   IntHomAV --> Finite
+  IntHomAV --> Commutativity
   IntHomAN --> Endomorphism
   LieAlgebra --> Endomorphism
   Dimension --> LieAlgebra
@@ -100,9 +106,9 @@ graph TD
   classDef unused fill:#f1f3f5,stroke:#adb5bd,stroke-dasharray:4 3,color:#495057
 
   class Theorem goal
-  class IntHomAV hub
-  class EndomorphismRing,FiniteGen,TorsionFree,TateModule,GlobalSections,IntHomAN,PullbackAddGrp,Finite,Endomorphism,LieAlgebra,CMDefn,Test,BaseFieldChange,EndBaseChange,FunctorCommAddObj,Defn,EndRingIso,Dimension connected
-  class AVCatalogue,InvertibleSheaf,TheCube,AGCatalogue,CMAlgebra unused
+  class Commutativity hub
+  class EndomorphismRing,FiniteGen,IntHomAV,Complex,TorsionFree,TateModule,GlobalSections,IntHomAN,PullbackAddGrp,Finite,Endomorphism,LieAlgebra,CMDefn,Test,BaseFieldChange,EndBaseChange,FunctorCommAddObj,Defn,EndRingIso,Dimension connected
+  class AVCatalogue,InvertibleSheaf,TheCube,AGCatalogue,CMAlgebra,Test1 unused
 ```
 
 **Legend**
@@ -110,6 +116,6 @@ graph TD
 | Colour | Meaning |
 |---|---|
 | Red, thick border | the main goal (`Theorem`) |
-| Yellow, thick border ★ | the hub (`Homomorphisms/IntHom`, imported by 3 files) |
+| Yellow, thick border ★ | the hub (`Commutativity`, imported by 4 files) |
 | Blue | part of the dependency chain |
 | Grey, dashed | not connected to the rest yet |

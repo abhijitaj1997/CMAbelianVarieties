@@ -5,7 +5,6 @@ Authors: Abhijit A J
 -/
 module
 
-public import Mathlib
 public import CMAbelianVarieties.AlgebraicGeometry.LieAlgebra.Defn
 public import CMAbelianVarieties.AbelianVarieties.Commutativity
 

@@ -67,5 +67,3 @@ def AddGrp.End.algHom_ofBaseChange : End (mk G) →ₐ[ℤ] End (mk (F.obj G)) w
     have := map_zsmul (F.homAddMonoidHom (X := G) (M := G)) n (𝟙 G)
     simp only [homAddMonoidHom_apply, CategoryTheory.Functor.map_id] at this
     exact this
-
-#min_imports

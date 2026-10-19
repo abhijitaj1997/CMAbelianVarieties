@@ -121,5 +121,3 @@ theorem module_tor_free_hom : Module.IsTorsionFree ℤ (mk A ⟶ mk B) := by
   exact tor_free_hom
 
 end Freeness
-
-#min_imports

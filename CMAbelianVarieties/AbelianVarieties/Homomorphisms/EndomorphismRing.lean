@@ -47,5 +47,3 @@ noncomputable def conjAlgEquiv {A : Over (Spec ↧K)} [IsProper A.hom]
   Algebra.TensorProduct.congr AlgEquiv.refl (Iso.conjAlgEquiv φ)
 
 end RationalEnd
-
-#min_imports

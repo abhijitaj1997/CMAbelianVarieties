@@ -8,7 +8,6 @@ module
 public import Mathlib.AlgebraicGeometry.Geometrically.Integral
 public import Mathlib.AlgebraicGeometry.Morphisms.Proper
 public import Mathlib.Combinatorics.Quiver.ReflQuiver
-public import Mathlib.RingTheory.Henselian
 public import Mathlib.RingTheory.SimpleRing.Principal
 
 /-!
@@ -120,6 +119,3 @@ lemma homomorphism_to_affine {G : Over (Spec ↧K)} [IsAffine G.left] [AddGrpObj
   have : (appTop f.left) = (appTop (0 : A ⟶ G).left) := Mono.right_cancellation (appTop f.left)
     (appTop (0 : A ⟶ G).left) this
   exact ext_of_isAffine this
-
-
-#min_imports

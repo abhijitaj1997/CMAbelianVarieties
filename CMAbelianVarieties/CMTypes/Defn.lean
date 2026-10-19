@@ -46,5 +46,3 @@ variable (K : Type*) [Field K] [NumberField K] [IsCMField K]
 
 
 end
-
-#min_imports

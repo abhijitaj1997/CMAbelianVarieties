@@ -66,5 +66,3 @@ lemma discrete_of_isFiniteOverField {K : Type*} [Field K] (f : X ⟶ Spec ↧K) 
     : DiscreteTopology X := by
   have : IsArtinianScheme X := isArtinianScheme_of_isFiniteOverField f
   exact IsLocallyArtinian.discreteTopology
-
-#min_imports

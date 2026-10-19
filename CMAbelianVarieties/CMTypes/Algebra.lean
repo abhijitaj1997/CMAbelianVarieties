@@ -325,5 +325,3 @@ lemma dimension_IsSimple_algebra (K R : Type*) [Ring R] [Field K] [Algebra K R] 
   use (fact₁ K R).choose
   rw [LinearEquiv.finrank_eq (Classical.choice ((fact₁ K R).choose_spec).choose_spec).toLinearEquiv]
   exact fact₂ (AlgebraicClosure K) ((AlgebraicClosure K) ⊗[K] R) (fact₁ K R).choose
-
-#min_imports

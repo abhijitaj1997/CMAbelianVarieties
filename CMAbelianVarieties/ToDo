@@ -106,12 +106,25 @@ End (mk G) on Lie G. No sorries left in this file.
 AbelianVarieties/Homomorphisms/IntHom.lean
 ------------------------------------------
 Line numbers as of 2026-10-10 (commit a93522c).
-[x] IsCommAddMonObj A                                                (l.44)
-      Abelian varieties are commutative. Done (a93522c): additive copy of
-      Mathlib's isCommMonObj_of_isProper_of_geometricallyIntegral made with
-      to_additive (Scheme, Scheme.instCategory marked
-      to_additive_do_translate; l.37–41).
-[ ] Get rid of `import all Mathlib.AlgebraicGeometry.Group.Abelian` (l.7)
+[x] IsCommAddMonObj A: moved to AbelianVarieties/Commutativity.lean
+      (a0ee502), together with the `import all` item; see there.
+
+[ ] isFinite_int_hom                                                 (l.86)
+      [n]_ A : A → A is a finite morphism when n ≠ 0.
+
+[x] step₂'                                                           (l.107)
+      The n-torsion A[n] is an affine scheme when n ≠ 0. Done (48b28db).
+
+
+AbelianVarieties/Commutativity.lean
+-----------------------------------
+New file (a0ee502), no sorries. Holds the instance IsCommAddMonObj A
+(abelian varieties are commutative), moved here from
+Homomorphisms/IntHom.lean so that other files can import it alone.
+Additive copy of Mathlib's isCommMonObj_of_isProper_of_geometricallyIntegral
+made with to_additive (Scheme, Scheme.instCategory marked
+to_additive_do_translate).
+[ ] Get rid of `import all Mathlib.AlgebraicGeometry.Group.Abelian` (l.9)
       Needed only so that to_additive can see the proof. Options:
         - upstream: put @[to_additive] on the theorems in
           Mathlib/AlgebraicGeometry/Group/Abelian.lean (+ do_translate on
@@ -119,11 +132,27 @@ Line numbers as of 2026-10-10 (commit a93522c).
         - go back to the statement-only bridge AddGrpObj.toGrpObj
           (commit 556c906), which needs no import all.
 
-[ ] isFinite_int_hom                                                 (l.86)
-      [n]_ A : A → A is a finite morphism when n ≠ 0.
 
-[x] step₂'                                                           (l.107)
-      The n-torsion A[n] is an affine scheme when n ≠ 0. Done (48b28db).
+AbelianVarieties/Complex.lean
+-----------------------------
+New file (a0ee502): complex abelian varieties A over Spec ℂ and
+uniformization. Line numbers as of 2026-10-19 (commit a0ee502).
+[ ] exponential : Lie A →+ (𝟙_ _ ⟶ A)                               (l.28)
+      The exponential map. Currently `sorry`.
+[x] AddMonoidHom_of_End f : (𝟙_ _ ⟶ A) →+ (𝟙_ _ ⟶ A)                (l.30)
+      φ ↦ φ ≫ f, via Mathlib's IsAddMonHom.addMonoidHom (2026-10-19).
+[ ] end_comp_exponential                                             (l.33)
+      (AddMonoidHom_of_End f) ∘ exp = exp ∘ (lie_algebra_represenation A f).
+[ ] lie_algebra_lattice_representation f : lattice A →ₗ[ℤ] lattice A (l.44)
+      Currently `sorry`. A proof checked on 2026-10-19 (compiles, modulo
+      end_comp_exponential): AddMonoidHom.toIntLinearMap of
+      (φ.comp (lattice A).subtype).codRestrict (lattice A) h, where
+      h x : exp (φ x) = 0 from congr_fun end_comp_exponential and x ∈ ker.
+[ ] lattice_addEquiv                                                 (l.54)
+      The lattice is free of rank 2 * dim A.
+[ ] Cleanup: the #checks (AddMonoidHom.toIntLinearMap,
+      AddMonoidHom.codRestrict), typo
+      "uniforization" in the module docstring.
 
 
 AbstractNonsense/IntHom.lean, ForMathlib/Endomorphism.lean
@@ -333,7 +362,7 @@ Quot.sound).
       Note: writing (Over.pullback …).obj A instead of A _ K₁ broke
       instance search while basechange_over_Over was a `def`; it is now
       an `abbrev` (BaseFieldChange.lean), which fixes this.
-[ ] Cleanup: trailing `#min_imports`, the `#check
+[ ] Cleanup (trailing `#min_imports` removed 2026-10-19): the `#check
       smoothOfRelativeDimension_isStableUnderBaseChange` (l.100) and the
       answered "hey claude" comment.
 
@@ -363,7 +392,8 @@ New file (f660978), no sorries.
 [x] AddGrp.End.algHom_ofBaseChange : End (mk G) →ₐ[ℤ] End (mk (F.obj G))
       for a braided F and a commutative additive group object G.
       Done (2026-10-15).
-[ ] Cleanup: trailing `#min_imports`; the module docstring still says
+[ ] Cleanup (trailing `#min_imports` removed 2026-10-19): the module
+      docstring still says
       the file shows that F preserves commutative group objects (that is
       now in ForMathlib/FunctorCommAddObj.lean); could add a
       `zsmul_asHom` lemma to ForMathlib/Endomorphism.lean and drop the
@@ -402,7 +432,8 @@ of 2026-10-02 (commit 45007ad).
       the reduced degree could then be defined directly as
       Nat.sqrt (finrank K R) instead of via choose.
 
-[ ] Cleanup: remove the trailing `#min_imports` and the commented-out
+[ ] Cleanup (trailing `#min_imports` removed 2026-10-19): remove the
+      commented-out
       `--#check IsSimpleRing.isField_center` (l.56).
 
 
@@ -420,9 +451,8 @@ New file (19bb4f6), line numbers as of that commit. No sorries yet.
       card Φ = nrComplexPlaces K = finrank ℚ K / 2
       (NumberField.Embeddings.card, IsTotallyComplex.finrank).
 
-[ ] Cleanup: the file is mostly #check / #synth exploration and ends
-      with `#min_imports`; replace `public import Mathlib` by the
-      minimal imports once the definitions settle.
+[ ] Cleanup: the file is mostly #check / #synth exploration. (Imports
+      are already minimal and `#min_imports` was removed, 2026-10-19.)
 
 
 Project housekeeping
@@ -440,3 +470,12 @@ Project housekeeping
 [x] MindMap.md moved from CMAbelianVarieties/ to the repo root (c46db84).
 [x] ClaudeCodeChecklist: new step 2 stops the checklist on any warning
       that is not a `sorry` warning (c46db84).
+[x] ClaudeCodeChecklist: new step 4 (check that imports are minimal,
+      a0ee502); step 2 now also ignores warnings created by `#check`s
+      (2026-10-19).
+[x] Imports minimized (2026-10-19): no file imports all of Mathlib any
+      more (BaseFieldChange, Complex, FiniteGen, LieAlgebra/Defn);
+      Henselian dropped from GlobalSections, AlgebraicClosure from
+      TateModule; Dimension.lean now imports SpanRankOperations,
+      Group.Smooth, KrullsHeightTheorem itself (for its #checks); all
+      `#min_imports` removed.

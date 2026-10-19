@@ -103,5 +103,3 @@ lemma step₂' {n : ℤ} (hn : n ≠ 0) : IsAffine (pullback ([n]_ A) ζ[A]).lef
 
 lemma step₃ {n : ℤ} (hn : n ≠ 0) : DiscreteTopology (A[n]).left :=
   @discrete_of_isFiniteOverField _ _ _ (pullback.snd ([n]_ A) ζ[A]).left (step₂ hn)
-
-#min_imports
