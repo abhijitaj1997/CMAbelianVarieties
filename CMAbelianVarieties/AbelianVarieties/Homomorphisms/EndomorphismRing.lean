@@ -5,7 +5,7 @@ Authors: Abhijit A J
 -/
 module
 
-public import CMAbelianVarieties.AbelianVarieties.Homomorphisms.IntHom
+public import CMAbelianVarieties.AbelianVarieties.Commutativity
 public import CMAbelianVarieties.AbstractNonsense.EndRingIso
 
 /-!

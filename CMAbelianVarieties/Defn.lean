@@ -26,7 +26,9 @@ open scoped TensorProduct End RationalEnd
 universe u
 
 variable {K : Type u} [Field K]
+variable {A : Over (Spec ↧K)} [IsProper A.hom] [GeometricallyIntegral A.hom] [AddGrpObj A]
 
+variable (A) in
 /-- A complex multiplication structure `ι : CMStructure A F` for an abelian variety `A` over a
 field `K` and a CM field `F`, is made of an inclusion `F →+* End⁰ A` together with a proof
 that `[F : ℚ] = 2 * dim A`, where `End⁰ A = ℚ ⊗[ℤ] End A` are all the rational endomorphisms of `A`.
@@ -48,8 +50,7 @@ structure CMStructure (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyInte
 attribute [coe] CMStructure.incl
 
 /-- A CM structure `ι` can be used as its inclusion `F →+* End⁰ A`. -/
-instance {A : Over (Spec ↧K)} [IsProper A.hom] [GeometricallyIntegral A.hom]
-    [AddGrpObj A] {F : Type*} [Field F] [NumberField F] [IsCMField F] :
+instance {F : Type*} [Field F] [NumberField F] [IsCMField F] :
     Coe (CMStructure A F) (F →+* End⁰ A) :=
   ⟨CMStructure.incl⟩
 
@@ -62,8 +63,7 @@ instance {G : Over (Spec ↧K)} [AddGrpObj G] [Algebra K ℂ] : Algebra (κ_ G) 
   ((algebraMap K ℂ).comp φ).toAlgebra
 
 open scoped TensorProduct in
-def complex_lie_algebra_representation_of_CMStrucutre {A : Over (Spec ↧K)} [IsProper A.hom]
-    [GeometricallyIntegral A.hom] [AddGrpObj A] {F : Type*} [Field F] [NumberField F]
+def complex_lie_algebra_representation_of_CMStrucutre {F : Type*} [Field F] [NumberField F]
     [IsCMField F] (ι : CMStructure A F) [Algebra K ℂ] :
     F →+* (ℂ ⊗[κ_ A] (Lie A) →ₗ[ℂ] ℂ ⊗[κ_ A] (Lie A)) := by
   let f : End⁰ A →+* (ℂ ⊗[κ_ A] (Lie A) →ₗ[ℂ] ℂ ⊗[κ_ A] (Lie A)) := by
@@ -76,8 +76,7 @@ def complex_lie_algebra_representation_of_CMStrucutre {A : Over (Spec ↧K)} [Is
 /-- Given a CM strucutre on an Abelian variety `A` over a field `K`, such that `K` is
 a subfield of `ℂ`, and `F` is the CM Field in the CM Structure. The, we have a preCMType
 on the field `F`. -/
-def CMType {A : Over (Spec ↧K)} [IsProper A.hom] [GeometricallyIntegral A.hom] [AddGrpObj A]
-    {F : Type*} [Field F] [NumberField F] [IsCMField F] (ι : CMStructure A F) [Algebra K ℂ] :
+def CMType {F : Type*} [Field F] [NumberField F] [IsCMField F] (ι : CMStructure A F) [Algebra K ℂ] :
     preCMType F := sorry
 
 namespace CMStructure
@@ -86,7 +85,6 @@ section BaseChange
 
 open CommRingCat Spec
 
-variable {A : Over (Spec ↧K)} [IsProper A.hom] [GeometricallyIntegral A.hom] [AddGrpObj A]
 variable {F : Type*} [Field F] [NumberField F] [IsCMField F]
 
 def End.algHom_ofBaseChange (A : Over (Spec ↧K)) [AddGrpObj A] [IsCommAddMonObj A] (K₁ : Type u)

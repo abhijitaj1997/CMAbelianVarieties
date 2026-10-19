@@ -30,6 +30,9 @@ variable {K : Type u} [Field K] [CharZero K] [IsAlgClosed K]
 variable {A : Over (Spec ↧K)} [IsProper A.hom] [GeometricallyIntegral A.hom] [AddGrpObj A]
 variable {F : Type*} [Field F] [NumberField F] [IsCMField F]
 
+/- maybe I should define something like `CMStructureIso`, or define a category
+of CMStructures, without only isomorphisms, and then go for something like
+`Nonempty CMStructureIso ι₀.basechange K ι` -/
 theorem CMStructure.exists_numberField_model (ι : CMStructure A F) :
     ∃ (E : Type u) (_ : Field E) (_ : NumberField E) (_ : Algebra E K)
     (A₀ : Over (Spec ↧E)) (_ : IsProper A₀.hom) (_ : GeometricallyIntegral A₀.hom)
