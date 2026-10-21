@@ -47,8 +47,6 @@ def lattice_representation' (f : End (mk A)) : lattice A →ₗ[ℤ] lattice A :
   let φ := (lie_algebra_represenation A f).toAddMonoidHom
   have : ∀ g : lattice A, (φ.comp (lattice A).subtype) g ∈ lattice A := by
     intro g
-    have (x : Lie A) : x ∈ lattice A ↔ (exponential A) x = 0 := by
-      exact Iff.of_eq rfl
     simp only [AddMonoidHom.coe_comp, AddSubgroup.coe_subtype, Function.comp_apply,
       AddMonoidHom.mem_ker, lattice, LinearMap.toAddMonoidHom_coe, φ]
     simp [← end_comp_exponential,

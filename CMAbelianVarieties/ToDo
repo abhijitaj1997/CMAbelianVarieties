@@ -149,13 +149,13 @@ uniformization. Line numbers as of 2026-10-21 (commit eecf9e8).
       (φ.comp (lattice A).subtype).codRestrict (lattice A) _.
       `lattice` is now an abbrev. Renamed from
       lie_algebra_lattice_representation; drop the prime eventually.
-[ ] lattice_addEquiv                                                 (l.61)
+[ ] lattice_addEquiv                                                 (l.59)
       The lattice is free of rank 2 * dim A.
 [ ] Local notation for (𝟙_ (Over (Spec ↧ℂ)) ⟶ A), scoped to this file
       (e.g. `A/ℂ/`). Requested in a comment at l.25 (2026-10-21).
-[ ] Cleanup: unused `have (x : Lie A) : x ∈ lattice A ↔ …` in
-      lattice_representation' (l.50); typo "uniforization" in the
-      module docstring. (The #checks are gone, eecf9e8.)
+[ ] Cleanup: typo "uniforization" in the module docstring.
+      (The #checks are gone, eecf9e8; the unused `have` in
+      lattice_representation' was removed, 2026-10-22.)
 
 
 AbstractNonsense/IntHom.lean, ForMathlib/Endomorphism.lean
