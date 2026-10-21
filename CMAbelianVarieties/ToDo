@@ -136,23 +136,26 @@ to_additive_do_translate).
 AbelianVarieties/Complex.lean
 -----------------------------
 New file (a0ee502): complex abelian varieties A over Spec ℂ and
-uniformization. Line numbers as of 2026-10-19 (commit a0ee502).
-[ ] exponential : Lie A →+ (𝟙_ _ ⟶ A)                               (l.28)
+uniformization. Line numbers as of 2026-10-21 (commit eecf9e8).
+[ ] exponential : Lie A →+ (𝟙_ _ ⟶ A)                               (l.32)
       The exponential map. Currently `sorry`.
-[x] AddMonoidHom_of_End f : (𝟙_ _ ⟶ A) →+ (𝟙_ _ ⟶ A)                (l.30)
+[x] AddMonoidHom_of_End f : (𝟙_ _ ⟶ A) →+ (𝟙_ _ ⟶ A)                (l.34)
       φ ↦ φ ≫ f, via Mathlib's IsAddMonHom.addMonoidHom (2026-10-19).
-[ ] end_comp_exponential                                             (l.33)
-      (AddMonoidHom_of_End f) ∘ exp = exp ∘ (lie_algebra_represenation A f).
-[ ] lie_algebra_lattice_representation f : lattice A →ₗ[ℤ] lattice A (l.44)
-      Currently `sorry`. A proof checked on 2026-10-19 (compiles, modulo
-      end_comp_exponential): AddMonoidHom.toIntLinearMap of
-      (φ.comp (lattice A).subtype).codRestrict (lattice A) h, where
-      h x : exp (φ x) = 0 from congr_fun end_comp_exponential and x ∈ ker.
-[ ] lattice_addEquiv                                                 (l.54)
+[ ] end_comp_exponential f g                                         (l.37)
+      (AddMonoidHom_of_End f) (exp g) = exp ((lie_algebra_represenation A f) g).
+      Now stated pointwise (eecf9e8).
+[x] lattice_representation' f : lattice A →ₗ[ℤ] lattice A           (l.46)
+      Done modulo end_comp_exponential (eecf9e8): toIntLinearMap of
+      (φ.comp (lattice A).subtype).codRestrict (lattice A) _.
+      `lattice` is now an abbrev. Renamed from
+      lie_algebra_lattice_representation; drop the prime eventually.
+[ ] lattice_addEquiv                                                 (l.61)
       The lattice is free of rank 2 * dim A.
-[ ] Cleanup: the #checks (AddMonoidHom.toIntLinearMap,
-      AddMonoidHom.codRestrict), typo
-      "uniforization" in the module docstring.
+[ ] Local notation for (𝟙_ (Over (Spec ↧ℂ)) ⟶ A), scoped to this file
+      (e.g. `A/ℂ/`). Requested in a comment at l.25 (2026-10-21).
+[ ] Cleanup: unused `have (x : Lie A) : x ∈ lattice A ↔ …` in
+      lattice_representation' (l.50); typo "uniforization" in the
+      module docstring. (The #checks are gone, eecf9e8.)
 
 
 AbstractNonsense/IntHom.lean, ForMathlib/Endomorphism.lean
