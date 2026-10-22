@@ -517,3 +517,6 @@ Project housekeeping
       `#min_imports` removed.
 [x] Files moved (3ca2b4e): AbelianVarieties/ → AlgebraicGeometry/
       AbelianVarieties/, CMTypes/ → preCMType/.
+[x] ClaudeCodeChecklist: note above step 1, when the checklist stops,
+      report only precisely why it stopped, not what succeeded
+      (2026-10-22).

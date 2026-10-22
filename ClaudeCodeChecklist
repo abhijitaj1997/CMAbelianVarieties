@@ -3,6 +3,11 @@ End-of-session checklist for Claude Code
 
 When asked to run this checklist, do the following steps in order:
 
+Note: if you have to stop running the checklist and inform the user of
+something, be precise about the issue you are raising. Do not report what
+was successful; only say precisely why you stopped running the checklist
+(which file, which line, what the problem is, and what you suggest).
+
 1. Check whether there is anything that has not been committed yet
    (potential non-chores):
        git status --short
