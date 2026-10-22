@@ -6,7 +6,8 @@ Authors: Abhijit A J
 module
 
 public import CMAbelianVarieties.AlgebraicGeometry.LieAlgebra.Defn
-public import CMAbelianVarieties.AbelianVarieties.Commutativity
+public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Commutativity
+public import CMAbelianVarieties.ForMathlib.Endomorphism
 
 /-!
 ## Goal
@@ -18,20 +19,18 @@ Especially facts about uniforization, as far as need for this project.
 
 @[expose] public noncomputable section
 
-open CategoryTheory AlgebraicGeometry MonoidalCategory AddMonObj AddGrp
+open CategoryTheory AlgebraicGeometry MonoidalCategory AddMonObj AddGrp End
 
 variable {A : Over (Spec ↧ℂ)} [IsProper A.hom] [GeometricallyIntegral A.hom] [AddGrpObj A]
 
-/-
-Hey clausde, remind me to create a local notation (I do not want to access this outside) for
-`(𝟙_ (Over (Spec ↧ℂ)) ⟶ A)`. Maybe something like `A/ℂ/` or something.
--/
+/-- The complex points of `A`. -/
+local notation "|" A " ℂ|" => (𝟙_ (Over (Spec ↧ℂ)) ⟶ A)
 
 variable (A) in
 /-- The exponential map `Lie A ⟶ A` for a complex abelian variety `A`. -/
-def exponential : Lie A →+ (𝟙_ _  ⟶ A) := sorry
+def exponential : Lie A →+ |A ℂ| := sorry
 
-def AddMonoidHom_of_End (f : End (mk A)) : (𝟙_ _  ⟶ A) →+ (𝟙_ _  ⟶ A) :=
+def AddMonoidHom_of_End (f : End (mk A)) : |A ℂ| →+ |A ℂ| :=
   IsAddMonHom.addMonoidHom f.asHom.hom.hom (𝟙_ _)
 
 lemma end_comp_exponential (f : End (mk A)) (g : Lie A) :
@@ -53,6 +52,22 @@ def lattice_representation' (f : End (mk A)) : lattice A →ₗ[ℤ] lattice A :
       (@AddMonoidHom.mem_ker _ _ _ _ (exponential A) g).1 (SetLike.coe_mem g)]
   exact AddMonoidHom.toIntLinearMap (AddMonoidHom.codRestrict (φ.comp (lattice A).subtype)
     (lattice A) this)
+
+-- filled in using Claude
+def lattice_representation : End (mk A) →+* (lattice A →ₗ[ℤ] lattice A) where
+  toFun f := lattice_representation' f
+  map_one' := by
+    refine LinearMap.ext fun g ↦ Subtype.ext ?_
+    exact congrArg (· g.1) (map_one (lie_algebra_represenation A))
+  map_mul' f f' := by
+    refine LinearMap.ext fun g ↦ Subtype.ext ?_
+    exact congrArg (· g.1) (map_mul (lie_algebra_represenation A) f f')
+  map_zero' := by
+    refine LinearMap.ext fun g ↦ Subtype.ext ?_
+    exact congrArg (· g.1) (map_zero (lie_algebra_represenation A))
+  map_add' f f' := by
+    refine LinearMap.ext fun g ↦ Subtype.ext ?_
+    exact congrArg (· g.1) (map_add (lie_algebra_represenation A) f f')
 
 /-- The lattice of a complex abelian variety `A` of dimension `g` is a free `ℤ`-module of
 rank `2 * g`. -/

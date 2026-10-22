@@ -5,11 +5,11 @@ Authors: Abhijit A J
 -/
 module
 
-public import CMAbelianVarieties.AbelianVarieties.BaseFieldChange
-public import CMAbelianVarieties.AbelianVarieties.Homomorphisms.EndomorphismRing
+public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.BaseFieldChange
+public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Homomorphisms.EndomorphismRing
 public import CMAbelianVarieties.AbstractNonsense.EndBaseChange
-public import CMAbelianVarieties.CMTypes.Defn
-public import CMAbelianVarieties.AlgebraicGeometry.LieAlgebra.Defn
+public import CMAbelianVarieties.preCMType.Defn
+public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Complex
 
 /-!
 ## CM Abelian varieties
@@ -54,6 +54,13 @@ instance {F : Type*} [Field F] [NumberField F] [IsCMField F] :
     Coe (CMStructure A F) (F →+* End⁰ A) :=
   ⟨CMStructure.incl⟩
 
+@[instance_reducible]
+def module_order_lattice_of_CMStructure {K : Type} [Field K] {A : Over (Spec ↧K)} [IsProper A.hom]
+    [GeometricallyIntegral A.hom] [AddGrpObj A] {F : Type*} [Field F] [NumberField F] [IsCMField F]
+    (ι : CMStructure A F) [Algebra K ℂ] : Module (𝓞 F) (lattice (A _ ℂ)) := sorry
+
+#check Module.finrank
+
 -- Done by Claude
 open AddMonObj in
 instance {G : Over (Spec ↧K)} [AddGrpObj G] [Algebra K ℂ] : Algebra (κ_ G) ℂ :=
@@ -66,7 +73,7 @@ open scoped TensorProduct in
 def complex_lie_algebra_representation_of_CMStrucutre {F : Type*} [Field F] [NumberField F]
     [IsCMField F] (ι : CMStructure A F) [Algebra K ℂ] :
     F →+* (ℂ ⊗[κ_ A] (Lie A) →ₗ[ℂ] ℂ ⊗[κ_ A] (Lie A)) := by
-  let f : End⁰ A →+* (ℂ ⊗[κ_ A] (Lie A) →ₗ[ℂ] ℂ ⊗[κ_ A] (Lie A)) := by
+  let f : End⁰ A →+* (ℂ ⊗[κ_ A] (Lie A) →ₗ[ℂ] ℂ ⊗[κ_ A] (Lie   A)) := by
     let f₁ : ℚ →ₐ[ℤ] (ℂ ⊗[κ_ A] (Lie A) →ₗ[ℂ] ℂ ⊗[κ_ A] (Lie A)) :=
       (algebraMap ℚ _).toIntAlgHom
     let f₂ := (complex_lie_algebra_represenation A).toIntAlgHom

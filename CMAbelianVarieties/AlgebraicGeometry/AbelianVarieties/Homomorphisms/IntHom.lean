@@ -8,7 +8,7 @@ module
 public import CMAbelianVarieties.AbstractNonsense.IntHom
 public import CMAbelianVarieties.AbstractNonsense.PullbackAddGrp
 public import CMAbelianVarieties.AlgebraicGeometry.Finite
-public import CMAbelianVarieties.AbelianVarieties.Commutativity
+public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Commutativity
 /-!
 
 ## Properties of [n]

@@ -5,8 +5,8 @@ Authors: Abhijit A J
 -/
 module
 
-public import CMAbelianVarieties.AbelianVarieties.GlobalSections
-public import CMAbelianVarieties.AbelianVarieties.Homomorphisms.IntHom
+public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.GlobalSections
+public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Homomorphisms.IntHom
 
 /-!
 ## Main goal
