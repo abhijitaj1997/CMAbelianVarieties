@@ -103,8 +103,8 @@ End (mk G) on Lie G. No sorries left in this file.
       I₁, I₂.
 
 
-AbelianVarieties/Homomorphisms/IntHom.lean
-------------------------------------------
+AlgebraicGeometry/AbelianVarieties/Homomorphisms/IntHom.lean
+------------------------------------------------------------
 Line numbers as of 2026-10-10 (commit a93522c).
 [x] IsCommAddMonObj A: moved to AbelianVarieties/Commutativity.lean
       (a0ee502), together with the `import all` item; see there.
@@ -116,8 +116,8 @@ Line numbers as of 2026-10-10 (commit a93522c).
       The n-torsion A[n] is an affine scheme when n ≠ 0. Done (48b28db).
 
 
-AbelianVarieties/Commutativity.lean
------------------------------------
+AlgebraicGeometry/AbelianVarieties/Commutativity.lean
+-----------------------------------------------------
 New file (a0ee502), no sorries. Holds the instance IsCommAddMonObj A
 (abelian varieties are commutative), moved here from
 Homomorphisms/IntHom.lean so that other files can import it alone.
@@ -133,26 +133,28 @@ to_additive_do_translate).
           (commit 556c906), which needs no import all.
 
 
-AbelianVarieties/Complex.lean
------------------------------
+AlgebraicGeometry/AbelianVarieties/Complex.lean
+-----------------------------------------------
 New file (a0ee502): complex abelian varieties A over Spec ℂ and
-uniformization. Line numbers as of 2026-10-21 (commit eecf9e8).
-[ ] exponential : Lie A →+ (𝟙_ _ ⟶ A)                               (l.32)
+uniformization. Line numbers as of 2026-10-22 (commit 3ca2b4e).
+[ ] exponential : Lie A →+ |A ℂ|                                     (l.31)
       The exponential map. Currently `sorry`.
-[x] AddMonoidHom_of_End f : (𝟙_ _ ⟶ A) →+ (𝟙_ _ ⟶ A)                (l.34)
+[x] AddMonoidHom_of_End f : |A ℂ| →+ |A ℂ|                            (l.33)
       φ ↦ φ ≫ f, via Mathlib's IsAddMonHom.addMonoidHom (2026-10-19).
-[ ] end_comp_exponential f g                                         (l.37)
+[ ] end_comp_exponential f g                                         (l.36)
       (AddMonoidHom_of_End f) (exp g) = exp ((lie_algebra_represenation A f) g).
       Now stated pointwise (eecf9e8).
-[x] lattice_representation' f : lattice A →ₗ[ℤ] lattice A           (l.46)
+[x] lattice_representation' f : lattice A →ₗ[ℤ] lattice A           (l.45)
       Done modulo end_comp_exponential (eecf9e8): toIntLinearMap of
       (φ.comp (lattice A).subtype).codRestrict (lattice A) _.
       `lattice` is now an abbrev. Renamed from
       lie_algebra_lattice_representation; drop the prime eventually.
-[ ] lattice_addEquiv                                                 (l.59)
+[x] lattice_representation : End (mk A) →+* (lattice A →ₗ[ℤ] lattice A)
+      (l.57). Bundles lattice_representation'; ring-hom fields from
+      those of lie_algebra_represenation (3ca2b4e).
+[ ] lattice_addEquiv                                                 (l.74)
       The lattice is free of rank 2 * dim A.
-[ ] Local notation for (𝟙_ (Over (Spec ↧ℂ)) ⟶ A), scoped to this file
-      (e.g. `A/ℂ/`). Requested in a comment at l.25 (2026-10-21).
+[x] Local notation `|A ℂ|` for (𝟙_ (Over (Spec ↧ℂ)) ⟶ A) (l.27, 3ca2b4e).
 [ ] Cleanup: typo "uniforization" in the module docstring.
       (The #checks are gone, eecf9e8; the unused `have` in
       lattice_representation' was removed, 2026-10-22.)
@@ -171,8 +173,8 @@ AbstractNonsense/IntHom.lean, ForMathlib/Endomorphism.lean
       picks Mathlib's Preadditive version. Use AddGrp.End.zero_asHom.
 
 
-AbelianVarieties/TateModule.lean
---------------------------------
+AlgebraicGeometry/AbelianVarieties/TateModule.lean
+--------------------------------------------------
 Points are now geometric points: morphisms from `gspec K` = Spec K̄ (with
 K̄ = `AlgebraicClosure K`), instead of K-points from `specᵤ K`.
 
@@ -222,26 +224,54 @@ K̄ = `AlgebraicClosure K`), instead of K-points from `specᵤ K`.
       unnecessary.
 
 
-AbelianVarieties/Homomorphisms/FiniteGen.lean
----------------------------------------------
+AlgebraicGeometry/AbelianVarieties/Homomorphisms/FiniteGen.lean
+---------------------------------------------------------------
 [ ] fin_gen_hom                                                      (l.23)
       Hom(A, B) is a finitely generated abelian group.
       Leftover `#check @Module.Finite.iff_addGroup_fg` to remove.
 
 
-AbelianVarieties/Homomorphisms/TorsionFree.lean
------------------------------------------------
+AlgebraicGeometry/AbelianVarieties/Homomorphisms/TorsionFree.lean
+-----------------------------------------------------------------
 [x] tor_free_hom, module_tor_free_hom
       Done; now stated as `theorem` (7305ad4).
 
 
-AbelianVarieties/Homomorphisms/EndomorphismRing.lean
-----------------------------------------------------
+AlgebraicGeometry/AbelianVarieties/Homomorphisms/EndomorphismRing.lean
+----------------------------------------------------------------------
 New file (7305ad4): defines RationalEnd A = ℚ ⊗[ℤ] End (mk A),
 notation `End⁰ A` (scoped in RationalEnd).
-[ ] Module.Finite ℚ (End⁰ A)                                         (l.34)
+[ ] Module.Finite ℚ (End⁰ A)                                         (l.35)
       Should follow from fin_gen_hom (FiniteGen.lean).
+[x] RationalEnd.conjAlgEquiv : End⁰ A ≃ₐ[ℤ] End⁰ B for φ : mk A ≅ mk B
+      (l.42), via Iso.conjAlgEquiv (AbstractNonsense/EndRingIso.lean).
 [ ] Collect the remaining instances from the Hom files for End A.
+
+
+AlgebraicGeometry/AbelianVarieties/Homomorphisms/Integral.lean
+--------------------------------------------------------------
+New file (3ca2b4e). Line numbers as of 2026-10-22.
+[x] ratEnd_as_fraction                                               (l.27)
+      Every φ₀ : End⁰ A is (1/n) ⊗ₜ φ with φ : End (mk A), n : ℤ.
+      Via IsLocalizedModule.surj (ℚ ⊗[ℤ] M is the localization of M at
+      the nonzero integers) (2026-10-22).
+[ ] nameless                                                         (l.40)
+      Stated as: IsIntegral ℤ φ₀ → φ₀ ∈ image of End (mk A).
+      FALSE as stated: End A is an order, not the set of all integral
+      elements. Counterexamples: [[0, 1/2], [0, 0]] in End⁰ (E × E)
+      (nilpotent, so integral); (1 + √-3)/2 for E with CM by ℤ[√-3].
+      The `have : n = 1` step fails too (fractions are not unique).
+      The module docstring ("integral elements of End⁰ A are exactly
+      End A") has to be corrected as well. True replacements:
+        - every element of End A is integral over ℤ (IsIntegral.of_finite,
+          needs fin_gen_hom);
+        - (1/n) ⊗ₜ φ ∈ End A iff φ kills A[n] (needs isogenies).
+[x] #checks (2026-10-22): integralClosure (needs CommRing, so not for
+      End⁰ A), _root_.IsIntegral (works for noncommutative rings; the
+      _root_ is only needed in the bare #check, because of
+      `open AlgebraicGeometry`), and the natural map
+      Algebra.TensorProduct.includeRight : End (mk A) →ₐ[ℤ] End⁰ A
+      (φ ↦ 1 ⊗ₜ φ, by rfl).
 
 
 AlgebraicGeometry/InvertibleSheaf.lean
@@ -342,6 +372,9 @@ Quot.sound).
             ℂ ⊗[ℚ] F étale ⇒ ≃ₐ PrimeSpectrum → ℂ
             (Algebra.FormallyEtale.equivPiOfIsSepClosed), missing the
             identification PrimeSpectrum ≃ (F →+* ℂ).
+[ ] module_order_lattice_of_CMStructure ι                             (l.58)
+      Module (𝓞 F) (lattice (A _ ℂ)) for a CM structure ι. Currently
+      `sorry` (new in 3ca2b4e). Leftover `#check Module.finrank` (l.62).
 [ ] Check the dimension condition: Module.finrank ℚ F : ℕ is compared
       with topologicalKrullDim A.left : WithBot ℕ∞ (via a cast). Decide
       whether to state dim A as a natural number instead.
@@ -370,8 +403,8 @@ Quot.sound).
       answered "hey claude" comment.
 
 
-AbelianVarieties/BaseFieldChange.lean
--------------------------------------
+AlgebraicGeometry/AbelianVarieties/BaseFieldChange.lean
+-------------------------------------------------------
 New file (1ff4cac), no sorries. Base change of X : Over (Spec K) along
 a field extension K → K₁, `abbrev basechange_over_Over`, notation
 `X _ K₁`, and instances IsProper, GeometricallyIntegral, AddGrpObj,
@@ -411,8 +444,8 @@ New file (1ff4cac), no sorries.
       Functor.isCommMonObj_obj). Candidate for a Mathlib PR.
 
 
-CMTypes/Algebra.lean
---------------------
+preCMType/Algebra.lean
+----------------------
 New file (70f2e46): algebraic background for CM types. Line numbers as
 of 2026-10-02 (commit 45007ad).
 [x] Algebra ℚ (center R)                                             (l.18–47)
@@ -440,8 +473,8 @@ of 2026-10-02 (commit 45007ad).
       `--#check IsSimpleRing.isField_center` (l.56).
 
 
-CMTypes/Defn.lean
------------------
+preCMType/Defn.lean
+-------------------
 New file (19bb4f6), line numbers as of that commit. No sorries yet.
 [x] preCMType K                                                      (l.16)
       A set Φ ⊆ (K →+* ℂ) containing exactly one of each conjugate
@@ -482,3 +515,5 @@ Project housekeeping
       TateModule; Dimension.lean now imports SpanRankOperations,
       Group.Smooth, KrullsHeightTheorem itself (for its #checks); all
       `#min_imports` removed.
+[x] Files moved (3ca2b4e): AbelianVarieties/ → AlgebraicGeometry/
+      AbelianVarieties/, CMTypes/ → preCMType/.

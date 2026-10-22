@@ -7,7 +7,6 @@ module
 
 public import CMAbelianVarieties.AlgebraicGeometry.LieAlgebra.Defn
 public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Commutativity
-public import CMAbelianVarieties.ForMathlib.Endomorphism
 
 /-!
 ## Goal

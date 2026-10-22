@@ -12,24 +12,6 @@ graph TD
   Theorem["<b>Theorem</b><br/><i>main theorem: CM abelian varieties have models over number fields</i>"]
   Defn["<b>Defn</b><br/><i>CMStructure, κ_ A → ℂ, F acting on ℂ ⊗ Lie A, CMType</i>"]
 
-  %% ---------- AbelianVarieties ----------
-  subgraph AV["AbelianVarieties/"]
-    direction TB
-    GlobalSections["<b>GlobalSections</b><br/><i>Γ(A) ≅ K</i>"]
-    TateModule["<b>TateModule</b><br/><i>torsion points, Tate module</i>"]
-    BaseFieldChange["<b>BaseFieldChange</b><br/><i>A _ K₁, base change to K₁</i>"]
-    AVCatalogue["<b>Catalogue</b><br/><i>#check cheat sheet</i>"]
-    Commutativity["<b>Commutativity</b> ★<br/><i>abelian varieties are commutative</i>"]
-    Complex["<b>Complex</b><br/><i>complex abelian varieties: exp, lattice</i>"]
-    subgraph HOM["Homomorphisms/"]
-      direction TB
-      EndomorphismRing["<b>EndomorphismRing</b><br/><i>End A, End A ⊗ ℚ</i>"]
-      FiniteGen["<b>FiniteGen</b><br/><i>Hom(A, B) finitely generated</i>"]
-      TorsionFree["<b>TorsionFree</b><br/><i>Hom(A, B) torsion free</i>"]
-      IntHomAV["<b>IntHom</b><br/><i>[n], A[n] finite & discrete</i>"]
-    end
-  end
-
   %% ---------- AbstractNonsense ----------
   subgraph AN["AbstractNonsense/"]
     direction TB
@@ -50,6 +32,23 @@ graph TD
       Dimension["<b>Dimension</b><br/><i>dim X = sup of dim 𝒪_{X,x}; dim Lie G vs dim 𝒪_{G,e}</i>"]
     end
     AGCatalogue["<b>Catalogue</b><br/><i>#check cheat sheet</i>"]
+    subgraph AV["AbelianVarieties/"]
+      direction TB
+      GlobalSections["<b>GlobalSections</b><br/><i>Γ(A) ≅ K</i>"]
+      TateModule["<b>TateModule</b><br/><i>torsion points, Tate module</i>"]
+      BaseFieldChange["<b>BaseFieldChange</b><br/><i>A _ K₁, base change to K₁</i>"]
+      AVCatalogue["<b>Catalogue</b><br/><i>#check cheat sheet</i>"]
+      Commutativity["<b>Commutativity</b> ★<br/><i>abelian varieties are commutative</i>"]
+      Complex["<b>Complex</b><br/><i>complex abelian varieties: exp, lattice</i>"]
+      subgraph HOM["Homomorphisms/"]
+        direction TB
+        EndomorphismRing["<b>EndomorphismRing</b><br/><i>End A, End A ⊗ ℚ</i>"]
+        FiniteGen["<b>FiniteGen</b><br/><i>Hom(A, B) finitely generated</i>"]
+        TorsionFree["<b>TorsionFree</b><br/><i>Hom(A, B) torsion free</i>"]
+        IntHomAV["<b>IntHom</b><br/><i>[n], A[n] finite & discrete</i>"]
+        Integral["<b>Integral</b><br/><i>End⁰ A as fractions of End A; integral elements</i>"]
+      end
+    end
   end
 
   %% ---------- ForMathlib ----------
@@ -58,8 +57,8 @@ graph TD
     FunctorCommAddObj["<b>FunctorCommAddObj</b><br/><i>F preserves comm. add. monoid objects</i>"]
   end
 
-  %% ---------- CMTypes ----------
-  subgraph CM["CMTypes/"]
+  %% ---------- preCMType ----------
+  subgraph CM["preCMType/"]
     direction TB
     CMDefn["<b>Defn</b><br/><i>preCMType</i>"]
     CMAlgebra["<b>Algebra</b><br/><i>background for CM types</i>"]
@@ -77,7 +76,7 @@ graph TD
   Defn --> CMDefn
   Defn --> BaseFieldChange
   Defn --> EndBaseChange
-  Defn --> LieAlgebra
+  Defn --> Complex
   BaseFieldChange --> FunctorCommAddObj
   EndBaseChange --> Endomorphism
   EndBaseChange --> FunctorCommAddObj
@@ -85,6 +84,7 @@ graph TD
   EndomorphismRing --> EndRingIso
   EndRingIso --> Endomorphism
   FiniteGen --> Commutativity
+  Integral --> EndomorphismRing
   Complex --> LieAlgebra
   Complex --> Commutativity
   TateModule --> IntHomAV
@@ -107,7 +107,7 @@ graph TD
 
   class Theorem goal
   class Commutativity hub
-  class EndomorphismRing,FiniteGen,IntHomAV,Complex,TorsionFree,TateModule,GlobalSections,IntHomAN,PullbackAddGrp,Finite,Endomorphism,LieAlgebra,CMDefn,Test,BaseFieldChange,EndBaseChange,FunctorCommAddObj,Defn,EndRingIso,Dimension connected
+  class EndomorphismRing,FiniteGen,IntHomAV,Complex,TorsionFree,TateModule,GlobalSections,IntHomAN,PullbackAddGrp,Finite,Endomorphism,LieAlgebra,CMDefn,Test,BaseFieldChange,EndBaseChange,FunctorCommAddObj,Defn,EndRingIso,Dimension,Integral connected
   class AVCatalogue,InvertibleSheaf,TheCube,AGCatalogue,CMAlgebra,Test1 unused
 ```
 
