@@ -7,6 +7,10 @@ Note: if you have to stop running the checklist and inform the user of
 something, be precise about the issue you are raising. Do not report what
 was successful; only say precisely why you stopped running the checklist
 (which file, which line, what the problem is, and what you suggest).
+If the checklist runs to the end, finish with a summary titled
+`Checklist complete!`: the commit hash, the build result, and what each
+step changed (files edited, imports removed, ToDo / mind map updates),
+skipping steps that changed nothing.
 
 1. Check whether there is anything that has not been committed yet
    (potential non-chores):

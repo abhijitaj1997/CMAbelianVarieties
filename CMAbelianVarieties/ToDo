@@ -520,3 +520,6 @@ Project housekeeping
 [x] ClaudeCodeChecklist: note above step 1, when the checklist stops,
       report only precisely why it stopped, not what succeeded
       (2026-10-22).
+[x] ClaudeCodeChecklist: the note now also asks for a final summary
+      titled `Checklist complete!` when the checklist runs to the end
+      (2026-10-22).
