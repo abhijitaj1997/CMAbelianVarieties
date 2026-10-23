@@ -110,6 +110,9 @@ hey claude, some places need the fact that the dimension of an ableian variety i
 are using the following lemma for it. Consider maybe creating a separate file somewhere else for
 that, because this is result is way too strong. Maybe create a `Basic.lean`, and add the dimension
 stuff and the commutativity to it.
+
+At the very least I should probably use the the CM Structure for the finiteness (using the second
+conditon)
 -/
 /-- The dimension of a group scheme `G` over `K` equals the dimension of its Lie algebra. -/
 theorem topologicalKrullDim_eq_finrank_Lie (G : Over (Spec ↧K)) [LocallyOfFiniteType G.hom]

@@ -91,10 +91,12 @@ end BaseChange
 
 section CMType
 
+variable {K : Type} [Field K] [Algebra K ℂ]
+variable {A : Over (Spec ↧K)} [IsProper A.hom] [GeometricallyIntegral A.hom] [AddGrpObj A]
+
 -- aided by Claude
-def CMField_ringHom_rationalLattice {K : Type} [Field K] {A : Over (Spec ↧K)}
-    [IsProper A.hom] [GeometricallyIntegral A.hom] [AddGrpObj A] {F : Type*} [Field F]
-    [NumberField F] [IsCMField F] (ι : CMStructure A F) [Algebra K ℂ] :
+def CMField_ringHom_rationalLattice {F : Type*} [Field F] [NumberField F]
+    [IsCMField F] (ι : CMStructure A F) :
     F →+* Module.End ℚ (ℚ ⊗[ℤ] (lattice (A _ ℂ))) := by
   let L := lattice (A _ ℂ)
   let g₁ : ℚ →ₐ[ℤ] Module.End ℚ (ℚ ⊗[ℤ] L) := (algebraMap ℚ _).toIntAlgHom
@@ -104,22 +106,20 @@ def CMField_ringHom_rationalLattice {K : Type} [Field K] {A : Over (Spec ↧K)}
   exact (ψ' : End⁰ (A _ ℂ) →+* Module.End ℚ (ℚ ⊗[ℤ] L)).comp (ι.basechange ℂ).incl
 
 @[instance_reducible]
-def module_rational_lattice_of_CMStructure {K : Type} [Field K] {A : Over (Spec ↧K)}
-    [IsProper A.hom] [GeometricallyIntegral A.hom] [AddGrpObj A] {F : Type*} [Field F]
-    [NumberField F] [IsCMField F] (ι : CMStructure A F) [Algebra K ℂ] :
+def module_rational_lattice_of_CMStructure {F : Type*} [Field F] [NumberField F]
+    [IsCMField F] (ι : CMStructure A F) :
     Module F (ℚ ⊗[ℤ] lattice (A _ ℂ)) :=
   Module.compHom (ℚ ⊗[ℤ] (lattice (A _ ℂ))) (CMField_ringHom_rationalLattice ι)
 
 -- aided by Claude
 /-- With the `F`-module structure `module_rational_lattice_of_CMStructure ι`, the rational
 lattice `ℚ ⊗[ℤ] lattice (A _ ℂ)` is one-dimensional over `F`. -/
-lemma finrank_rational_lattice_of_CMStructure {K : Type} [Field K] {A : Over (Spec ↧K)}
-    [IsProper A.hom] [GeometricallyIntegral A.hom] [AddGrpObj A] {F : Type*} [Field F]
-    [NumberField F] [IsCMField F] (ι : CMStructure A F) [Algebra K ℂ] :
+lemma finrank_rational_lattice_of_CMStructure {F : Type*} [Field F] [NumberField F]
+    [IsCMField F] (ι : CMStructure A F) :
     letI := module_rational_lattice_of_CMStructure ι
     Module.finrank F (ℚ ⊗[ℤ] lattice (A _ ℂ)) = 1 := by
-  #check LinearEquiv.smul_id_of_finrank_eq_one
-  let g := topologicalKrullDim (A _ ℂ).left
+  let := module_rational_lattice_of_CMStructure ι
+  set g := topologicalKrullDim (A _ ℂ).left with hg
   have : (Module.finrank ℚ (ℚ ⊗[ℤ] lattice (A _ ℂ))) = 2 * g := by
     have : (Module.finrank ℤ (lattice (A _ ℂ))) = 2 * g := by
       obtain ⟨n, hn⟩ : ∃ n : ℕ, topologicalKrullDim (A _ ℂ).left = n := by
@@ -135,24 +135,37 @@ lemma finrank_rational_lattice_of_CMStructure {K : Type} [Field K] {A : Over (Sp
     rwa [this]
   let E := Module.End ℚ (ℚ ⊗[ℤ] lattice (A _ ℂ))
   let L := lattice (A _ ℂ)
-  -- to claude : can ψ be solved without going through the whole g₁ g₂, ...ψ ,etc from `module_rational_lattice_of_CMStructure`
-  have ψ : F →+* E := CMField_ringHom_rationalLattice ι
-  --algebraize [ψ]
-  #check Algebra.finrank_eq_one_iff_bijective_algebraMap
-  #check Module.finrank_linearMap
-  sorry
+  let ψ : F →+* E := CMField_ringHom_rationalLattice ι
+  have h : (Module.finrank ℚ F : WithBot ℕ∞) * Module.finrank F (ℚ ⊗[ℤ] lattice (A _ ℂ)) =
+      Module.finrank ℚ (ℚ ⊗[ℤ] lattice (A _ ℂ)) := by
+    exact_mod_cast Module.finrank_mul_finrank ℚ F (ℚ ⊗[ℤ] lattice (A _ ℂ))
+  rw [this, hg, ← (ι.basechange ℂ).finrank_of_CM_field] at h
+  norm_cast at h
+  exact (Nat.mul_eq_left Module.finrank_pos.ne').mp h
+
+-- proved by Claude
+/-- With the `F`-module structure `module_rational_lattice_of_CMStructure ι`, the rational
+lattice `ℚ ⊗[ℤ] lattice (A _ ℂ)` is isomorphic to `F` as an `F`-module. -/
+lemma nonempty_linearEquiv_rational_lattice_of_CMStructure {F : Type*} [Field F] [NumberField F]
+    [IsCMField F] (ι : CMStructure A F) : letI := module_rational_lattice_of_CMStructure ι
+    Nonempty (F ≃ₗ[F] (ℚ ⊗[ℤ] lattice (A _ ℂ))) := by
+  let := module_rational_lattice_of_CMStructure ι
+  have h := finrank_rational_lattice_of_CMStructure ι
+  have : FiniteDimensional F (ℚ ⊗[ℤ] lattice (A _ ℂ)) := Module.finite_of_finrank_eq_succ h
+  exact ⟨LinearEquiv.ofFinrankEq _ _ (by rw [Module.finrank_self, h])⟩
 
 -- Done by Claude
 open AddMonObj in
-instance {G : Over (Spec ↧K)} [AddGrpObj G] [Algebra K ℂ] : Algebra (κ_ G) ℂ :=
+instance {K : Type*} [Field K] {G : Over (Spec ↧K)} [AddGrpObj G] [Algebra K ℂ] :
+    Algebra (κ_ G) ℂ :=
   letI z : Spec ↧K ⟶ G.left := ζ[G].left
   letI φ : κ_ G →+* K := @IsLocalRing.ResidueField.lift _ _ _ _ _ (Scheme.stalkClosedPointTo z).hom
     (Scheme.isLocalHom_stalkClosedPointTo' z)
   ((algebraMap K ℂ).comp φ).toAlgebra
 
 open scoped TensorProduct in
-def complex_lie_algebra_representation_of_CMStrucutre {F : Type*} [Field F] [NumberField F]
-    [IsCMField F] (ι : CMStructure A F) [Algebra K ℂ] :
+def complex_lie_algebra_representation_of_CMStrucutre {K : Type*} [Field K] {F : Type*} [Field F]
+    [NumberField F] [IsCMField F] (ι : CMStructure A F) [Algebra K ℂ] :
     F →+* (ℂ ⊗[κ_ A] (Lie A) →ₗ[ℂ] ℂ ⊗[κ_ A] (Lie A)) := by
   let f : End⁰ A →+* (ℂ ⊗[κ_ A] (Lie A) →ₗ[ℂ] ℂ ⊗[κ_ A] (Lie   A)) := by
     let f₁ : ℚ →ₐ[ℤ] (ℂ ⊗[κ_ A] (Lie A) →ₗ[ℂ] ℂ ⊗[κ_ A] (Lie A)) :=
@@ -166,7 +179,8 @@ def complex_lie_algebra_representation_of_CMStrucutre {F : Type*} [Field F] [Num
 /-- Given a CM strucutre on an Abelian variety `A` over a field `K`, such that `K` is
 a subfield of `ℂ`, and `F` is the CM Field in the CM Structure. The, we have a preCMType
 on the field `F`. -/
-def CMType {F : Type*} [Field F] [NumberField F] [IsCMField F] (ι : CMStructure A F) [Algebra K ℂ] :
+def CMType {K : Type*} [Field K] {F : Type*} [Field F] [NumberField F] [IsCMField F]
+    (ι : CMStructure A F) [Algebra K ℂ] :
     preCMType F := sorry
 
 end CMType

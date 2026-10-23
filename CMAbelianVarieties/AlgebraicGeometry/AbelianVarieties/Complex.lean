@@ -41,6 +41,10 @@ variable (A) in
 /-- The lattice associated to a complex abelian variety `A` in the lie algebra of `A`. -/
 abbrev lattice := (exponential A).ker
 
+open TensorProduct in
+variable (A) in
+lemma lattice_isLattice : Nonempty (ℝ ⊗[ℤ] (lattice A) ≃+ Lie A) := sorry
+
 def lattice_representation' (f : End (mk A)) : lattice A →ₗ[ℤ] lattice A := by
   let φ := (lie_algebra_represenation A f).toAddMonoidHom
   have : ∀ g : lattice A, (φ.comp (lattice A).subtype) g ∈ lattice A := by
