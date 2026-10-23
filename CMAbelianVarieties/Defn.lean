@@ -10,6 +10,7 @@ public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Homomorphism
 public import CMAbelianVarieties.AbstractNonsense.EndBaseChange
 public import CMAbelianVarieties.preCMType.Defn
 public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Complex
+public import CMAbelianVarieties.AlgebraicGeometry.LieAlgebra.Dimension
 
 /-!
 ## CM Abelian varieties
@@ -54,12 +55,92 @@ instance {F : Type*} [Field F] [NumberField F] [IsCMField F] :
     Coe (CMStructure A F) (F →+* End⁰ A) :=
   ⟨CMStructure.incl⟩
 
-@[instance_reducible]
-def module_order_lattice_of_CMStructure {K : Type} [Field K] {A : Over (Spec ↧K)} [IsProper A.hom]
-    [GeometricallyIntegral A.hom] [AddGrpObj A] {F : Type*} [Field F] [NumberField F] [IsCMField F]
-    (ι : CMStructure A F) [Algebra K ℂ] : Module (𝓞 F) (lattice (A _ ℂ)) := sorry
+namespace CMStructure
 
-#check Module.finrank
+section BaseChange
+
+open CommRingCat Spec
+
+variable {F : Type*} [Field F] [NumberField F] [IsCMField F]
+
+def End.algHom_ofBaseChange (A : Over (Spec ↧K)) [AddGrpObj A] [IsCommAddMonObj A] (K₁ : Type u)
+    [Field K₁] [Algebra K K₁] : End (AddGrp.mk A) →ₐ[ℤ] End (AddGrp.mk (A _ K₁)) :=
+  AddGrp.End.algHom_ofBaseChange (Over.pullback (map (ofHom (Algebra.algebraMap K K₁))))
+
+def rational_end_morphism (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyIntegral A.hom]
+    [AddGrpObj A] (K₁ : Type u) [Field K₁] [Algebra K K₁] : End⁰ A →+* End⁰ ((A _ K₁)) :=
+  (Algebra.TensorProduct.map (AlgHom.id ℤ ℚ) (End.algHom_ofBaseChange A K₁)).toRingHom
+
+
+/-
+Hey claude, remind me to move this to another file about dimenions.
+-/
+#check smoothOfRelativeDimension_isStableUnderBaseChange -- But I don't wanna just prove this
+-- for AVs
+lemma dimension_isStableUnderBasechange (X : Over (Spec ↧K)) [LocallyOfFiniteType X.hom]
+    (K₁ : Type u) [Field K₁] [Algebra K K₁] :
+    topologicalKrullDim X.left = topologicalKrullDim (X _ K₁).left := sorry
+
+def basechange (ι : CMStructure A F) (K₁ : Type u) [Field K₁] [Algebra K K₁] :
+    CMStructure (A _ K₁) F where
+      incl := (rational_end_morphism A K₁).comp ι
+      finrank_of_CM_field := by
+        rw [ι.finrank_of_CM_field, dimension_isStableUnderBasechange A K₁]
+
+end BaseChange
+
+section CMType
+
+-- aided by Claude
+def CMField_ringHom_rationalLattice {K : Type} [Field K] {A : Over (Spec ↧K)}
+    [IsProper A.hom] [GeometricallyIntegral A.hom] [AddGrpObj A] {F : Type*} [Field F]
+    [NumberField F] [IsCMField F] (ι : CMStructure A F) [Algebra K ℂ] :
+    F →+* Module.End ℚ (ℚ ⊗[ℤ] (lattice (A _ ℂ))) := by
+  let L := lattice (A _ ℂ)
+  let g₁ : ℚ →ₐ[ℤ] Module.End ℚ (ℚ ⊗[ℤ] L) := (algebraMap ℚ _).toIntAlgHom
+  let g₂ : End (AddGrp.mk (A _ ℂ)) →ₐ[ℤ] Module.End ℚ (ℚ ⊗[ℤ] L) :=
+    (Module.End.baseChangeHom ℤ ℚ L).comp (lattice_representation (A _ ℂ)).toIntAlgHom
+  let ψ' := (Algebra.TensorProduct.lift g₁ g₂ fun x y ↦ Algebra.commutes x (g₂ y)).toRingHom
+  exact (ψ' : End⁰ (A _ ℂ) →+* Module.End ℚ (ℚ ⊗[ℤ] L)).comp (ι.basechange ℂ).incl
+
+@[instance_reducible]
+def module_rational_lattice_of_CMStructure {K : Type} [Field K] {A : Over (Spec ↧K)}
+    [IsProper A.hom] [GeometricallyIntegral A.hom] [AddGrpObj A] {F : Type*} [Field F]
+    [NumberField F] [IsCMField F] (ι : CMStructure A F) [Algebra K ℂ] :
+    Module F (ℚ ⊗[ℤ] lattice (A _ ℂ)) :=
+  Module.compHom (ℚ ⊗[ℤ] (lattice (A _ ℂ))) (CMField_ringHom_rationalLattice ι)
+
+-- aided by Claude
+/-- With the `F`-module structure `module_rational_lattice_of_CMStructure ι`, the rational
+lattice `ℚ ⊗[ℤ] lattice (A _ ℂ)` is one-dimensional over `F`. -/
+lemma finrank_rational_lattice_of_CMStructure {K : Type} [Field K] {A : Over (Spec ↧K)}
+    [IsProper A.hom] [GeometricallyIntegral A.hom] [AddGrpObj A] {F : Type*} [Field F]
+    [NumberField F] [IsCMField F] (ι : CMStructure A F) [Algebra K ℂ] :
+    letI := module_rational_lattice_of_CMStructure ι
+    Module.finrank F (ℚ ⊗[ℤ] lattice (A _ ℂ)) = 1 := by
+  #check LinearEquiv.smul_id_of_finrank_eq_one
+  let g := topologicalKrullDim (A _ ℂ).left
+  have : (Module.finrank ℚ (ℚ ⊗[ℤ] lattice (A _ ℂ))) = 2 * g := by
+    have : (Module.finrank ℤ (lattice (A _ ℂ))) = 2 * g := by
+      obtain ⟨n, hn⟩ : ∃ n : ℕ, topologicalKrullDim (A _ ℂ).left = n := by
+        use Module.finrank (κ_ (A _ ℂ)) (Lie (A _ ℂ))
+        rw [ topologicalKrullDim_eq_finrank_Lie (A _ ℂ)]
+      obtain ⟨φ⟩ := lattice_linearEquiv hn
+      rw [φ.finrank_eq, Module.finrank_fin_fun, show g = n from hn]
+      push_cast
+      rfl
+    have : (Module.finrank ℚ (ℚ ⊗[ℤ] lattice (A _ ℂ))) = (Module.finrank ℤ (lattice (A _ ℂ))) := by
+      let := lattice_freeModule (A _ ℂ)
+      rw [Module.finrank_baseChange]
+    rwa [this]
+  let E := Module.End ℚ (ℚ ⊗[ℤ] lattice (A _ ℂ))
+  let L := lattice (A _ ℂ)
+  -- to claude : can ψ be solved without going through the whole g₁ g₂, ...ψ ,etc from `module_rational_lattice_of_CMStructure`
+  have ψ : F →+* E := CMField_ringHom_rationalLattice ι
+  --algebraize [ψ]
+  #check Algebra.finrank_eq_one_iff_bijective_algebraMap
+  #check Module.finrank_linearMap
+  sorry
 
 -- Done by Claude
 open AddMonObj in
@@ -80,40 +161,14 @@ def complex_lie_algebra_representation_of_CMStrucutre {F : Type*} [Field F] [Num
     exact (Algebra.TensorProduct.lift f₁ f₂ fun x y ↦ Algebra.commutes x (f₂ y)).toRingHom
   exact f.comp ι.incl
 
+
+-- I might need `K : Type` here.
 /-- Given a CM strucutre on an Abelian variety `A` over a field `K`, such that `K` is
 a subfield of `ℂ`, and `F` is the CM Field in the CM Structure. The, we have a preCMType
 on the field `F`. -/
 def CMType {F : Type*} [Field F] [NumberField F] [IsCMField F] (ι : CMStructure A F) [Algebra K ℂ] :
     preCMType F := sorry
 
-namespace CMStructure
-
-section BaseChange
-
-open CommRingCat Spec
-
-variable {F : Type*} [Field F] [NumberField F] [IsCMField F]
-
-def End.algHom_ofBaseChange (A : Over (Spec ↧K)) [AddGrpObj A] [IsCommAddMonObj A] (K₁ : Type u)
-    [Field K₁] [Algebra K K₁] : End (AddGrp.mk A) →ₐ[ℤ] End (AddGrp.mk (A _ K₁)) :=
-  AddGrp.End.algHom_ofBaseChange (Over.pullback (map (ofHom (Algebra.algebraMap K K₁))))
-
-def rational_end_morphism (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyIntegral A.hom]
-    [AddGrpObj A] (K₁ : Type u) [Field K₁] [Algebra K K₁] : End⁰ A →+* End⁰ ((A _ K₁)) :=
-  (Algebra.TensorProduct.map (AlgHom.id ℤ ℚ) (End.algHom_ofBaseChange A K₁)).toRingHom
-
-#check smoothOfRelativeDimension_isStableUnderBaseChange -- But I don't wanna just prove this
--- for AVs
-lemma dimension_isStableUnderBasechange (X : Over (Spec ↧K)) [LocallyOfFiniteType X.hom]
-    (K₁ : Type u) [Field K₁] [Algebra K K₁] :
-    topologicalKrullDim X.left = topologicalKrullDim (X _ K₁).left := sorry
-
-def basechange (ι : CMStructure A F) (K₁ : Type u) [Field K₁] [Algebra K K₁] :
-    CMStructure (A _ K₁) F where
-      incl := (rational_end_morphism A K₁).comp ι
-      finrank_of_CM_field := by
-        rw [ι.finrank_of_CM_field, dimension_isStableUnderBasechange A K₁]
-
-end BaseChange
+end CMType
 
 end CMStructure

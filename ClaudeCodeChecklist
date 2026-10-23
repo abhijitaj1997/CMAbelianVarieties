@@ -35,8 +35,9 @@ skipping steps that changed nothing.
    to continue.
 
 3. Update the ToDo list (CMAbelianVarieties/ToDo) to reflect the work done
-   in this session: mark finished items as done, add any new tasks or open
-   problems that came up.
+   in this session: remove every task that has been completed (do not just
+   mark it as done), and add any new tasks or open problems that came up.
+   Only pending tasks should remain in the ToDo list.
 
 4. Go through every file of the project and check that its imports are
    minimal. `#min_imports` is a starting point, but it is not enough on

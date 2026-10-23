@@ -105,6 +105,12 @@ open CategoryTheory
 
 variable {K : Type*} [Field K]
 
+/-
+hey claude, some places need the fact that the dimension of an ableian variety is finite, and they
+are using the following lemma for it. Consider maybe creating a separate file somewhere else for
+that, because this is result is way too strong. Maybe create a `Basic.lean`, and add the dimension
+stuff and the commutativity to it.
+-/
 /-- The dimension of a group scheme `G` over `K` equals the dimension of its Lie algebra. -/
 theorem topologicalKrullDim_eq_finrank_Lie (G : Over (Spec ↧K)) [LocallyOfFiniteType G.hom]
     [GeometricallyReduced G.hom] [AddGrpObj G] :

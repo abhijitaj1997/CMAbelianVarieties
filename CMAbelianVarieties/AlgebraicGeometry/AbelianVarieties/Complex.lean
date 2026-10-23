@@ -5,7 +5,7 @@ Authors: Abhijit A J
 -/
 module
 
-public import CMAbelianVarieties.AlgebraicGeometry.LieAlgebra.Defn
+public import CMAbelianVarieties.AlgebraicGeometry.LieAlgebra.Dimension
 public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Commutativity
 
 /-!
@@ -53,6 +53,7 @@ def lattice_representation' (f : End (mk A)) : lattice A →ₗ[ℤ] lattice A :
     (lattice A) this)
 
 -- filled in using Claude
+variable (A) in
 def lattice_representation : End (mk A) →+* (lattice A →ₗ[ℤ] lattice A) where
   toFun f := lattice_representation' f
   map_one' := by
@@ -70,5 +71,11 @@ def lattice_representation : End (mk A) →+* (lattice A →ₗ[ℤ] lattice A) 
 
 /-- The lattice of a complex abelian variety `A` of dimension `g` is a free `ℤ`-module of
 rank `2 * g`. -/
-lemma lattice_addEquiv {g : ℕ} (hg : topologicalKrullDim A.left = g) :
-    Nonempty (lattice A ≃+ (Fin (2 * g) → ℤ)) := sorry
+lemma lattice_linearEquiv {g : ℕ} (hg : topologicalKrullDim A.left = g) :
+    Nonempty (lattice A ≃ₗ[ℤ] (Fin (2 * g) → ℤ)) := sorry
+
+-- proof written by Claude
+variable (A) in
+lemma lattice_freeModule : Module.Free ℤ (lattice A) := by
+  obtain ⟨e⟩ := lattice_linearEquiv (topologicalKrullDim_eq_finrank_Lie A)
+  exact Module.Free.of_equiv e.symm
