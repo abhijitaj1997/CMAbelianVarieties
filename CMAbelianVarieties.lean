@@ -27,3 +27,4 @@ public import CMAbelianVarieties.ForMathlib.FunctorCommAddObj
 public import CMAbelianVarieties.Theorem
 public import CMAbelianVarieties.preCMType.Algebra
 public import CMAbelianVarieties.preCMType.Defn
+public import CMAbelianVarieties.preCMType.FieldRepresentations

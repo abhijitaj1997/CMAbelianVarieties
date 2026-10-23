@@ -5,7 +5,10 @@ Authors: Abhijit A J
 -/
 module
 
-public import Mathlib
+public import Mathlib.Algebra.Algebra.Hom.Rat
+public import Mathlib.Basic.Complex.Basic
+public import Mathlib.NumberTheory.NumberField.Basic
+public import Mathlib.RingTheory.SimpleRing.Principal
 
 /-!
 ## Goal

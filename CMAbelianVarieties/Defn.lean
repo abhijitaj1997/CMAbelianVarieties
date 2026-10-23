@@ -10,7 +10,6 @@ public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Homomorphism
 public import CMAbelianVarieties.AbstractNonsense.EndBaseChange
 public import CMAbelianVarieties.preCMType.Defn
 public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Complex
-public import CMAbelianVarieties.AlgebraicGeometry.LieAlgebra.Dimension
 
 /-!
 ## CM Abelian varieties

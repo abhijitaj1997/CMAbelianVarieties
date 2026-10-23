@@ -1,8 +1,8 @@
 ToDo — unfinished results (still containing `sorry`)
 ====================================================
-Line numbers refer to the files as of 2026-09-26 (commit 2b5817e),
-except the Homomorphisms / InvertibleSheaf / TheCube sections, which
-refer to 2026-09-27 (commit 7305ad4). They will drift as files change.
+Line numbers refer to the files as of the date/commit given in each
+section (default: 2026-09-26, commit 2b5817e). They will drift as files
+change. Only pending tasks are listed; completed ones are removed.
 
 
 AbstractNonsense/PullbackAddGrp.lean
@@ -41,63 +41,16 @@ New file (d13a8ab), line numbers as of 2026-10-12 (commit c4f93e5).
 Defines the identity point e G, the Lie algebra Lie G = Dual (m/m²) of a
 group scheme G over K, stalkEnd / cotangentEnd, and the representation of
 End (mk G) on Lie G. No sorries left in this file.
-[x] lie_algebra_represenation : End (mk G) →+* Module.End _ (Lie G)   (l.605)
-      map_one', map_mul', map_zero' via stalkEnd_one/_mul,
-      cotangentEnd_one/_mul/_zero; map_add' via cotangentEnd_add.
-[x] cotangentEnd_add                                                 (l.571)
-      cotangentEnd (f + g) = cotangentEnd f + cotangentEnd g, i.e. the
-      differential of μ at (e, e) is addition. Done (c4f93e5).
 [ ] Cleanup: fix the typos in the names lie_algebra_repsentation' /
       lie_algebra_represenation (and use lowerCamelCase for defs).
-[x] Cleanup session (2026-10-15/16, 9a1f472 + checklist commit):
-      notations 𝒪_ G / κ_ G (replacing kG); heuristic docstrings;
-      Scheme.stalkCongr_hom_stalkMap_id removed (inlined into
-      stalkEnd_one); new def Scheme.Hom.fixedStalkMap with
-      fixedStalkMap_comp (replaces stalkCongr_hom_stalkMap_comp, the
-      redundant hypothesis hψφ dropped); naming conventions: ring
-      elements r / r₁, r₂, morphisms f, g / φ (no more x, y, z, h for
-      these).
-[x] Docstring of Scheme.SpecMap_comp_fromSpecStalk_comp written
-      (c15dec1). Could still be restated with fixedStalkMap; only used
-      in tan_comp_end.
-[x] Review session (2026-10-16/17, c15dec1 + 5a7dbce): all "hey claude"
-      comments resolved.
-      - structure map renamed κ → π (κ_ G stays the residue field).
-      - docstrings use 𝒪_{G,e} / κ_{G,e} throughout (except in
-        SpecMap_comp_fromSpecStalk_comp), old `k` replaced by κ_{G,e}.
-      - tan_injective no longer assumes IsLocalRing T / IsLocalHom: proof
-        is now Spec.map_injective + cancel_mono (fromSpecStalk is a
-        preimmersion, hence mono). exists_eq_tan / tan_closedPoint do
-        need their locality hypotheses.
-      - renames: T → R (square-zero extension, `RGM` in docstrings),
-        mapT → mapR, ψRingHom → derRingHom', ψ → derRingHom, section ψ
-        → section der; local names in left_add_eq_tan (f, g, hfφ₁, hgφ₂,
-        hφ₁, hφ₂).
-      - G made implicit in tan, mapR, Sp, der, derRingHom', derRingHom,
-        tanVec; φ, g implicit in Sp_comp_left; f, φ in Sp_zero_comp;
-        f, g, φ₁, φ₂ in left_add_eq_tan.
-      - comments on TrivSqZeroExt (Eᵐᵒᵖ, why Mathlib needs the right
-        action) and on section tsze; new docstrings for Sp_zero_comp and
-        left_add_eq_tan.
-      - `variable (G M) in` kept (standard in Mathlib, 3000+ uses).
 [ ] Remaining naming nits: the def hζ (h for "hom"); proofs named
       f₁ / f₂ in left_add_eq_tan (hφ₁ / hφ₂ are now taken; e.g.
       hφc₁ / hφc₂); section name k2 (from the old `k`).
-[x] Typos in docstrings: "induces by" (cotangentEnd_mul), "induced bt"
-      (cotangentEnd_toCotangent), lowercase "for" at the start of two
-      docstrings. Fixed (2026-10-17).
 [ ] The IsLocalHom instance for mapR has the docstring "The map
       `κ_{G,e} ⊕ M ⟶ κ_{G,e} ⊕ N`", which does not say what it proves.
 [ ] Possibly replace the `erw`s (stalkEnd_one, fixedStalkMap_comp,
       residueFieldCongr_residueFieldMap_of_comp_eq, exists_eq_tan,
       tan_closedPoint) by rw + explicit rfl lemmas / change.
-[x] End_lie_algebra_map : (Lie G →ₗ[κ_ G] Lie G) →+*
-      (ℂ ⊗[κ_ G] Lie G →ₗ[ℂ] ℂ ⊗[κ_ G] Lie G)                        (l.745)
-      f ↦ AlgebraTensorModule.map id f (= LinearMap.baseChange ℂ f);
-      ring-hom fields via LinearMap.baseChange_one/_mul/_zero/_add
-      (2026-10-17). Could be (Module.End.baseChangeHom _ ℂ _).toRingHom.
-[x] complex_lie_algebra_represenation : End (mk G) →+* End_ℂ (ℂ ⊗ Lie G)
-      (l.757) := End_lie_algebra_map ∘ lie_algebra_represenation.
 [ ] Reminder from the "hey claude" comment (l.113): the docstring of
       Ideal.mapCotangent (Mathlib) uses I, J while the theorem uses
       I₁, I₂.
@@ -106,14 +59,9 @@ End (mk G) on Lie G. No sorries left in this file.
 AlgebraicGeometry/AbelianVarieties/Homomorphisms/IntHom.lean
 ------------------------------------------------------------
 Line numbers as of 2026-10-10 (commit a93522c).
-[x] IsCommAddMonObj A: moved to AbelianVarieties/Commutativity.lean
-      (a0ee502), together with the `import all` item; see there.
 
 [ ] isFinite_int_hom                                                 (l.86)
       [n]_ A : A → A is a finite morphism when n ≠ 0.
-
-[x] step₂'                                                           (l.107)
-      The n-torsion A[n] is an affine scheme when n ≠ 0. Done (48b28db).
 
 
 AlgebraicGeometry/AbelianVarieties/Commutativity.lean
@@ -135,42 +83,20 @@ to_additive_do_translate).
 
 AlgebraicGeometry/AbelianVarieties/Complex.lean
 -----------------------------------------------
-New file (a0ee502): complex abelian varieties A over Spec ℂ and
-uniformization. Line numbers as of 2026-10-22 (commit 3ca2b4e).
-[ ] exponential : Lie A →+ |A ℂ|                                     (l.31)
+Complex abelian varieties A over Spec ℂ and uniformization. Line numbers
+as of 2026-10-23. lattice_representation and lattice_freeModule are done
+modulo the sorries below.
+[ ] exponential : Lie A →+ |A ℂ|                                     (l.30)
       The exponential map. Currently `sorry`.
-[x] AddMonoidHom_of_End f : |A ℂ| →+ |A ℂ|                            (l.33)
-      φ ↦ φ ≫ f, via Mathlib's IsAddMonHom.addMonoidHom (2026-10-19).
-[ ] end_comp_exponential f g                                         (l.36)
+[ ] end_comp_exponential f g                                         (l.35)
       (AddMonoidHom_of_End f) (exp g) = exp ((lie_algebra_represenation A f) g).
-      Now stated pointwise (eecf9e8).
-[x] lattice_representation' f : lattice A →ₗ[ℤ] lattice A           (l.45)
-      Done modulo end_comp_exponential (eecf9e8): toIntLinearMap of
-      (φ.comp (lattice A).subtype).codRestrict (lattice A) _.
-      `lattice` is now an abbrev. Renamed from
-      lie_algebra_lattice_representation; drop the prime eventually.
-[x] lattice_representation : End (mk A) →+* (lattice A →ₗ[ℤ] lattice A)
-      (l.57). Bundles lattice_representation'; ring-hom fields from
-      those of lie_algebra_represenation (3ca2b4e).
-[ ] lattice_addEquiv                                                 (l.74)
-      The lattice is free of rank 2 * dim A.
-[x] Local notation `|A ℂ|` for (𝟙_ (Over (Spec ↧ℂ)) ⟶ A) (l.27, 3ca2b4e).
-[ ] Cleanup: typo "uniforization" in the module docstring.
-      (The #checks are gone, eecf9e8; the unused `have` in
-      lattice_representation' was removed, 2026-10-22.)
-
-
-AbstractNonsense/IntHom.lean, ForMathlib/Endomorphism.lean
-----------------------------------------------------------
-[x] Port to Mathlib v4.35.0-rc4 (1eaa5b5, 556c906)
-      `End X` is now a structure (use .of / .asHom); the ring instances on
-      End G are `scoped` in AddMon.End / AddGrp.End, so files using
-      `[n]_` need `open scoped AddGrp.End`. int_hom is now
-      (n : End (mk G)).asHom.hom.hom. No sorries left in
-      AbstractNonsense/IntHom.lean.
-      Pitfall: `open … End` opens both CategoryTheory.End and AddGrp.End,
-      so bare `zero_asHom` / `add_asHom` are ambiguous and simp silently
-      picks Mathlib's Preadditive version. Use AddGrp.End.zero_asHom.
+[ ] lattice_isLattice : Nonempty (ℝ ⊗[ℤ] lattice A ≃+ Lie A)          (l.46)
+      The lattice spans Lie A over ℝ. Currently `sorry`.
+[ ] lattice_linearEquiv                                              (l.78)
+      (renamed from lattice_addEquiv) lattice A ≃ₗ[ℤ] (Fin (2 * g) → ℤ)
+      for g = dim A: the lattice is free of rank 2 * dim A.
+[ ] Drop the prime of lattice_representation' (l.48) eventually.
+[ ] Cleanup: typo "uniforization" in the module docstring (l.15).
 
 
 AlgebraicGeometry/AbelianVarieties/TateModule.lean
@@ -178,10 +104,6 @@ AlgebraicGeometry/AbelianVarieties/TateModule.lean
 Points are now geometric points: morphisms from `gspec K` = Spec K̄ (with
 K̄ = `AlgebraicClosure K`), instead of K-points from `specᵤ K`.
 
-[x] torsion_map_comp
-      Done (9dca10f): the scheme-level identity
-        ker_int_hom (k ∣ n) = ker_int_hom (m ∣ n) ≫ ker_int_hom (k ∣ m)
-      via pullback.hom_ext + int_hom_comp.
 
 [-] int_hom_rational, rational_torsion                               (l.42–60)
       Commented out ("probably don't need this"). If needed after all,
@@ -212,9 +134,6 @@ K̄ = `AlgebraicClosure K`), instead of K-points from `specᵤ K`.
       (needs `include f in` or explicit binders).
       The placeholder `blah` (l.268) should be removed or replaced.
 
-[x] Deprecation warning at l.195: `Category.assoc'` (deprecated in
-      Mathlib since 2026-09-15) replaced by `← Category.assoc`
-      (2026-10-13). The project now builds without non-sorry warnings.
 
 [ ] Cleanup (see module docstring "Fixes")
       torsion_point_as_profinite and AddGrpCatHom_of_torsion_map view
@@ -231,30 +150,18 @@ AlgebraicGeometry/AbelianVarieties/Homomorphisms/FiniteGen.lean
       Leftover `#check @Module.Finite.iff_addGroup_fg` to remove.
 
 
-AlgebraicGeometry/AbelianVarieties/Homomorphisms/TorsionFree.lean
------------------------------------------------------------------
-[x] tor_free_hom, module_tor_free_hom
-      Done; now stated as `theorem` (7305ad4).
-
-
 AlgebraicGeometry/AbelianVarieties/Homomorphisms/EndomorphismRing.lean
 ----------------------------------------------------------------------
 New file (7305ad4): defines RationalEnd A = ℚ ⊗[ℤ] End (mk A),
 notation `End⁰ A` (scoped in RationalEnd).
 [ ] Module.Finite ℚ (End⁰ A)                                         (l.35)
       Should follow from fin_gen_hom (FiniteGen.lean).
-[x] RationalEnd.conjAlgEquiv : End⁰ A ≃ₐ[ℤ] End⁰ B for φ : mk A ≅ mk B
-      (l.42), via Iso.conjAlgEquiv (AbstractNonsense/EndRingIso.lean).
 [ ] Collect the remaining instances from the Hom files for End A.
 
 
 AlgebraicGeometry/AbelianVarieties/Homomorphisms/Integral.lean
 --------------------------------------------------------------
 New file (3ca2b4e). Line numbers as of 2026-10-22.
-[x] ratEnd_as_fraction                                               (l.27)
-      Every φ₀ : End⁰ A is (1/n) ⊗ₜ φ with φ : End (mk A), n : ℤ.
-      Via IsLocalizedModule.surj (ℚ ⊗[ℤ] M is the localization of M at
-      the nonzero integers) (2026-10-22).
 [ ] nameless                                                         (l.40)
       Stated as: IsIntegral ℤ φ₀ → φ₀ ∈ image of End (mk A).
       FALSE as stated: End A is an order, not the set of all integral
@@ -266,12 +173,6 @@ New file (3ca2b4e). Line numbers as of 2026-10-22.
         - every element of End A is integral over ℤ (IsIntegral.of_finite,
           needs fin_gen_hom);
         - (1/n) ⊗ₜ φ ∈ End A iff φ kills A[n] (needs isogenies).
-[x] #checks (2026-10-22): integralClosure (needs CommRing, so not for
-      End⁰ A), _root_.IsIntegral (works for noncommutative rings; the
-      _root_ is only needed in the bare #check, because of
-      `open AlgebraicGeometry`), and the natural map
-      Algebra.TensorProduct.includeRight : End (mk A) →ₐ[ℤ] End⁰ A
-      (φ ↦ 1 ⊗ₜ φ, by rfl).
 
 
 AlgebraicGeometry/InvertibleSheaf.lean
@@ -283,22 +184,16 @@ AlgebraicGeometry/InvertibleSheaf.lean
 
 AlgebraicGeometry/LieAlgebra/Dimension.lean
 --------------------------------
-New file (00aaa88). No sorries.
-[x] topologicalKrullDim_eq_iSup_ringKrullDim_stalk                  (l.22)
-      dim X = ⨆ x, dim 𝒪_{X,x} for every scheme X, no assumptions.
-      Via ringKrullDim_stalk_eq_coheight, krullDim_eq_iSup_coheight and
-      irreducibleSetEquivPoints (points of X carry the specialization
-      preorder: a ≤ b ↔ b ⤳ a).
+New file (00aaa88).
+[ ] topologicalKrullDim_eq_finrank_Lie                               (l.118)
+      dim G = finrank (κ_ G) (Lie G). Currently `sorry`; it is used
+      (e.g. in Defn.lean) only to know that dim A is finite, which is far
+      stronger than needed. Note in the file: move the finiteness of the
+      dimension (and commutativity) to a separate `Basic.lean`, or get
+      finiteness from the CM structure (finrank_of_CM_field).
 [ ] Module docstring ("Dimension of a group scheme") is a placeholder.
       Intended: dim of a group scheme, e.g. via dim of Lie G / the local
       ring at e (needed for step 1 of CMType).
-[x] #checks of the relevant Mathlib results (2026-10-17):
-      ringKrullDim_le_spanFinrank_maximalIdeal,
-      IsLocalRing.spanFinrank_maximalIdeal_eq_finrank_cotangentSpace,
-      IsRegularLocalRing.iff_finrank_cotangentSpace, smooth_of_grpObj,
-      Algebra.IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential;
-      imports minimized (#min_imports ignores #checks, so it was done by
-      hand). Big comment "Strategy: dim Lie G via Kähler differentials".
 [ ] Strategy Steps A + B: dim Lie G = n for G SmoothOfRelativeDimension n.
       A: m/m² ≅ κ ⊗ Ω[A⁄K] since e is K-rational
       (kerCotangentToTensor, exact_kerCotangentToTensor_mapBaseChange,
@@ -311,8 +206,6 @@ New file (00aaa88). No sorries.
       regularity and dim Lie G = topologicalKrullDim G (with homogeneity).
 [ ] smooth_of_grpObj is for GrpObj; additivize with to_additive as in
       IntHom.lean to use it for AddGrpObj.
-[x] Lint: missing space in `(G : Over (Spec ↧K))[LocallyOfFiniteType …]`
-      (topologicalKrullDim_eq_finrank_Lie) fixed (2026-10-17).
 [ ] Strategy comment l.78: write
       `Algebra.IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential`
       (namespace missing).
@@ -325,21 +218,14 @@ AlgebraicGeometry/TheCube.lean
 
 Defn.lean (CM abelian varieties)
 --------------------------------
-New file (556c906). Line numbers as of 2026-10-13 (commit 00aaa88).
-CMStructure is sorry-free (#print axioms: propext, Classical.choice,
-Quot.sound).
-[x] CMStructure A F                                                  (l.39)
-      incl : F →+* End⁰ A, and finrank ℚ F = 2 * dim A.
-[x] Coercion CMStructure A F → (F →+* End⁰ A)                        (l.45–50)
-      `attribute [coe] CMStructure.incl` + a `Coe` instance (2026-10-13).
-      Pitfall: `(ι : F →+* End⁰ A)` fails with "Type mismatch" when ι is
-      a constant whose A, F are implicit (coercion search does not run
-      on CMStructure ?A ?F); write `((ι : CMStructure A F) : F →+* End⁰ A)`.
-      `ι x` does not work; making CMStructure a FunLike/RingHomClass
-      would allow it.
-      Update (2026-10-15): in CMStructure.basechange, plain `.comp ι`
-      now works without the ascription.
-[ ] CMType ι : preCMType F, given [Algebra K ℂ]                      (l.58)
+Line numbers as of 2026-10-23. CMStructure, basechange (modulo
+dimension_isStableUnderBasechange), and the F-module structure on the
+rational lattice ℚ ⊗[ℤ] lattice (A _ ℂ) (CMField_ringHom_rationalLattice,
+module_rational_lattice_of_CMStructure, finrank_rational_lattice_of_CMStructure
+= 1, nonempty_linearEquiv_rational_lattice_of_CMStructure : F ≃ₗ[F] …)
+are done. Section CMType now has variables {K : Type} [Field K]
+[Algebra K ℂ] and A.
+[ ] CMType ι : preCMType F, given [Algebra K ℂ]                      (l.182)
       Currently `sorry`. Plan (see the file `Pondering`):
         1. Lie A is a (dim A)-dimensional vector space over the residue
            field k of e (k ≅ K);
@@ -347,22 +233,11 @@ Quot.sound).
         3. from F →+* End⁰ A get F →+* (Lie A →ₗ[k] Lie A);
         4. base change to ℂ: F →+* End_ℂ (ℂ ⊗ Lie A);
         5. this gives dim A embeddings F →+* ℂ, which form a preCMType.
+      Steps 2–4 are done (instance Algebra (κ_ G) ℂ, l.159;
+      complex_lie_algebra_representation_of_CMStrucutre, l.167).
       Useful: IsAlgClosed.lift gives F →ₐ[ℚ] ℂ for a number field F;
       there is no Mathlib class "K is a subfield of ℂ", [Algebra K ℂ] is
       the idiom.
-      Progress (2026-10-17): steps 2–4 done.
-        [x] step 2: instance Algebra (κ_ G) ℂ given [Algebra K ℂ]   (l.58)
-            κ_ G →+* K via ResidueField.lift (stalkClosedPointTo ζ[G].left)
-            (needs `open AddMonObj in` for ζ[G]; the IsLocalHom instance
-            has to be passed explicitly with @, ↧K vs K mismatch).
-            Only the map κ_ G → K is built, not that it is an iso.
-        [x] steps 3–4: complex_lie_algebra_representation_of_CMStrucutre
-            ι : F →+* End_ℂ (ℂ ⊗[κ_ A] Lie A)                        (l.65)
-            via Algebra.TensorProduct.lift f₁ f₂ on End⁰ A = ℚ ⊗[ℤ] End,
-            f₁ = (algebraMap ℚ _).toIntAlgHom,
-            f₂ = (complex_lie_algebra_represenation A).toIntAlgHom,
-            commutation by Algebra.commutes. Typo in the name
-            ("Strucutre").
         [ ] step 1: finrank (κ_ A) (Lie A) = dim A (Dimension.lean).
         [ ] step 5: simultaneous eigenspace decomposition of
             ℂ ⊗ Lie A under F. No direct Mathlib result; options:
@@ -372,35 +247,32 @@ Quot.sound).
             ℂ ⊗[ℚ] F étale ⇒ ≃ₐ PrimeSpectrum → ℂ
             (Algebra.FormallyEtale.equivPiOfIsSepClosed), missing the
             identification PrimeSpectrum ≃ (F →+* ℂ).
-[ ] module_order_lattice_of_CMStructure ι                             (l.58)
-      Module (𝓞 F) (lattice (A _ ℂ)) for a CM structure ι. Currently
-      `sorry` (new in 3ca2b4e). Leftover `#check Module.finrank` (l.62).
+[ ] complex_lie_algebra_representation_of_CMStrucutre (l.167) and CMType
+      (l.182) still declare their own {K : Type*} [Field K] [Algebra K ℂ],
+      shadowing the section variable K : Type while A comes from the
+      section (A lives over the section's K). Drop the local binders.
+      Typo in the name ("Strucutre").
 [ ] Check the dimension condition: Module.finrank ℚ F : ℕ is compared
       with topologicalKrullDim A.left : WithBot ℕ∞ (via a cast). Decide
-      whether to state dim A as a natural number instead.
-[x] End.algHom_ofBaseChange : End (mk A) →ₐ[ℤ] End (mk (A _ K₁))    (l.71)
-      Done (2026-10-15) via AddGrp.End.algHom_ofBaseChange applied to the
-      pullback functor. Lives in namespace CMStructure, but is a general
-      fact about endomorphisms; could be moved out.
-[x] rational_end_morphism : End⁰ A →+* End⁰ (A _ K₁)                 (l.75)
-[ ] dimension_isStableUnderBasechange                                (l.81)
+      whether to state dim A as a natural number instead. (In
+      finrank_rational_lattice_of_CMStructure the cast is undone with
+      `norm_cast`.)
+[ ] dimension_isStableUnderBasechange                                (l.80)
       dim X = dim (X _ K₁) for X locally of finite type over K.
-      [LocallyOfFiniteType X.hom] added (2026-10-15): without it the
-      statement is false (X = Spec K(t), K₁ = K(t)). Nothing in Mathlib
-      proves it; smoothOfRelativeDimension_isStableUnderBaseChange does
-      not help (no link between relative dimension and Krull dimension).
+      [LocallyOfFiniteType X.hom] is needed: without it the statement is
+      false (X = Spec K(t), K₁ = K(t)). Nothing in Mathlib proves it;
+      smoothOfRelativeDimension_isStableUnderBaseChange does not help
+      (no link between relative dimension and Krull dimension).
       Possible proof: reduce to affines, Noether normalization
       (exists_integral_inj_algHom_of_fg) and "finite injective extensions
       preserve Krull dimension" (not found in Mathlib). Should be moved
       to AlgebraicGeometry/ (e.g. Dimension.lean).
-[x] CMStructure.basechange ι K₁ : CMStructure (A _ K₁) F             (l.88)
-      Done modulo dimension_isStableUnderBasechange.
-      Note: writing (Over.pullback …).obj A instead of A _ K₁ broke
-      instance search while basechange_over_Over was a `def`; it is now
-      an `abbrev` (BaseFieldChange.lean), which fixes this.
-[ ] Cleanup (trailing `#min_imports` removed 2026-10-19): the `#check
-      smoothOfRelativeDimension_isStableUnderBaseChange` (l.100) and the
-      answered "hey claude" comment.
+[ ] End.algHom_ofBaseChange (l.66) lives in namespace CMStructure, but is
+      a general fact about endomorphisms; could be moved out.
+[ ] Cleanup: the `#check
+      smoothOfRelativeDimension_isStableUnderBaseChange` (l.78) and the
+      "Hey claude, remind me to move this to another file about
+      dimensions" comment (l.76).
 
 
 AlgebraicGeometry/AbelianVarieties/BaseFieldChange.lean
@@ -409,15 +281,6 @@ New file (1ff4cac), no sorries. Base change of X : Over (Spec K) along
 a field extension K → K₁, `abbrev basechange_over_Over`, notation
 `X _ K₁`, and instances IsProper, GeometricallyIntegral, AddGrpObj,
 IsCommAddMonObj for X _ K₁.
-[x] IsProper (X _ K₁).hom: via IsProper.isStableUnderBaseChange
-      .of_isPullback (MorphismProperty.pullback_snd fails to find
-      IsStableUnderBaseChangeAlong; Mathlib uses
-      `set_option backward.isDefEq.respectTransparency.types false` there).
-[x] GeometricallyIntegral (X _ K₁).hom: Mathlib's instance for
-      pullback.snd, via inferInstanceAs.
-[x] AddGrpObj (G _ K₁) := Functor.addGrpObjObj. Pitfall: any AddGrpObj
-      on a base change must come from Functor.addGrpObjObj, otherwise End
-      of the base change does not match AddGrp.End.algHom_ofBaseChange.
 [ ] Cleanup: unused `variable {A …}` (l.27); typo "Them" in docstring;
       the notation uses `_`, which is also the placeholder token.
 
@@ -425,9 +288,6 @@ IsCommAddMonObj for X _ K₁.
 AbstractNonsense/EndBaseChange.lean
 -----------------------------------
 New file (f660978), no sorries.
-[x] AddGrp.End.algHom_ofBaseChange : End (mk G) →ₐ[ℤ] End (mk (F.obj G))
-      for a braided F and a commutative additive group object G.
-      Done (2026-10-15).
 [ ] Cleanup (trailing `#min_imports` removed 2026-10-19): the module
       docstring still says
       the file shows that F preserves commutative group objects (that is
@@ -436,37 +296,11 @@ New file (f660978), no sorries.
       local `have h h'` in commutes'.
 
 
-ForMathlib/FunctorCommAddObj.lean
----------------------------------
-New file (1ff4cac), no sorries.
-[x] Functor.isCommAddMonObj_obj: a lax braided functor preserves
-      commutative additive monoid objects (additive version of Mathlib's
-      Functor.isCommMonObj_obj). Candidate for a Mathlib PR.
-
-
 preCMType/Algebra.lean
 ----------------------
 New file (70f2e46): algebraic background for CM types. Line numbers as
 of 2026-10-02 (commit 45007ad).
-[x] Algebra ℚ (center R)                                             (l.18–47)
-      SMul, center_algebra_map and the Algebra instance are done.
 
-[x] IsCentral_basechange, IsCentral_basechange'                      (l.58, l.170)
-      Base change of a central algebra is central. Done (45007ad), two
-      proofs: the long one over a K-basis of F, and a short one via
-      Subalgebra.centralizer_range_includeRight_eq_center_tensorProduct.
-      Could keep only the short one.
-
-[x] IsSimpleRing_basechange                                          (l.187)
-      F ⊗[K] R is simple (needs [IsCentral K R]). Done (d551456), no
-      sorries left in this file.
-
-[x] fact₁ / dimension_IsSimple_algebra                               (l.304, l.317)
-      Now fully proved (IsSimpleRing_basechange done); both carry
-      [IsCentral K R]. Possible improvement:
-      finrank K R = n * n should follow via Module.finrank_baseChange;
-      the reduced degree could then be defined directly as
-      Nat.sqrt (finrank K R) instead of via choose.
 
 [ ] Cleanup (trailing `#min_imports` removed 2026-10-19): remove the
       commented-out
@@ -476,10 +310,6 @@ of 2026-10-02 (commit 45007ad).
 preCMType/Defn.lean
 -------------------
 New file (19bb4f6), line numbers as of that commit. No sorries yet.
-[x] preCMType K                                                      (l.16)
-      A set Φ ⊆ (K →+* ℂ) containing exactly one of each conjugate
-      pair: φ ∈ Φ ↔ conj ∘ φ ∉ Φ (composition via RingHom.comp;
-      equivalently NumberField.ComplexEmbedding.conjugate φ).
 
 [ ] Natural map from a preCMType to the infinite places of K         (l.21)
       Idea noted in the file. φ ↦ InfinitePlace.mk φ should be a
@@ -491,35 +321,15 @@ New file (19bb4f6), line numbers as of that commit. No sorries yet.
       are already minimal and `#min_imports` was removed, 2026-10-19.)
 
 
-Project housekeeping
---------------------
-[x] Removed the unused files Basic.lean (lake placeholder) and
-      AbelianVarieties/Homomorphisms/Basic.lean (re-exports only), and
-      their imports in CMAbelianVarieties.lean (2026-10-12).
-[x] Add a LICENSE file: Apache 2.0 (ad21018).
-[x] Copyright headers: every file now has the Mathlib-style header
-      (a509425). The root CMAbelianVarieties.lean has none, like
-      Mathlib.lean; that is fine.
-[x] Test file moved from CMAbelianVarieties/Test/ to the top-level
-      Test/Test.lean (outside the lean_lib), so mk_all no longer imports
-      it and `lake build` does not build it (2026-10-13).
-[x] MindMap.md moved from CMAbelianVarieties/ to the repo root (c46db84).
-[x] ClaudeCodeChecklist: new step 2 stops the checklist on any warning
-      that is not a `sorry` warning (c46db84).
-[x] ClaudeCodeChecklist: new step 4 (check that imports are minimal,
-      a0ee502); step 2 now also ignores warnings created by `#check`s
-      (2026-10-19).
-[x] Imports minimized (2026-10-19): no file imports all of Mathlib any
-      more (BaseFieldChange, Complex, FiniteGen, LieAlgebra/Defn);
-      Henselian dropped from GlobalSections, AlgebraicClosure from
-      TateModule; Dimension.lean now imports SpanRankOperations,
-      Group.Smooth, KrullsHeightTheorem itself (for its #checks); all
-      `#min_imports` removed.
-[x] Files moved (3ca2b4e): AbelianVarieties/ → AlgebraicGeometry/
-      AbelianVarieties/, CMTypes/ → preCMType/.
-[x] ClaudeCodeChecklist: note above step 1, when the checklist stops,
-      report only precisely why it stopped, not what succeeded
-      (2026-10-22).
-[x] ClaudeCodeChecklist: the note now also asks for a final summary
-      titled `Checklist complete!` when the checklist runs to the end
-      (2026-10-22).
+preCMType/FieldRepresentations.lean
+-----------------------------------
+New file (a164484). Goal: for a number field F and a representation
+φ : F →+* End_ℂ V, decompose V = ⊕_{σ : F →+* ℂ} V_σ, with F acting on
+V_σ through σ (step 5 of CMType in Defn.lean). Line numbers as of
+2026-10-23.
+[ ] card : Fintype.card (F →+* ℂ) = finrank ℚ F                      (l.34)
+      Currently `sorry`. Note in the file: this lemma is not needed.
+[ ] decomposition φ : DirectSum.IsInternal (factor φ)                (l.58)
+      Currently `sorry`.
+[ ] Note in the file (l.55): opening `Classical` globally gave a
+      warning; it is now opened only locally (`open DirectSum Classical in`).

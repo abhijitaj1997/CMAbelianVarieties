@@ -10,7 +10,7 @@ An arrow `A --> B` means "A imports B". `CMAbelianVarieties.lean` imports every 
 graph TD
   %% ---------- top level ----------
   Theorem["<b>Theorem</b><br/><i>main theorem: CM abelian varieties have models over number fields</i>"]
-  Defn["<b>Defn</b><br/><i>CMStructure, κ_ A → ℂ, F acting on ℂ ⊗ Lie A, CMType</i>"]
+  Defn["<b>Defn</b><br/><i>CMStructure, F-module ℚ ⊗ lattice ≅ F, κ_ A → ℂ, F acting on ℂ ⊗ Lie A, CMType</i>"]
 
   %% ---------- AbstractNonsense ----------
   subgraph AN["AbstractNonsense/"]
@@ -39,7 +39,7 @@ graph TD
       BaseFieldChange["<b>BaseFieldChange</b><br/><i>A _ K₁, base change to K₁</i>"]
       AVCatalogue["<b>Catalogue</b><br/><i>#check cheat sheet</i>"]
       Commutativity["<b>Commutativity</b> ★<br/><i>abelian varieties are commutative</i>"]
-      Complex["<b>Complex</b><br/><i>complex abelian varieties: exp, lattice</i>"]
+      Complex["<b>Complex</b><br/><i>complex abelian varieties: exp, lattice, free of rank 2g</i>"]
       subgraph HOM["Homomorphisms/"]
         direction TB
         EndomorphismRing["<b>EndomorphismRing</b><br/><i>End A, End A ⊗ ℚ</i>"]
@@ -62,6 +62,7 @@ graph TD
     direction TB
     CMDefn["<b>Defn</b><br/><i>preCMType</i>"]
     CMAlgebra["<b>Algebra</b><br/><i>background for CM types</i>"]
+    FieldRepresentations["<b>FieldRepresentations</b><br/><i>V = ⊕ V_σ for F →+* End_ℂ V</i>"]
   end
 
   %% ---------- Test ----------
@@ -85,7 +86,7 @@ graph TD
   EndRingIso --> Endomorphism
   FiniteGen --> Commutativity
   Integral --> EndomorphismRing
-  Complex --> LieAlgebra
+  Complex --> Dimension
   Complex --> Commutativity
   TateModule --> IntHomAV
   TorsionFree --> GlobalSections
@@ -108,7 +109,7 @@ graph TD
   class Theorem goal
   class Commutativity hub
   class EndomorphismRing,FiniteGen,IntHomAV,Complex,TorsionFree,TateModule,GlobalSections,IntHomAN,PullbackAddGrp,Finite,Endomorphism,LieAlgebra,CMDefn,Test,BaseFieldChange,EndBaseChange,FunctorCommAddObj,Defn,EndRingIso,Dimension,Integral connected
-  class AVCatalogue,InvertibleSheaf,TheCube,AGCatalogue,CMAlgebra,Test1 unused
+  class AVCatalogue,InvertibleSheaf,TheCube,AGCatalogue,CMAlgebra,FieldRepresentations,Test1 unused
 ```
 
 **Legend**
