@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Module.StablyFree.Basic
 public import Mathlib.Algebra.TrivSqZeroExt.Basic
 public import Mathlib.AlgebraicGeometry.ValuativeCriterion
-public import Mathlib.Basic.Complex.Basic
 public import Mathlib.Combinatorics.Quiver.ReflQuiver
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.RingTheory.Henselian

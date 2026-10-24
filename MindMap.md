@@ -62,6 +62,12 @@ graph TD
     direction TB
     CMDefn["<b>Defn</b><br/><i>preCMType</i>"]
     CMAlgebra["<b>Algebra</b><br/><i>background for CM types</i>"]
+  end
+
+  %% ---------- Algebra ----------
+  subgraph ALG["Algebra/"]
+    direction TB
+    CMField["<b>CMField</b><br/><i>ℝ ⊗[ℚ] F for a CM field F, via complex embeddings</i>"]
     FieldRepresentations["<b>FieldRepresentations</b><br/><i>V = ⊕ V_σ for F →+* End_ℂ V</i>"]
   end
 
@@ -98,6 +104,7 @@ graph TD
   IntHomAN --> Endomorphism
   LieAlgebra --> Endomorphism
   Dimension --> LieAlgebra
+  FieldRepresentations --> CMField
   Test --> Defn
 
   %% ---------- colours ----------
@@ -109,7 +116,7 @@ graph TD
   class Theorem goal
   class Commutativity hub
   class EndomorphismRing,FiniteGen,IntHomAV,Complex,TorsionFree,TateModule,GlobalSections,IntHomAN,PullbackAddGrp,Finite,Endomorphism,LieAlgebra,CMDefn,Test,BaseFieldChange,EndBaseChange,FunctorCommAddObj,Defn,EndRingIso,Dimension,Integral connected
-  class AVCatalogue,InvertibleSheaf,TheCube,AGCatalogue,CMAlgebra,FieldRepresentations,Test1 unused
+  class AVCatalogue,InvertibleSheaf,TheCube,AGCatalogue,CMAlgebra,CMField,FieldRepresentations,Test1 unused
 ```
 
 **Legend**

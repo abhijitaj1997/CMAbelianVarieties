@@ -35,6 +35,42 @@ lives in `CMAbelianVarieties/Theorem.lean` (not yet proven).
 - Regenerate `CMAbelianVarieties.lean` (imports every library file): `lake exe mk_all`
 - `relaxedAutoImplicit = false` and the Mathlib standard linter set are enabled.
 
+## Updating Mathlib
+When I ask you to update Mathlib, do the following in the project root, in order.
+1. Fetch Mathlib's current toolchain:
+       curl -L https://raw.githubusercontent.com/leanprover-community/mathlib4/master/lean-toolchain -o lean-toolchain
+2. Keep `lakefile.toml` in sync with it (otherwise `lake update` keeps the old Mathlib
+   and the build fails). Read the new version `<VER>` from `lean-toolchain` (the part
+   after `leanprover/lean4:`, e.g. `v4.36.0-rc1`) and check that Mathlib has a tag for it:
+       git ls-remote --tags https://github.com/leanprover-community/mathlib4 refs/tags/<VER>
+   - If the tag exists, set `rev = "<VER>"` in the mathlib `[[require]]` block of
+     `lakefile.toml`, and tell me the old and new version.
+   - If it does not exist, stop and ask me what to do (do not run `lake update`).
+3. Run the slow commands, in this order:
+       lake update          # new Mathlib source + lake-manifest.json
+       lake exe cache get   # prebuilt Mathlib files (always run it, even though
+                            # `lake update` sometimes does this automatically)
+       lake exe mk_all      # regenerate CMAbelianVarieties.lean
+       lake build
+   I want to see progress bars wherever possible, so run them in a new terminal window
+   that I can watch live. Use `script` so they still see a real terminal (I keep the
+   progress bars and estimated time left) while the output is recorded to a log file
+   in your scratchpad directory (`<LOG>` below):
+       gnome-terminal -- bash -c 'cd /home/abhijit/lean/CMAbelianVarieties && \
+         script -q -e -c "lake update && lake exe cache get && lake exe mk_all && lake build" <LOG>; \
+         echo "MATHLIB UPDATE FINISHED (exit $?)" | tee -a <LOG>; \
+         exec bash'
+   Tell me when the window has been opened. Then wait for the
+   `MATHLIB UPDATE FINISHED` line to appear in the log, strip the terminal control
+   codes from it, read it, and report the outcome to me: which command it stopped at
+   if one failed, and any errors. Only report build errors; do not fix them unless I
+   ask.
+4. Check that `lean-toolchain`, the `rev` in `lakefile.toml`, and the mathlib entry in
+   `lake-manifest.json` all agree on `<VER>`, and tell me if they do not.
+
+Asking you to update Mathlib counts as permission for the file changes these steps
+make (`lean-toolchain`, `lakefile.toml`, `lake-manifest.json`, `CMAbelianVarieties.lean`).
+
 ## Layout
 - `CMAbelianVarieties/`: the library
   - `Defn.lean`, `Theorem.lean`: main definitions and the main theorem
