@@ -159,22 +159,6 @@ notation `End⁰ A` (scoped in RationalEnd).
 [ ] Collect the remaining instances from the Hom files for End A.
 
 
-AlgebraicGeometry/AbelianVarieties/Homomorphisms/Integral.lean
---------------------------------------------------------------
-New file (3ca2b4e). Line numbers as of 2026-10-22.
-[ ] nameless                                                         (l.40)
-      Stated as: IsIntegral ℤ φ₀ → φ₀ ∈ image of End (mk A).
-      FALSE as stated: End A is an order, not the set of all integral
-      elements. Counterexamples: [[0, 1/2], [0, 0]] in End⁰ (E × E)
-      (nilpotent, so integral); (1 + √-3)/2 for E with CM by ℤ[√-3].
-      The `have : n = 1` step fails too (fractions are not unique).
-      The module docstring ("integral elements of End⁰ A are exactly
-      End A") has to be corrected as well. True replacements:
-        - every element of End A is integral over ℤ (IsIntegral.of_finite,
-          needs fin_gen_hom);
-        - (1/n) ⊗ₜ φ ∈ End A iff φ kills A[n] (needs isogenies).
-
-
 AlgebraicGeometry/InvertibleSheaf.lean
 --------------------------------------
 [ ] New file (7305ad4), only #checks so far. Basic facts about
@@ -225,21 +209,23 @@ module_rational_lattice_of_CMStructure, finrank_rational_lattice_of_CMStructure
 = 1, nonempty_linearEquiv_rational_lattice_of_CMStructure : F ≃ₗ[F] …)
 are done. Section CMType now has variables {K : Type} [Field K]
 [Algebra K ℂ] and A.
-[ ] CMType ι : preCMType F, given [Algebra K ℂ]                      (l.182)
+[ ] CMType ι : preCMType F, given [Algebra K ℂ]                      (l.195)
       Currently `sorry`. Plan (see the file `Pondering`):
-        1. Lie A is a (dim A)-dimensional vector space over the residue
-           field k of e (k ≅ K);
-        2. transfer algebraMap K ℂ to an embedding k →+* ℂ;
-        3. from F →+* End⁰ A get F →+* (Lie A →ₗ[k] Lie A);
-        4. base change to ℂ: F →+* End_ℂ (ℂ ⊗ Lie A);
-        5. this gives dim A embeddings F →+* ℂ, which form a preCMType.
-      Steps 2–4 are done (instance Algebra (κ_ G) ℂ, l.159;
-      complex_lie_algebra_representation_of_CMStrucutre, l.167).
+        1. Lie A is a (dim A)-dimensional vector space over K
+           (Module K (Lie G) via π_κ : κ_ G ≃+* K, LieAlgebra/Defn.lean);
+        2. from F →+* End⁰ A get F →+* (Lie A →ₗ[K] Lie A)
+           (needs char 0; End (mk G) →+* (Lie G →ₗ[K] Lie G) is
+           baseField_lie_algebra_represenation);
+        3. base change to ℂ: F →+* End_ℂ (ℂ ⊗[K] Lie A);
+        4. this gives dim A embeddings F →+* ℂ, which form a preCMType.
       Useful: IsAlgClosed.lift gives F →ₐ[ℚ] ℂ for a number field F;
       there is no Mathlib class "K is a subfield of ℂ", [Algebra K ℂ] is
       the idiom.
-        [ ] step 1: finrank (κ_ A) (Lie A) = dim A (Dimension.lean).
-        [ ] step 5: simultaneous eigenspace decomposition of
+        [ ] step 1: finrank K (Lie A) = dim A
+            (topologicalKrullDim_eq_finrank_baseFiled_Lie, Dimension.lean;
+            reduces to the sorried topologicalKrullDim_eq_finrank_Lie).
+        [ ] steps 2-3.
+        [ ] step 4: simultaneous eigenspace decomposition of
             ℂ ⊗ Lie A under F. No direct Mathlib result; options:
             Module.End.iSup_iInf_maxGenEigenspace_eq_top_of_iSup_maxGenEigenspace_eq_top_of_commute
             + semisimplicity (IsSemisimple.iSup_eigenspace_eq_top) +
@@ -247,11 +233,9 @@ are done. Section CMType now has variables {K : Type} [Field K]
             ℂ ⊗[ℚ] F étale ⇒ ≃ₐ PrimeSpectrum → ℂ
             (Algebra.FormallyEtale.equivPiOfIsSepClosed), missing the
             identification PrimeSpectrum ≃ (F →+* ℂ).
-[ ] complex_lie_algebra_representation_of_CMStrucutre (l.167) and CMType
-      (l.182) still declare their own {K : Type*} [Field K] [Algebra K ℂ],
+[ ] CMType (l.195) still declares its own {K : Type*} [Field K] [Algebra K ℂ],
       shadowing the section variable K : Type while A comes from the
       section (A lives over the section's K). Drop the local binders.
-      Typo in the name ("Strucutre").
 [ ] Check the dimension condition: Module.finrank ℚ F : ℕ is compared
       with topologicalKrullDim A.left : WithBot ℕ∞ (via a cast). Decide
       whether to state dim A as a natural number instead. (In

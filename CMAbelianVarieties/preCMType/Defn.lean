@@ -18,7 +18,10 @@ In this section we define CM types
 
 open ComplexConjugate NumberField
 
-structure preCMType (K : Type*) [Field K] [NumberField K] [IsCMField K] where
+variable {K : Type*} [Field K] [NumberField K] [IsCMField K]
+
+variable (K) in
+structure preCMType where
   partition : Set (K →+* ℂ)
   partition_condition : ∀ φ : (K →+* ℂ), φ ∈ partition ↔
     (conj : ℂ →+* ℂ).comp φ ∈ partitionᶜ
@@ -44,5 +47,7 @@ variable (K : Type*) [Field K] [NumberField K] [IsCMField K]
 
 #check InfinitePlace.nrComplexPlaces
 
-
 end
+
+open TensorProduct in
+def preCMType.ofComplexStructure {j : ℝ ⊗[ℚ] K} (hj : j * j = -1) : preCMType K := sorry

@@ -119,3 +119,12 @@ theorem topologicalKrullDim_eq_finrank_Lie (G : Over (Spec ↧K)) [LocallyOfFini
     [GeometricallyReduced G.hom] [AddGrpObj G] :
     topologicalKrullDim G.left = Module.finrank (κ_ G) (Lie G) := by
   sorry
+
+-- proof written by Claude
+theorem topologicalKrullDim_eq_finrank_baseFiled_Lie (G : Over (Spec ↧K))
+    [LocallyOfFiniteType G.hom] [GeometricallyReduced G.hom] [AddGrpObj G] :
+    topologicalKrullDim G.left = Module.finrank K (Lie G) := by
+  rw [topologicalKrullDim_eq_finrank_Lie, Module.finrank, Module.finrank,
+    rank_eq_of_equiv_equiv (π_κ G) (AddEquiv.refl _) (π_κ G).bijective fun r m ↦ ?_]
+  change r • m = (π_κ G).symm (π_κ G r) • m
+  rw [RingEquiv.symm_apply_apply]

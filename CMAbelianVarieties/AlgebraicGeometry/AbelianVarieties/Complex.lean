@@ -7,6 +7,7 @@ module
 
 public import CMAbelianVarieties.AlgebraicGeometry.LieAlgebra.Dimension
 public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Commutativity
+public import Mathlib.LinearAlgebra.Complex.Module
 
 /-!
 ## Goal
@@ -43,7 +44,7 @@ abbrev lattice := (exponential A).ker
 
 open TensorProduct in
 variable (A) in
-lemma lattice_isLattice : Nonempty (ℝ ⊗[ℤ] (lattice A) ≃+ Lie A) := sorry
+lemma lattice_isLattice : Nonempty (ℝ ⊗[ℤ] (lattice A) ≃ₗ[ℝ] Lie A) := sorry
 
 def lattice_representation' (f : End (mk A)) : lattice A →ₗ[ℤ] lattice A := by
   let φ := (lie_algebra_represenation A f).toAddMonoidHom

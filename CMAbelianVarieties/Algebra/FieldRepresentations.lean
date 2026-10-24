@@ -5,9 +5,7 @@ Authors: Abhijit A J
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Hom.Rat
-public import Mathlib.Basic.Complex.Basic
-public import Mathlib.NumberTheory.NumberField.Basic
+public import CMAbelianVarieties.Algebra.CMField
 public import Mathlib.RingTheory.SimpleRing.Principal
 
 /-!
@@ -24,10 +22,9 @@ runs over all inclusions `i : F →+* ℂ`, and `F` acts on `Vᵢ` via the inclu
 variable {F : Type*} [Field F] [NumberField F]
 variable {V : Type*} [AddCommGroup V] [Module ℂ V]
 
-namespace FieldRepresentations
+open NumberField
 
-variable (F) in
-abbrev Sigma := F →+* ℂ
+namespace FieldRepresentations
 
 instance : Fintype (Sigma F) :=
   Fintype.ofEquiv (F →ₐ[ℚ] ℂ) (RingHom.equivRatAlgHom F ℂ).symm
@@ -64,3 +61,5 @@ lemma decomposition (φ : F →+* (V →ₗ[ℂ] V)) : IsInternal (fun σ : Sigm
 def factor_dim (φ : F →+* (V →ₗ[ℂ] V)) (σ : Sigma F) := Module.finrank ℂ (factor φ σ)
 
 end FieldRepresentations
+
+#min_imports

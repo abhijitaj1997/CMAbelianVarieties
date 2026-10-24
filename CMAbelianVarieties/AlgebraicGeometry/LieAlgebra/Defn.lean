@@ -730,8 +730,13 @@ lemma cotangentEnd_add [IsCommAddMonObj G] (f g : End (mk G)) :
   rw [cotangentEnd_toCotangent, cotangentEnd_toCotangent, cotangentEnd_toCotangent]
   exact this
 
+/-
+Hey claude, this should proably be changed to `End (mk G) →+* (Lie G →ₗ[K] Lie G)`
+And, whatever that follows. Remind me to do it.
+-/
 variable (G) in
-/-- The representation of `End (mk G)` on the Lie algebra of `G`, as a ring homomorphism. -/
+/-- The representation of `End (mk G)` on the Lie algebra of `G`, as a ring homomorphism,
+`End (mk G) →+* (Lie G →ₗ[κ_ G] Lie G)`. -/
 def lie_algebra_represenation [IsCommAddMonObj G] :
     End (mk G) →+* (Lie G →ₗ[κ_ G] Lie G) where
   toFun f := lie_algebra_repsentation' f
@@ -748,20 +753,53 @@ def lie_algebra_represenation [IsCommAddMonObj G] :
     ext
     simp [lie_algebra_repsentation', cotangentEnd_add, LinearMap.dualMap_apply]
 
+section BaseField
+
+open CotangentEndAdd in
 variable (G) in
-open scoped TensorProduct in
-def End_lie_algebra_map [IsCommAddMonObj G] [Algebra (κ_ G) ℂ] :
-    (Lie G →ₗ[κ_ G] Lie G) →+* (ℂ ⊗[κ_ G] (Lie G) →ₗ[ℂ] ℂ ⊗[κ_ G] (Lie G)) where
-  toFun f := TensorProduct.AlgebraTensorModule.map LinearMap.id f
-  map_one' := LinearMap.baseChange_one _ _
-  map_mul' := LinearMap.baseChange_mul
-  map_zero' := LinearMap.baseChange_zero
-  map_add' := LinearMap.baseChange_add
+/-- The residue field `κ_{G,e}` is isomorphic to `K`. The inverse is the composition
+`K ⟶ 𝒪_{G,e} ⟶ κ_{G,e}` of the structure map `π` and the quotient map, and the map
+`κ_{G,e} ⟶ K` is induced by `hζ`. -/
+def π_κ : κ_ G ≃+* K :=
+  RingEquiv.ofRingHom (ResidueField.lift (hζ G).hom) ((residue (𝒪_ G)).comp (π G).hom)
+    (by
+      ext k
+      change (π G ≫ hζ G).hom k = k
+      rw [π_hζ]
+      rfl)
+    (by
+      ext x
+      obtain ⟨a, rfl⟩ := residue_surjective x
+      simpa using residue_π_hζ a)
+
+/-- `Lie G` is a `K`-vector space, via the isomorphism `π_κ : κ_{G,e} ≃ K`. -/
+instance : Module K (Lie G) := Module.compHom (Lie G) (π_κ G).symm.toRingHom
+
+/-- Every `κ_{G,e}`-linear map `Lie G → Lie G` is `K`-linear, since `K` acts through `π_κ`. -/
+instance : LinearMap.CompatibleSMul (Lie G) (Lie G) K (κ_ G) :=
+  ⟨fun f k x ↦ f.map_smul ((π_κ G).symm k) x⟩
+
+variable (G) in
+/-- The representation of `End (mk G)` on the Lie algebra of `G`, as a ring homomorphism,
+`End (mk G) →+* (Lie G →ₗ[K] Lie G)`. -/
+def baseField_lie_algebra_represenation [IsCommAddMonObj G] :
+    End (mk G) →+* (Lie G →ₗ[K] Lie G) where
+  toFun f := (lie_algebra_represenation G f).restrictScalars K
+  map_one' := by rw [map_one]; rfl
+  map_mul' f g := by rw [map_mul]; rfl
+  map_zero' := by rw [map_zero]; rfl
+  map_add' f g := by rw [map_add]; rfl
 
 variable (G) in
 open scoped TensorProduct in
-/-- If the residue field `κ_ G` is contained in `ℂ`, the there is an representation
-of `End (mk G)` on the complexified Lie algebra of `G`, as a ring homomorphism. -/
-def complex_lie_algebra_represenation [IsCommAddMonObj G] [Algebra (κ_ G) ℂ] :
-    End (mk G) →+* (ℂ ⊗[κ_ G] (Lie G) →ₗ[ℂ] ℂ ⊗[κ_ G] (Lie G)) :=
-  (End_lie_algebra_map G).comp (lie_algebra_represenation G)
+/-- The representation of `ℚ ⊗[ℤ] End (mk G)` on the Lie algebra of `G`, as a ring
+homomorphism, `ℚ ⊗[ℤ] End (mk G) →+* (Lie G →ₗ[K] Lie G)`. -/
+def rationalEnd_lie_algebra_represenation [CharZero K] [IsCommAddMonObj G] :
+    ℚ ⊗[ℤ] End (mk G) →+* (Lie G →ₗ[K] Lie G) :=
+  let f₁ : ℚ →ₐ[ℤ] (Lie G →ₗ[K] Lie G) :=
+    ((algebraMap K (Lie G →ₗ[K] Lie G)).comp (Rat.castHom K)).toIntAlgHom
+  let f₂ := (baseField_lie_algebra_represenation G).toIntAlgHom
+  (Algebra.TensorProduct.lift f₁ f₂ fun x y ↦
+    Algebra.commute_algebraMap_left (Rat.castHom K x) (f₂ y)).toRingHom
+
+end BaseField
