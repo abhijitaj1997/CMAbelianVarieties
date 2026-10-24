@@ -4,6 +4,8 @@ public import CMAbelianVarieties.AbstractNonsense.EndBaseChange
 public import CMAbelianVarieties.AbstractNonsense.EndRingIso
 public import CMAbelianVarieties.AbstractNonsense.IntHom
 public import CMAbelianVarieties.AbstractNonsense.PullbackAddGrp
+public import CMAbelianVarieties.Algebra.CMField
+public import CMAbelianVarieties.Algebra.FieldRepresentations
 public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.BaseFieldChange
 public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Catalogue
 public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Commutativity
@@ -27,4 +29,3 @@ public import CMAbelianVarieties.ForMathlib.FunctorCommAddObj
 public import CMAbelianVarieties.Theorem
 public import CMAbelianVarieties.preCMType.Algebra
 public import CMAbelianVarieties.preCMType.Defn
-public import CMAbelianVarieties.preCMType.FieldRepresentations

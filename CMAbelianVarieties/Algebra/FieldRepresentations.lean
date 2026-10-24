@@ -36,7 +36,7 @@ lemma card : Fintype.card (F →+* ℂ) = Module.finrank ℚ F := by
   sorry
 
 def factor (φ : F →+* (V →ₗ[ℂ] V)) (σ : Sigma F) : Submodule ℂ V where
-  carrier := fun v : V ↦ ∀ (x : F), φ x v = (σ x) • v
+  carrier := {v : V | ∀ (x : F), φ x v = (σ x) • v}
   add_mem' := by
     intro v₁ v₂ hv₁ hv₂ x
     specialize hv₁ x
