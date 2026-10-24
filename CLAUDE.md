@@ -56,10 +56,12 @@ When I ask you to update Mathlib, do the following in the project root, in order
    that I can watch live. Use `script` so they still see a real terminal (I keep the
    progress bars and estimated time left) while the output is recorded to a log file
    in your scratchpad directory (`<LOG>` below):
-       gnome-terminal -- bash -c 'cd /home/abhijit/lean/CMAbelianVarieties && \
+       gnome-terminal --working-directory="$(git rev-parse --show-toplevel)" -- bash -c '
          script -q -e -c "lake update && lake exe cache get && lake exe mk_all && lake build" <LOG>; \
          echo "MATHLIB UPDATE FINISHED (exit $?)" | tee -a <LOG>; \
          exec bash'
+   (Run this from inside the project; the project path differs between my
+   computers, so do not hard-code it.)
    Tell me when the window has been opened. Then wait for the
    `MATHLIB UPDATE FINISHED` line to appear in the log, strip the terminal control
    codes from it, read it, and report the outcome to me: which command it stopped at
@@ -88,6 +90,11 @@ make (`lean-toolchain`, `lakefile.toml`, `lake-manifest.json`, `CMAbelianVarieti
 - `MindMap.md`: Mermaid diagram of imports between project files.
 - `ClaudeCodeChecklist`: the end-of-session checklist. When I say "run the
   checklist", follow it step by step, exactly.
+  - Whenever you notice uncommitted changes to `ClaudeCodeChecklist`, check that
+    its note still says to print `Checklist complete!` with the summary right after
+    the last main step (the final build and commit), and not after an on-request
+    step such as the push or at a stale step number. If it is out of date, tell me
+    and suggest the fix.
 
 ## Lean conventions
 - Follow Mathlib style and naming conventions.

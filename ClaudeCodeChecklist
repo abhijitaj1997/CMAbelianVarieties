@@ -7,7 +7,7 @@ Note: if you have to stop running the checklist and inform the user of
 something, be precise about the issue you are raising. Do not report what
 was successful; only say precisely why you stopped running the checklist
 (which file, which line, what the problem is, and what you suggest).
-If the checklist runs to the end, finish with a summary titled
+If the checklist runs through step 8, finish with a summary titled
 `Checklist complete!`: the commit hash, the build result, and what each
 step changed (files edited, imports removed, ToDo / mind map updates),
 skipping steps that changed nothing.
@@ -77,3 +77,26 @@ skipping steps that changed nothing.
        git add -A
        git commit -m "chore: complete end-of-session checklist"
    If there were errors, do NOT commit; report the errors instead.
+
+9. (Only if the user asks you to push, after the checklist is complete.)
+   Do not try to push yourself: you do not have the user's GitHub credentials.
+   Instead, open a new terminal window that runs the push with the user's username
+   already filled in, so that the user only has to enter their token. If a push
+   fails (e.g. the user mistypes the token), it tries again, up to 3 attempts in total.
+   It writes the result to a log file in your scratchpad directory (`<LOG>`
+   below):
+       gnome-terminal --working-directory="$(git rev-parse --show-toplevel)" -- bash -c '
+         for i in 1 2 3; do
+           git -c credential.username=abhijitaj1997 push && { r=0; break; }
+           r=1; [ $i -lt 3 ] && echo "Push failed, trying again (attempt $((i+1)) of 3)"
+         done
+         echo "PUSH FINISHED (exit $r)" | tee <LOG>; exec bash'
+   (Run this from inside the project; the project path differs between the
+   user's computers, so do not hard-code it.)
+   Tell the user when the window has been opened. Then, without waiting for
+   the user to say anything, wait in the background for the `PUSH FINISHED` line to appear
+   in the log, check with
+       git status -sb
+   that master is no longer ahead of origin/master, and tell the user the result:
+   either that the push succeeded, or that all 3 attempts failed (in which
+   case the user can read the error in the terminal window).
