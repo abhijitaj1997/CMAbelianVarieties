@@ -210,6 +210,10 @@ def incl : (ℚ ⊗[ℤ] (lattice (A _ ℂ))) →ₗ[ℤ] (ℝ ⊗[ℤ] (lattice
 • `i : ℝ ⊗[ℤ] L ≅ Lie A`
 • `σ x` is the action of `x` on `Lie A`
 • `incl : ℚ ⊗[ℤ] L →ₗ[ℤ] ℝ ⊗[ℤ] L`
+
+
+in below, `x : F` should be replaced by `ι_x`, in the rational endomorphism
+ring, and we need to consider doing induction on that.
 -/
 
 -- this is the hard one
@@ -221,12 +225,14 @@ lemma lattice_incl_smul {F : Type*} [Field F] [NumberField F] [IsCMField F] (ι 
     ((ι.basechange ℂ).incl x) (lattice_isLattice_map (A _ ℂ) (incl A v)) := by
   let := module_rational_lattice_of_CMStructure ι
   induction v using TensorProduct.inductionOn with
-    | tmul r f =>
+    | tmul r l =>
         let i := lattice_isLattice_map (A _ ℂ)
         let σ (x : F) := rationalEnd_lie_algebra_represenation (A _ ℂ) ((ι.basechange ℂ).incl x)
+        let ι_x := (ι.basechange ℂ).incl x
         have hi : i = lattice_isLattice_map (A _ ℂ) := rfl
         have hσ (x : F) : σ x = rationalEnd_lie_algebra_represenation (A _ ℂ) ((ι.basechange ℂ).incl
              x) := rfl
+
         simp [← hi, ← hσ]
         sorry
     | add a b ha hb => simp [smul_add, map_add, ha, hb]
