@@ -84,18 +84,25 @@ to_additive_do_translate).
 AlgebraicGeometry/AbelianVarieties/Complex.lean
 -----------------------------------------------
 Complex abelian varieties A over Spec ℂ and uniformization. Line numbers
-as of 2026-10-23. lattice_representation and lattice_freeModule are done
+as of 2026-10-26. lattice_representation and lattice_freeModule are done
 modulo the sorries below.
 [ ] exponential : Lie A →+ |A ℂ|                                     (l.30)
       The exponential map. Currently `sorry`.
 [ ] end_comp_exponential f g                                         (l.35)
       (AddMonoidHom_of_End f) (exp g) = exp ((lie_algebra_represenation A f) g).
-[ ] lattice_isLattice : Nonempty (ℝ ⊗[ℤ] lattice A ≃+ Lie A)          (l.46)
-      The lattice spans Lie A over ℝ. Currently `sorry`.
-[ ] lattice_linearEquiv                                              (l.78)
+[ ] lattice_isLattice_map : ℝ ⊗[ℤ] lattice A ≃ₗ[ℝ] Lie A             (l.47)
+      (replaces the old `Nonempty` lemma lattice_isLattice, whose `.some`
+      was an arbitrary isomorphism, not compatible with endomorphisms.)
+      toFun is the canonical map r ⊗ l ↦ r • l (via TensorProduct.lift).
+      Still `sorry`: map_add', map_smul', invFun, left_inv, right_inv
+      (l.61–65). Suggestion: toFun := LinearMap.liftBaseChange ℝ
+      (lattice A).subtype.toIntLinearMap (already ℝ-linear), and build
+      the equiv with LinearEquiv.ofBijective, leaving only bijectivity
+      as a `sorry`.
+[ ] lattice_linearEquiv                                              (l.97)
       (renamed from lattice_addEquiv) lattice A ≃ₗ[ℤ] (Fin (2 * g) → ℤ)
       for g = dim A: the lattice is free of rank 2 * dim A.
-[ ] Drop the prime of lattice_representation' (l.48) eventually.
+[ ] Drop the prime of lattice_representation' (l.67) eventually.
 [ ] Cleanup: typo "uniforization" in the module docstring (l.15).
 
 
@@ -202,46 +209,31 @@ AlgebraicGeometry/TheCube.lean
 
 Defn.lean (CM abelian varieties)
 --------------------------------
-Line numbers as of 2026-10-23. CMStructure, basechange (modulo
-dimension_isStableUnderBasechange), and the F-module structure on the
-rational lattice ℚ ⊗[ℤ] lattice (A _ ℂ) (CMField_ringHom_rationalLattice,
-module_rational_lattice_of_CMStructure, finrank_rational_lattice_of_CMStructure
-= 1, nonempty_linearEquiv_rational_lattice_of_CMStructure : F ≃ₗ[F] …)
-are done. Section CMType now has variables {K : Type} [Field K]
-[Algebra K ℂ] and A.
-[ ] CMType ι : preCMType F, given [Algebra K ℂ]                      (l.195)
-      Currently `sorry`. Plan (see the file `Pondering`):
-        1. Lie A is a (dim A)-dimensional vector space over K
-           (Module K (Lie G) via π_κ : κ_ G ≃+* K, LieAlgebra/Defn.lean);
-        2. from F →+* End⁰ A get F →+* (Lie A →ₗ[K] Lie A)
-           (needs char 0; End (mk G) →+* (Lie G →ₗ[K] Lie G) is
-           baseField_lie_algebra_represenation);
-        3. base change to ℂ: F →+* End_ℂ (ℂ ⊗[K] Lie A);
-        4. this gives dim A embeddings F →+* ℂ, which form a preCMType.
-      Useful: IsAlgClosed.lift gives F →ₐ[ℚ] ℂ for a number field F;
-      there is no Mathlib class "K is a subfield of ℂ", [Algebra K ℂ] is
-      the idiom.
-        [ ] step 1: finrank K (Lie A) = dim A
-            (topologicalKrullDim_eq_finrank_baseFiled_Lie, Dimension.lean;
-            reduces to the sorried topologicalKrullDim_eq_finrank_Lie).
-        [ ] steps 2-3.
-        [ ] step 4: simultaneous eigenspace decomposition of
-            ℂ ⊗ Lie A under F. No direct Mathlib result; options:
-            Module.End.iSup_iInf_maxGenEigenspace_eq_top_of_iSup_maxGenEigenspace_eq_top_of_commute
-            + semisimplicity (IsSemisimple.iSup_eigenspace_eq_top) +
-            "a nonzero eigencharacter is a ring hom"; or
-            ℂ ⊗[ℚ] F étale ⇒ ≃ₐ PrimeSpectrum → ℂ
-            (Algebra.FormallyEtale.equivPiOfIsSepClosed), missing the
-            identification PrimeSpectrum ≃ (F →+* ℂ).
-[ ] CMType (l.195) still declares its own {K : Type*} [Field K] [Algebra K ℂ],
-      shadowing the section variable K : Type while A comes from the
-      section (A lives over the section's K). Drop the local binders.
+Line numbers as of 2026-10-26. CMStructure, basechange (modulo
+dimension_isStableUnderBasechange), the F-module structure on the
+rational lattice ℚ ⊗[ℤ] lattice (A _ ℂ) and F ≃ₗ[F] (ℚ ⊗[ℤ] L) (`u`) are
+done. CMType ι is now defined as preCMType.ofComplexStructure (J_one ι),
+where J is multiplication by i on Lie (A _ ℂ) transported to ℝ ⊗[ℚ] F via
+u_ℝ : ℝ ⊗[ℚ] F ≃ₗ[ℝ] Lie (A _ ℂ). J_one, u_ℝ_one_tmul_mul, u_mul,
+ψ₂_tmul are proved, modulo the sorries below.
+[ ] lattice_incl_smul                                                (l.221)
+      i (incl (x • v)) = σ(ι x) (i (incl v)), with i = lattice_isLattice_map,
+      σ = rationalEnd_lie_algebra_represenation. The `add` case is done,
+      the `tmul` case is `sorry`; u_ℝ_one_tmul_mul depends on it.
+      Plan: generalize from ι x to any e : End⁰ (A _ ℂ) and induct on e
+      too. Needs: the map End⁰ → Module.End ℚ (ℚ ⊗[ℤ] L) pulled out of
+      CMField_ringHom_rationalLattice as a named def (inlining it as a
+      `let` times out), and `tmul` lemmas (proved by rfl) for it, for
+      rationalEnd_lie_algebra_represenation and for lattice_isLattice_map.
+      Note: rw [Algebra.TensorProduct.lift_tmul] does not fire on
+      ℚ ⊗[ℤ] End (mk _) (only erw works) and some rw's time out; maybe two
+      ℤ-module structures on End (mk A) (hom-group vs ring). Unconfirmed.
 [ ] Check the dimension condition: Module.finrank ℚ F : ℕ is compared
       with topologicalKrullDim A.left : WithBot ℕ∞ (via a cast). Decide
       whether to state dim A as a natural number instead. (In
       finrank_rational_lattice_of_CMStructure the cast is undone with
       `norm_cast`.)
-[ ] dimension_isStableUnderBasechange                                (l.80)
+[ ] dimension_isStableUnderBasechange                                (l.84)
       dim X = dim (X _ K₁) for X locally of finite type over K.
       [LocallyOfFiniteType X.hom] is needed: without it the statement is
       false (X = Spec K(t), K₁ = K(t)). Nothing in Mathlib proves it;
@@ -251,12 +243,15 @@ are done. Section CMType now has variables {K : Type} [Field K]
       (exists_integral_inj_algHom_of_fg) and "finite injective extensions
       preserve Krull dimension" (not found in Mathlib). Should be moved
       to AlgebraicGeometry/ (e.g. Dimension.lean).
-[ ] End.algHom_ofBaseChange (l.66) lives in namespace CMStructure, but is
+[ ] End.algHom_ofBaseChange (l.70) lives in namespace CMStructure, but is
       a general fact about endomorphisms; could be moved out.
 [ ] Cleanup: the `#check
-      smoothOfRelativeDimension_isStableUnderBaseChange` (l.78) and the
+      smoothOfRelativeDimension_isStableUnderBaseChange` (l.82), the
       "Hey claude, remind me to move this to another file about
-      dimensions" comment (l.76).
+      dimensions" comment (l.79), and `#check lattice_isLattice_map`
+      (l.254). u_ℚ_mul could be proved by `exact u_mul ι a b`.
+      ψ₂_tmul uses `erw [TensorProduct.map_tmul]`; an `incl_tmul` rfl
+      lemma would avoid it.
 
 
 AlgebraicGeometry/AbelianVarieties/BaseFieldChange.lean
@@ -301,15 +296,20 @@ New file (19bb4f6), line numbers as of that commit. No sorries yet.
       card Φ = nrComplexPlaces K = finrank ℚ K / 2
       (NumberField.Embeddings.card, IsTotallyComplex.finrank).
 
+[ ] preCMType.ofComplexStructure                                     (l.53)
+      A complex structure j : ℝ ⊗[ℚ] K with j * j = -1 gives a preCMType K.
+      Currently `sorry`. Used to define CMType in Defn.lean.
+
 [ ] Cleanup: the file is mostly #check / #synth exploration. (Imports
       are already minimal and `#min_imports` was removed, 2026-10-19.)
 
 
-preCMType/FieldRepresentations.lean
------------------------------------
+Algebra/FieldRepresentations.lean (moved from preCMType/)
+---------------------------------------------------------
 New file (a164484). Goal: for a number field F and a representation
 φ : F →+* End_ℂ V, decompose V = ⊕_{σ : F →+* ℂ} V_σ, with F acting on
-V_σ through σ (step 5 of CMType in Defn.lean). Line numbers as of
+V_σ through σ (was step 5 of the old CMType plan; CMType is now
+defined via ofComplexStructure, so this file may no longer be needed). Line numbers as of
 2026-10-23.
 [ ] card : Fintype.card (F →+* ℂ) = finrank ℚ F                      (l.34)
       Currently `sorry`. Note in the file: this lemma is not needed.
@@ -317,3 +317,10 @@ V_σ through σ (step 5 of CMType in Defn.lean). Line numbers as of
       Currently `sorry`.
 [ ] Note in the file (l.55): opening `Classical` globally gave a
       warning; it is now opened only locally (`open DirectSum Classical in`).
+
+
+Algebra/CMField.lean
+--------------------
+New file (5b16965). Line numbers as of 2026-10-26.
+[ ] real_tensor_CMField : ℝ ⊗[ℚ] F ≃ₐ[ℝ] ({w // w.IsComplex} → ℂ)    (l.37)
+      For a CM field F. Currently `sorry`.

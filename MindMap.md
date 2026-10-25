@@ -10,7 +10,7 @@ An arrow `A --> B` means "A imports B". `CMAbelianVarieties.lean` imports every 
 graph TD
   %% ---------- top level ----------
   Theorem["<b>Theorem</b><br/><i>main theorem: CM abelian varieties have models over number fields</i>"]
-  Defn["<b>Defn</b><br/><i>CMStructure, F-module ℚ ⊗ lattice ≅ F, κ_ A → ℂ, F acting on ℂ ⊗ Lie A, CMType</i>"]
+  Defn["<b>Defn</b><br/><i>CMStructure, F-module ℚ ⊗ lattice ≅ F, u_ℝ : ℝ ⊗ F ≅ Lie A, complex structure J, CMType</i>"]
 
   %% ---------- AbstractNonsense ----------
   subgraph AN["AbstractNonsense/"]
@@ -39,7 +39,7 @@ graph TD
       BaseFieldChange["<b>BaseFieldChange</b><br/><i>A _ K₁, base change to K₁</i>"]
       AVCatalogue["<b>Catalogue</b><br/><i>#check cheat sheet</i>"]
       Commutativity["<b>Commutativity</b> ★<br/><i>abelian varieties are commutative</i>"]
-      Complex["<b>Complex</b><br/><i>complex abelian varieties: exp, lattice, free of rank 2g</i>"]
+      Complex["<b>Complex</b><br/><i>complex abelian varieties: exp, lattice, ℝ ⊗ lattice ≅ Lie A, free of rank 2g</i>"]
       subgraph HOM["Homomorphisms/"]
         direction TB
         EndomorphismRing["<b>EndomorphismRing</b><br/><i>End A, End A ⊗ ℚ</i>"]
@@ -60,7 +60,7 @@ graph TD
   %% ---------- preCMType ----------
   subgraph CM["preCMType/"]
     direction TB
-    CMDefn["<b>Defn</b><br/><i>preCMType</i>"]
+    CMDefn["<b>Defn</b><br/><i>preCMType, preCMType from a complex structure</i>"]
     CMAlgebra["<b>Algebra</b><br/><i>background for CM types</i>"]
   end
 
