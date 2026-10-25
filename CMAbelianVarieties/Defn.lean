@@ -20,8 +20,8 @@ In this section, we will define CM Abelian varieties
 
 @[expose] public noncomputable section
 
-open CategoryTheory AlgebraicGeometry AddGrp NumberField
-open scoped TensorProduct End RationalEnd
+open CategoryTheory AlgebraicGeometry AddGrp NumberField RationalEnd
+open scoped TensorProduct End
 
 section CMStructure
 
@@ -42,8 +42,7 @@ definition, in fact it is weaker).
 3. In characteristic zero, some authors define a CM abelian variety of CM type `(F, Φ)`, where
 `Φ` is read off of the action of `F` on the Lie algebra of `A` (this definition is equivalent
 to our definition in characteristic zero). -/
-structure CMStructure (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyIntegral A.hom]
-    [AddGrpObj A] (F : Type*) [Field F] [NumberField F] [IsCMField F] where
+structure CMStructure (F : Type*) [Field F] [NumberField F] [IsCMField F] where
   /-- The inclusion of the CM field into the algebra of rational endomorphisms -/
   incl : F →+* End⁰ A
   /-- The dimension of the CM field is twice the Krull dimension of the abelian variety -/
@@ -64,6 +63,10 @@ open CommRingCat Spec
 
 variable {F : Type*} [Field F] [NumberField F] [IsCMField F]
 
+def Iso {B : Over (Spec ↧K)} [IsProper B.hom] [GeometricallyIntegral B.hom] [AddGrpObj B]
+    (ι_A : CMStructure A F) (ι_B : CMStructure B F) :=
+  {φ : AddGrp.mk A ≅ AddGrp.mk B // (conjAlgEquiv φ).toRingHom.comp ι_A.incl = ι_B}
+
 def End.algHom_ofBaseChange (A : Over (Spec ↧K)) [AddGrpObj A] [IsCommAddMonObj A] (K₁ : Type u)
     [Field K₁] [Algebra K K₁] : End (AddGrp.mk A) →ₐ[ℤ] End (AddGrp.mk (A _ K₁)) :=
   AddGrp.End.algHom_ofBaseChange (Over.pullback (map (ofHom (Algebra.algebraMap K K₁))))
@@ -72,9 +75,9 @@ def rational_end_morphism (A : Over (Spec ↧K)) [IsProper A.hom] [Geometrically
     [AddGrpObj A] (K₁ : Type u) [Field K₁] [Algebra K K₁] : End⁰ A →+* End⁰ ((A _ K₁)) :=
   (Algebra.TensorProduct.map (AlgHom.id ℤ ℚ) (End.algHom_ofBaseChange A K₁)).toRingHom
 
-
 /-
-Hey claude, remind me to move this to another file about dimenions.
+Hey claude, remind me to move this to another file about dimenions. maybe even a file like
+AlgebraiGeometry.Basic
 -/
 #check smoothOfRelativeDimension_isStableUnderBaseChange -- But I don't wanna just prove this
 -- for AVs
@@ -106,7 +109,7 @@ def CMField_ringHom_rationalLattice {F : Type*} [Field F] [NumberField F]
   let g₂ : End (AddGrp.mk (A _ ℂ)) →ₐ[ℤ] Module.End ℚ (ℚ ⊗[ℤ] L) :=
     (Module.End.baseChangeHom ℤ ℚ L).comp (lattice_representation (A _ ℂ)).toIntAlgHom
   let ψ' := (Algebra.TensorProduct.lift g₁ g₂ fun x y ↦ Algebra.commutes x (g₂ y)).toRingHom
-  exact (ψ' : End⁰ (A _ ℂ) →+* Module.End ℚ (ℚ ⊗[ℤ] L)).comp (ι.basechange ℂ).incl
+  exact (ψ' : End⁰ (A _ ℂ) →+* Module.End ℚ (ℚ ⊗[ℤ] L)).comp (ι.basechange ℂ)
 
 @[instance_reducible]
 def module_rational_lattice_of_CMStructure {F : Type*} [Field F] [NumberField F]
@@ -157,39 +160,116 @@ lemma nonempty_linearEquiv_rational_lattice_of_CMStructure {F : Type*} [Field F]
   have : FiniteDimensional F (ℚ ⊗[ℤ] lattice (A _ ℂ)) := Module.finite_of_finrank_eq_succ h
   exact ⟨LinearEquiv.ofFinrankEq _ _ (by rw [Module.finrank_self, h])⟩
 
-/- Not needed (just for the lemma and notation below)
+/-- A fixed isomorphism `F ≃ₗ[F] (ℚ ⊗[ℤ] L)`, where `L` is the lattice of
+the complex abelian variety. -/
 def u {F : Type*} [Field F] [NumberField F] [IsCMField F] (ι : CMStructure A F) :
     letI := module_rational_lattice_of_CMStructure ι
     F ≃ₗ[F] (ℚ ⊗[ℤ] lattice (A _ ℂ)) :=
   letI := module_rational_lattice_of_CMStructure ι
   (nonempty_linearEquiv_rational_lattice_of_CMStructure ι).some
 
-lemma catalogue {F : Type*} [Field F] [NumberField F] [IsCMField F] (ι : CMStructure A F) :
-    1 = 1 := by
+lemma u_mul {F : Type*} [Field F] [NumberField F] [IsCMField F] (ι : CMStructure A F) (x y : F) :
+    letI := module_rational_lattice_of_CMStructure ι
+    u ι (x * y) =  x • (u ι y) := by
   let := module_rational_lattice_of_CMStructure ι
-  #check u ι
-  #check (u ι).toLinearMap
-  #check (u ι).symm
-  #check (u ι).symm.toLinearMap
-  #check (u ι).bijective
-  rfl-/
+  exact map_smul (u ι) x y
 
 def u_ℚ {F : Type*} [Field F] [NumberField F] [IsCMField F] (ι : CMStructure A F) :
     F ≃ₗ[ℚ] (ℚ ⊗[ℤ] lattice (A _ ℂ)) :=
   letI := module_rational_lattice_of_CMStructure ι
-  (nonempty_linearEquiv_rational_lattice_of_CMStructure ι).some.restrictScalars ℚ
+  (u ι).restrictScalars ℚ
 
+lemma u_ℚ_mul {F : Type*} [Field F] [NumberField F] [IsCMField F] (ι : CMStructure A F) :
+    letI := module_rational_lattice_of_CMStructure ι
+    ∀ a b : F, u_ℚ ι (a * b) = a • u_ℚ ι b := by
+  let := module_rational_lattice_of_CMStructure ι
+  intro a b
+  simp only [u_ℚ, LinearEquiv.restrictScalars_apply]
+  exact map_smul ((nonempty_linearEquiv_rational_lattice_of_CMStructure ι).some) a b
+
+/-- The isomorphism `ℝ ⊗[ℚ] F ≃ₗ ℝ ⊗[ℚ] (ℚ ⊗[ℤ] L)`, where `L` is the lattice of
+the complex abelian variety. -/
+def ψ₁ {F : Type*} [Field F] [NumberField F] [IsCMField F] (ι : CMStructure A F)
+  := LinearEquiv.baseChange ℚ ℝ F (ℚ ⊗[ℤ] (lattice (A _ ℂ))) (u_ℚ ι)
+
+lemma ψ₁_tmul {F : Type*} [Field F] [NumberField F] [IsCMField F] (ι : CMStructure A F) :
+    ∀ x : ℝ, ∀ y : F, ψ₁ ι (x ⊗ₜ[ℚ] y) = (x ⊗ₜ[ℚ] u ι y) :=
+  fun x y ↦ by simp [ψ₁, u_ℚ]
+
+variable (A) in
+/-- The isomorphism `ℝ ⊗[ℚ] (ℚ ⊗[ℤ] L) ≃ₗ[ℝ] ℝ ⊗[ℤ] L`, where `L` is the lattice of
+the complex abelian variety. -/
+def ψ₂ := TensorProduct.AlgebraTensorModule.cancelBaseChange ℤ ℚ ℝ ℝ (lattice (A _ ℂ))
+
+variable (A) in
+/-- The natural linear map `(ℚ ⊗[ℤ] L) →ₗ[ℤ] (ℝ ⊗[ℤ] L)` -/
+def incl : (ℚ ⊗[ℤ] (lattice (A _ ℂ))) →ₗ[ℤ] (ℝ ⊗[ℤ] (lattice (A _ ℂ))) :=
+  TensorProduct.map (algebraMap ℚ ℝ).toAddMonoidHom.toIntLinearMap LinearMap.id
+
+/-
+• `i : ℝ ⊗[ℤ] L ≅ Lie A`
+• `σ x` is the action of `x` on `Lie A`
+• `incl : ℚ ⊗[ℤ] L →ₗ[ℤ] ℝ ⊗[ℤ] L`
+-/
+
+-- this is the hard one
+variable (A) in
+lemma lattice_incl_smul {F : Type*} [Field F] [NumberField F] [IsCMField F] (ι : CMStructure A F)
+    (x : F) (v : ℚ ⊗[ℤ] (lattice (A _ ℂ))) :
+    letI := module_rational_lattice_of_CMStructure ι
+    lattice_isLattice_map (A _ ℂ) (incl A (x • v)) = rationalEnd_lie_algebra_represenation (A _ ℂ)
+    ((ι.basechange ℂ).incl x) (lattice_isLattice_map (A _ ℂ) (incl A v)) := by
+  let := module_rational_lattice_of_CMStructure ι
+  induction v using TensorProduct.inductionOn with
+    | tmul r f =>
+        let i := lattice_isLattice_map (A _ ℂ)
+        let σ (x : F) := rationalEnd_lie_algebra_represenation (A _ ℂ) ((ι.basechange ℂ).incl x)
+        have hi : i = lattice_isLattice_map (A _ ℂ) := rfl
+        have hσ (x : F) : σ x = rationalEnd_lie_algebra_represenation (A _ ℂ) ((ι.basechange ℂ).incl
+             x) := rfl
+        simp [← hi, ← hσ]
+        sorry
+    | add a b ha hb => simp [smul_add, map_add, ha, hb]
+
+variable (A) in
+omit [IsProper A.hom] [GeometricallyIntegral A.hom] in
+-- proof written by Claude
+lemma ψ₂_tmul : ∀ x : ℝ, ∀ y : (ℚ ⊗[ℤ] (lattice (A _ ℂ))), ψ₂ A (x ⊗ₜ[ℚ] y) = x • (incl A y) := by
+  intro x y
+  induction y using TensorProduct.inductionOn with
+  | tmul q l =>
+    simp only [ψ₂, TensorProduct.AlgebraTensorModule.cancelBaseChange_tmul]
+    erw [TensorProduct.map_tmul, TensorProduct.smul_tmul']
+    congr 1
+    simp [Algebra.smul_def, mul_comm]
+  | add y₁ y₂ h₁ h₂ => simp only [TensorProduct.tmul_add, map_add, h₁, h₂, smul_add]
+
+/- The isomorphisms `ℝ ⊗[ℤ] L ≃ₗ[ℝ] Lie (A _ ℂ )` -/
+#check lattice_isLattice_map (A _ ℂ)
+
+/-- The isomorphism `ℝ ⊗[ℚ] F ≃ₗ[ℝ] (Lie (A _ ℂ))` which takes `x ⊗ y` to -/
 def u_ℝ {F : Type*} [Field F] [NumberField F] [IsCMField F] (ι : CMStructure A F) :
     ℝ ⊗[ℚ] F ≃ₗ[ℝ] (Lie (A _ ℂ)) :=
-  let ψ₁ := TensorProduct.AlgebraTensorModule.cancelBaseChange ℤ ℚ ℝ ℝ ↥(lattice (A _ ℂ))
-  let ψ₂ := LinearEquiv.baseChange ℚ ℝ F (ℚ ⊗[ℤ] ↥(lattice (A _ ℂ))) (u_ℚ ι)
-  (ψ₂.trans ψ₁).trans (lattice_isLattice (A _ ℂ)).some
+  ((ψ₁ ι).trans (ψ₂ A)).trans (lattice_isLattice_map (A _ ℂ))
 
 lemma u_ℝ_one_tmul_mul {F : Type*} [Field F] [NumberField F] [IsCMField F] (ι : CMStructure A F) :
     ∀ x : F, ∀ y : ℝ ⊗[ℚ] F, (u_ℝ ι) (1 ⊗ₜ[ℚ] x * y) = rationalEnd_lie_algebra_represenation (A _ ℂ)
     ((ι.basechange ℂ).incl x) ((u_ℝ ι) y) := by
+  let := module_rational_lattice_of_CMStructure ι
   intro x y
-  sorry
+  induction y using TensorProduct.inductionOn with
+  | tmul r t =>
+      have (f : End⁰ (A _ ℂ)) : ∀ r : ℝ, ∀ v : Lie (A _ ℂ), rationalEnd_lie_algebra_represenation
+          (A _ ℂ) f (r • v) = r • rationalEnd_lie_algebra_represenation (A _ ℂ) f v :=
+        fun r v ↦ by simp
+      have h : (lattice_isLattice_map (A _ ℂ)) ((incl A) ((u ι) (x * t))) =
+          (rationalEnd_lie_algebra_represenation (A _ ℂ)) ((ι.basechange ℂ).incl x)
+          ((lattice_isLattice_map (A _ ℂ)) ((incl A) ((u ι) t))) := by
+        simp [u_mul ι x t, lattice_incl_smul]
+      simp only [Algebra.TensorProduct.tmul_mul_tmul, one_mul,
+        u_ℝ, LinearEquiv.trans_apply, LinearEquiv.trans_apply, ψ₁_tmul, ψ₂_tmul, map_smul, this, h]
+  | add y₁ y₂ h₁ h₂ =>
+      rw [mul_add, map_add, h₁, h₂, map_add, map_add]
 
 def complex_I_mul (V : Type*) [AddCommGroup V] [Module ℂ V] : V →ₗ[ℂ] V :=
   DistribSMul.toLinearMap _ V Complex.I
@@ -199,27 +279,32 @@ def J {F : Type*} [Field F] [NumberField F] [IsCMField F] (ι : CMStructure A F)
   ((u_ℝ ι).symm.toLinearMap.comp ((complex_I_mul (Lie (A _ ℂ))).restrictScalars ℝ)).comp
   (u_ℝ ι).toLinearMap
 
+-- aided by claude
+open LinearMap in
 lemma J_one {F : Type*} [Field F] [NumberField F] [IsCMField F] (ι : CMStructure A F) :
     J ι 1 * J ι 1 = -1 := by
-  have hJ : ∀ v : ℝ ⊗[ℚ] F, (J ι) (J ι v) = - v := sorry
-  let μ (x : F) : ℝ ⊗[ℚ] F →ₗ[ℝ] ℝ ⊗[ℚ] F :=
-    TensorProduct.AlgebraTensorModule.map (LinearMap.id : ℝ →ₗ[ℝ] ℝ)
-      ((DistribSMul.toLinearMap F F x).restrictScalars ℚ)
+  have hJ : ∀ v : ℝ ⊗[ℚ] F, J ι (J ι v) = -v := by
+    intro v
+    simp [J, complex_I_mul, smul_smul]
+  let μ (x : F) : ℝ ⊗[ℚ] F →ₗ[ℝ] ℝ ⊗[ℚ] F := mulLeft ℝ (1 ⊗ₜ[ℚ] x)
   have hμ : ∀ x : F, ∀ y : ℝ ⊗[ℚ] F, (u_ℝ ι) (μ x y) = rationalEnd_lie_algebra_represenation (A _ ℂ)
-    ((ι.basechange ℂ).incl x) ((u_ℝ ι) y) := by
-    intro x y
-    have : μ x y = 1 ⊗ₜ x * y := by
-      simp [μ]
-      sorry
-    rw [this]
-    exact u_ℝ_one_tmul_mul ι x y
-  have : ∀ x : F, (J ι).comp (μ x) = (μ x).comp (J ι) := by
+      ((ι.basechange ℂ).incl x) ((u_ℝ ι) y) :=
+    u_ℝ_one_tmul_mul ι
+  have h : ∀ x : F, (J ι).comp (μ x) = (μ x).comp (J ι) := by
     intro x
-    sorry
-  have : ∀ y : ℝ ⊗[ℚ] F, J ι y = (J ι 1) * y := sorry
-  specialize this (J ι 1)
-  rw [hJ 1] at this
-  rw [this]
+    ext v
+    apply (u_ℝ ι).injective
+    simp [J, hμ, complex_I_mul]
+  have : ∀ y : ℝ ⊗[ℚ] F, J ι y = J ι 1 * y := by
+    intro y
+    induction y using TensorProduct.inductionOn with
+    | tmul r f =>
+      have : r ⊗ₜ[ℚ] f = r • μ f 1 := by
+        simp [μ, Algebra.TensorProduct.one_def, TensorProduct.smul_tmul']
+      rw [this, map_smul, ← LinearMap.comp_apply, h f, LinearMap.comp_apply]
+      simp [μ, mul_comm]
+    | add a b ha hb => rw [map_add, ha, hb, mul_add]
+  rw [← this, hJ]
 
 /-- Given a CM strucutre on an Abelian variety `A` over a field `K`, such that `K` is
 a subfield of `ℂ`, and `F` is the CM Field in the CM Structure. The, we have a preCMType

@@ -38,3 +38,5 @@ def ι : CMStructure A F where
 
 -- nice!!
 example (κ : CMStructure A F) : F →+* End⁰ A := κ
+
+#check ι.Iso ι

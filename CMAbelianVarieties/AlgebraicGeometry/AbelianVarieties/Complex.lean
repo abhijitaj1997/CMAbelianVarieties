@@ -44,7 +44,25 @@ abbrev lattice := (exponential A).ker
 
 open TensorProduct in
 variable (A) in
-lemma lattice_isLattice : Nonempty (ℝ ⊗[ℤ] (lattice A) ≃ₗ[ℝ] Lie A) := sorry
+def lattice_isLattice_map : (ℝ ⊗[ℤ] (lattice A) ≃ₗ[ℝ] Lie A) where
+  toFun := by
+    let f : ℝ →ₗ[ℤ] lattice A →ₗ[ℤ] Lie A := {
+      toFun x := {
+        toFun l := x • (lattice A).subtype l
+        map_add' x y := by simp
+        map_smul' n l := smul_comm x n (l : Lie A)
+      }
+      map_add' x y := by
+        ext _
+        simp [add_smul]
+      map_smul' n x := LinearMap.ext fun l ↦ smul_assoc n x (l : Lie A)
+    }
+    exact (TensorProduct.lift f).toFun
+  map_add' := sorry
+  map_smul' := sorry
+  invFun := sorry
+  left_inv := sorry
+  right_inv := sorry
 
 def lattice_representation' (f : End (mk A)) : lattice A →ₗ[ℤ] lattice A := by
   let φ := (lie_algebra_represenation A f).toAddMonoidHom
