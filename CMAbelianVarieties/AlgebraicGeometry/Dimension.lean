@@ -7,7 +7,6 @@ module
 
 public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.BaseFieldChange
 public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
-public import Mathlib.Topology.KrullDimension
 
 /-!
 ## Dimension

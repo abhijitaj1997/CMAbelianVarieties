@@ -209,49 +209,34 @@ AlgebraicGeometry/TheCube.lean
 
 Defn.lean (CM abelian varieties)
 --------------------------------
-Line numbers as of 2026-10-26. CMStructure, basechange (modulo
-dimension_isStableUnderBasechange), the F-module structure on the
-rational lattice ℚ ⊗[ℤ] lattice (A _ ℂ) and F ≃ₗ[F] (ℚ ⊗[ℤ] L) (`u`) are
-done. CMType ι is now defined as preCMType.ofComplexStructure (J_one ι),
-where J is multiplication by i on Lie (A _ ℂ) transported to ℝ ⊗[ℚ] F via
-u_ℝ : ℝ ⊗[ℚ] F ≃ₗ[ℝ] Lie (A _ ℂ). J_one, u_ℝ_one_tmul_mul, u_mul,
-ψ₂_tmul are proved, modulo the sorries below.
-[ ] lattice_incl_smul                                                (l.221)
-      i (incl (x • v)) = σ(ι x) (i (incl v)), with i = lattice_isLattice_map,
-      σ = rationalEnd_lie_algebra_represenation. The `add` case is done,
-      the `tmul` case is `sorry`; u_ℝ_one_tmul_mul depends on it.
-      Plan: generalize from ι x to any e : End⁰ (A _ ℂ) and induct on e
-      too. Needs: the map End⁰ → Module.End ℚ (ℚ ⊗[ℤ] L) pulled out of
-      CMField_ringHom_rationalLattice as a named def (inlining it as a
-      `let` times out), and `tmul` lemmas (proved by rfl) for it, for
-      rationalEnd_lie_algebra_represenation and for lattice_isLattice_map.
-      Note: rw [Algebra.TensorProduct.lift_tmul] does not fire on
-      ℚ ⊗[ℤ] End (mk _) (only erw works) and some rw's time out; maybe two
-      ℤ-module structures on End (mk A) (hom-group vs ring). Unconfirmed.
+Line numbers as of 2026-10-26 (commit 8d41718). No sorries left in this
+file. CMStructure, basechange, the F-module structure on the rational
+lattice, u, u_ℝ and CMType ι := preCMType.ofComplexStructure (J_one ι) are
+done (modulo dimension_isStableUnderBasechange, see below).
 [ ] Check the dimension condition: Module.finrank ℚ F : ℕ is compared
       with topologicalKrullDim A.left : WithBot ℕ∞ (via a cast). Decide
       whether to state dim A as a natural number instead. (In
       finrank_rational_lattice_of_CMStructure the cast is undone with
       `norm_cast`.)
-[ ] dimension_isStableUnderBasechange                                (l.84)
+[ ] End.algHom_ofBaseChange (l.71) lives in namespace CMStructure, but is
+      a general fact about endomorphisms; could be moved out.
+[ ] Cleanup: `#check lattice_isLattice_map` (l.250). u_ℚ_mul (l.177)
+      could be proved by `exact u_mul ι a b`. ψ₂_tmul (l.239) uses
+      `erw [TensorProduct.map_tmul]`; an `incl_tmul` rfl lemma would
+      avoid it.
+
+
+AlgebraicGeometry/Dimension.lean
+--------------------------------
+Line numbers as of 2026-10-26 (commit 8d41718).
+[ ] dimension_isStableUnderBasechange                                (l.75)
       dim X = dim (X _ K₁) for X locally of finite type over K.
       [LocallyOfFiniteType X.hom] is needed: without it the statement is
-      false (X = Spec K(t), K₁ = K(t)). Nothing in Mathlib proves it;
-      smoothOfRelativeDimension_isStableUnderBaseChange does not help
-      (no link between relative dimension and Krull dimension).
-      Possible proof: reduce to affines, Noether normalization
-      (exists_integral_inj_algHom_of_fg) and "finite injective extensions
-      preserve Krull dimension" (not found in Mathlib). Should be moved
-      to AlgebraicGeometry/ (e.g. Dimension.lean).
-[ ] End.algHom_ofBaseChange (l.70) lives in namespace CMStructure, but is
-      a general fact about endomorphisms; could be moved out.
-[ ] Cleanup: the `#check
-      smoothOfRelativeDimension_isStableUnderBaseChange` (l.82), the
-      "Hey claude, remind me to move this to another file about
-      dimensions" comment (l.79), and `#check lattice_isLattice_map`
-      (l.254). u_ℚ_mul could be proved by `exact u_mul ι a b`.
-      ψ₂_tmul uses `erw [TensorProduct.map_tmul]`; an `incl_tmul` rfl
-      lemma would avoid it.
+      false (X = Spec K(t), K₁ = K(t)). Proof plan (Noether normalization,
+      missing "dim S = dim R for R → S injective integral") is written in
+      the file.
+[ ] Cleanup: `#check smoothOfRelativeDimension_isStableUnderBaseChange`
+      (l.27).
 
 
 AlgebraicGeometry/AbelianVarieties/BaseFieldChange.lean
@@ -288,20 +273,32 @@ of 2026-10-02 (commit 45007ad).
 
 preCMType/Defn.lean
 -------------------
-New file (19bb4f6), line numbers as of that commit. No sorries yet.
+Line numbers as of 2026-10-26. No sorries left: preCMType and
+preCMType.ofComplexStructure are done.
 
-[ ] Natural map from a preCMType to the infinite places of K         (l.21)
-      Idea noted in the file. φ ↦ InfinitePlace.mk φ should be a
-      bijection Φ ≃ InfinitePlace K, giving
-      card Φ = nrComplexPlaces K = finrank ℚ K / 2
+[ ] Natural map from a preCMType to the infinite places of F
+      φ ↦ InfinitePlace.mk φ should be a bijection Φ ≃ InfinitePlace F,
+      giving card Φ = nrComplexPlaces F = finrank ℚ F / 2
       (NumberField.Embeddings.card, IsTotallyComplex.finrank).
 
-[ ] preCMType.ofComplexStructure                                     (l.53)
-      A complex structure j : ℝ ⊗[ℚ] K with j * j = -1 gives a preCMType K.
-      Currently `sorry`. Used to define CMType in Defn.lean.
+[ ] Lemma: the partition condition for all embeddings σ : F →+* ℂ, not
+      just the w.embedding (comment at the end of the file, with proof idea).
 
-[ ] Cleanup: the file is mostly #check / #synth exploration. (Imports
-      are already minimal and `#min_imports` was removed, 2026-10-19.)
+[ ] Consider stating partition_condition as
+      IsCompl partition ((conj).comp '' partition) (comment at the end of
+      the file lists IsCompl and Mathlib's other partition notions).
+
+[ ] Docstrings: field `partition` ("inclusions" → "embeddings"; it is a
+      subset, not a partition); `partition_condition` ("infact"; it is
+      about an embedding and its conjugate, not an infinite place; the
+      partition is partition ⊔ conj ∘ partition, not partition ⊔
+      partitionᶜ). Missing docstrings on preCMType and
+      ofComplexStructure; module docstring says "section".
+
+[ ] Naming: preCMType → PreCMType (UpperCamelCase), maybe just CMType;
+      maybe rename the field `partition` (e.g. carrier / embeddings).
+      [NumberField F] [IsCMField F] are included in the structure only
+      via the `variable` line; it only needs [Field F].
 
 
 Algebra/FieldRepresentations.lean (moved from preCMType/)
@@ -317,10 +314,3 @@ defined via ofComplexStructure, so this file may no longer be needed). Line numb
       Currently `sorry`.
 [ ] Note in the file (l.55): opening `Classical` globally gave a
       warning; it is now opened only locally (`open DirectSum Classical in`).
-
-
-Algebra/CMField.lean
---------------------
-New file (5b16965). Line numbers as of 2026-10-26.
-[ ] real_tensor_CMField : ℝ ⊗[ℚ] F ≃ₐ[ℝ] ({w // w.IsComplex} → ℂ)    (l.37)
-      For a CM field F. Currently `sorry`.

@@ -5,7 +5,6 @@ Authors: Abhijit A J
 -/
 module
 
-public import Mathlib.NumberTheory.NumberField.CMField
 public import CMAbelianVarieties.Algebra.CMField
 
 /-!
@@ -23,7 +22,11 @@ variable {F : Type*} [Field F] [NumberField F] [IsCMField F]
 
 variable (F) in
 structure preCMType where
+  /-- The subset of inclusions `F →+* ℂ` -/
   partition : Set (F →+* ℂ)
+  /-- The `partition` is infact a partition. The condition basically says that an infinite
+  place, and its conjugate can not be in the same set within the partition
+  `partition ⊔ partitionᶜ` -/
   partition_condition : ∀ w : InfinitePlace F, (w.embedding ∈ partition ↔
     (conj).comp w.embedding ∈ partitionᶜ)
 
@@ -69,3 +72,30 @@ noncomputable def preCMType.ofComplexStructure {j : ℝ ⊗[ℚ] F} (hj : j * j 
           mul_self_eq_mul_self_iff.mp (by rw [← map_mul, hj, map_neg, map_one, Complex.I_mul_I])
         exact Or.inl ⟨w, hw.resolve_right fun hw ↦ h (Or.inr ⟨w, hw, rfl⟩), rfl⟩
   }
+
+/-
+Suggested by Claude: add a lemma recovering the condition for all complex embeddings, not just
+the chosen embeddings `w.embedding` of the infinite places:
+  `∀ σ : F →+* ℂ, σ ∈ Φ.partition ↔ (conj).comp σ ∈ Φ.partitionᶜ`.
+Proof idea: every `σ` is `w.embedding` or `conj ∘ w.embedding` for `w = InfinitePlace.mk σ`
+(`InfinitePlace.mk_eq_iff`); in the second case use the contrapositive of `partition_condition w`.
+-/
+
+/-
+Suggested by Claude: partitions in Mathlib.
+- `IsCompl` (`Mathlib/Order/Disjoint.lean`): `IsCompl x y` means `Disjoint x y` and
+  `Codisjoint x y` (i.e. `x ⊓ y = ⊥` and `x ⊔ y = ⊤`); for sets, `x ∩ y = ∅` and
+  `x ∪ y = univ`. The CM type condition could be stated as
+    `IsCompl partition ((conj).comp '' partition)`,
+  i.e. `Hom(F, ℂ) = Φ ⊔ conj ∘ Φ`, which is the textbook statement. `IsCompl.compl_eq` turns it
+  into `(conj).comp '' Φ = Φᶜ`, and the "for every `σ`" version follows quickly.
+More general notions (for more than two pieces):
+- `Setoid.IsPartition (c : Set (Set α))` (`Mathlib/Order/Setoid/Partition.lean`):
+  `∅ ∉ c ∧ ∀ a, ∃! b ∈ c, a ∈ b`; unindexed, nonempty pieces; linked to equivalence relations.
+- `IndexedPartition (s : ι → Set α)` (same file): indexed family, each point in exactly one
+  `s i`, with `index : α → ι` and a chosen point `some i ∈ s i` (so no piece is empty).
+- `Partition (s : α)` (`Mathlib/Order/Partition/Basic.lean`): partition of an element of a
+  complete lattice: `sSupIndep` parts, `⊥` not a part, supremum `s`.
+- `Finpartition (a : α)` (`Mathlib/Order/Partition/Finpartition.lean`): finite version, with
+  parts a `Finset`.
+-/

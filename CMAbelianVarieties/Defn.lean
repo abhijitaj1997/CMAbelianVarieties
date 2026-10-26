@@ -5,7 +5,6 @@ Authors: Abhijit A J
 -/
 module
 
-public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.BaseFieldChange
 public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Homomorphisms.EndomorphismRing
 public import CMAbelianVarieties.AbstractNonsense.EndBaseChange
 public import CMAbelianVarieties.preCMType.Defn

@@ -27,6 +27,7 @@ graph TD
     Finite["<b>Finite</b><br/><i>finite over a field ⇒ Artinian</i>"]
     InvertibleSheaf["<b>InvertibleSheaf</b><br/><i>line bundles</i>"]
     TheCube["<b>TheCube</b><br/><i>theorem of the cube</i>"]
+    AGDimension["<b>Dimension</b><br/><i>dim X = dim (X _ K₁) under base change</i>"]
     subgraph LIE["LieAlgebra/"]
       LieAlgebra["<b>Defn</b><br/><i>Lie G, End G acts on Lie G and on ℂ ⊗ Lie G</i>"]
       Dimension["<b>Dimension</b><br/><i>dim X = sup of dim 𝒪_{X,x}; dim Lie G vs dim 𝒪_{G,e}</i>"]
@@ -81,7 +82,8 @@ graph TD
   Theorem --> Defn
   Defn --> EndomorphismRing
   Defn --> CMDefn
-  Defn --> BaseFieldChange
+  Defn --> AGDimension
+  AGDimension --> BaseFieldChange
   Defn --> EndBaseChange
   Defn --> Complex
   BaseFieldChange --> FunctorCommAddObj
@@ -105,6 +107,7 @@ graph TD
   LieAlgebra --> Endomorphism
   Dimension --> LieAlgebra
   FieldRepresentations --> CMField
+  CMDefn --> CMField
   Test --> Defn
 
   %% ---------- colours ----------
@@ -115,8 +118,8 @@ graph TD
 
   class Theorem goal
   class Commutativity hub
-  class EndomorphismRing,FiniteGen,IntHomAV,Complex,TorsionFree,TateModule,GlobalSections,IntHomAN,PullbackAddGrp,Finite,Endomorphism,LieAlgebra,CMDefn,Test,BaseFieldChange,EndBaseChange,FunctorCommAddObj,Defn,EndRingIso,Dimension,Integral connected
-  class AVCatalogue,InvertibleSheaf,TheCube,AGCatalogue,CMAlgebra,CMField,FieldRepresentations,Test1 unused
+  class EndomorphismRing,FiniteGen,IntHomAV,Complex,TorsionFree,TateModule,GlobalSections,IntHomAN,PullbackAddGrp,Finite,Endomorphism,LieAlgebra,CMDefn,Test,BaseFieldChange,EndBaseChange,FunctorCommAddObj,Defn,EndRingIso,Dimension,Integral,AGDimension,CMField,FieldRepresentations connected
+  class AVCatalogue,InvertibleSheaf,TheCube,AGCatalogue,CMAlgebra,Test1 unused
 ```
 
 **Legend**
