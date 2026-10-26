@@ -102,11 +102,19 @@ make (`lean-toolchain`, `lakefile.toml`, `lake-manifest.json`, `CMAbelianVarieti
 - When searching for Mathlib results, report the exact name and file.
 
 ## Cleaning up a term
-When I ask you to clean up a term (a `def`, `lemma`, `theorem`, `instance`, etc.), rewrite
+When I ask you to clean up a term (a `def`, `lemma`, `theorem`, `instance`, etc.), tidy
 its body so that it would be admissible in Mathlib:
+- **Do not rewrite the proof from scratch.** Fundamentally, the proof idea must still be
+  the one I have written down. Keep my proof's structure and strategy: the same overall
+  argument and the same definitions/data. Case splits may be shortened (e.g. merged or
+  handled with `<;>`), but not removed entirely in favour of a different proof route.
+  Clean it up step by step (merge redundant tactic steps, use the right lemma names, drop
+  unnecessary wrappers like `id (Eq.symm _)`, etc.). If you think a different approach
+  would be much better, suggest it and ask, rather than doing it.
 - Follow Mathlib's conventions and idioms. Do not use unusual tricks that Mathlib would not
   use, even if they would shorten the code massively.
 - Remove `let`s and `have`s that are not needed, and shorten the code into something
-  readable and well structured.
+  readable and well structured. This includes `let`s and `have`s that are used (e.g. by
+  inlining them), as long as the idea and fundamental steps of the proof are not changed.
 - Do not change the term's name or statement unless I ask.
 - Afterwards, build the module and confirm there are no new errors or warnings.

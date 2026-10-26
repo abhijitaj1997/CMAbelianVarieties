@@ -24,58 +24,48 @@ variable {F : Type*} [Field F] [NumberField F] [IsCMField F]
 variable (F) in
 structure preCMType where
   partition : Set (F →+* ℂ)
-  partition_condition : ∀ φ : (F →+* ℂ), φ ∈ partition ↔
-    (conj : ℂ →+* ℂ).comp φ ∈ partitionᶜ
-
-/-
-Maybe a lemma should be created which says that given a `preCMType`, we
-have a natural map from to the set of places of `K`
--/
-
-section
-
-variable (F : Type*) [Field F] [NumberField F] [IsCMField F]
-
-#check (Module.finrank ℚ F)
-
-#synth Finite (F →+* ℂ)
-
-/- The number of complex embeddings equals the degree `[F : ℚ]`. -/
-#check NumberField.Embeddings.card F ℂ
-
-/- A totally complex field (e.g. a CM field) has even degree. -/
-#check NumberField.IsTotallyComplex.finrank F
-
-#check InfinitePlace.nrComplexPlaces
-
-
-
-end
-
-#check real_tensor_CMField F
-
-/- Written by Claude: for each infinite place `w`, the composition
-`ℝ ⊗[ℚ] F ≃ₐ[ℝ] (InfinitePlace F → ℂ) →ₐ[ℝ] ℂ` of `real_tensor_CMField F` with evaluation at `w`
-(`Pi.evalAlgHom`, in `Mathlib/Algebra/Algebra/Pi.lean`). -/
-#check fun w : InfinitePlace F ↦
-  (Pi.evalAlgHom ℝ (fun _ ↦ ℂ) w).comp (real_tensor_CMField F).toAlgHom
+  partition_condition : ∀ w : InfinitePlace F, (w.embedding ∈ partition ↔
+    (conj).comp w.embedding ∈ partitionᶜ)
 
 open TensorProduct in
 noncomputable def preCMType.ofComplexStructure {j : ℝ ⊗[ℚ] F} (hj : j * j = -1) : preCMType F := by
   let φ (w : InfinitePlace F) := (Pi.evalAlgHom ℝ (fun _ ↦ ℂ) w).comp
     (real_tensor_CMField F).toAlgHom
   let s₁ := InfinitePlace.embedding '' {w | φ w j = Complex.I}
-  let s₂ := (fun w ↦ ComplexEmbedding.conjugate w.embedding) '' {w | φ w j = -Complex.I}
+  let s₂ := (fun w ↦ (conj).comp w.embedding) '' {w | φ w j = -Complex.I}
+  have hs₁' (w : InfinitePlace F) : (conj).comp w.embedding ∈ s₁ → φ w j = -Complex.I := by
+    rintro ⟨w', -, hw'w⟩
+    exfalso
+    have hw : w' = w := by
+      rw [← InfinitePlace.mk_embedding w', hw'w]
+      exact (InfinitePlace.mk_conjugate_eq w.embedding).trans w.mk_embedding
+    subst hw
+    exact InfinitePlace.isComplex_iff.mp (IsTotallyComplex.isComplex w') hw'w.symm
+  have hs₂ (w : InfinitePlace F) : (conj).comp w.embedding ∈ s₂ → φ w j = -Complex.I := by
+    rintro ⟨w', hw', hw'w : ComplexEmbedding.conjugate w'.embedding = _⟩
+    have hw : w' = w := by
+      rw [← InfinitePlace.mk_embedding w', ← InfinitePlace.mk_conjugate_eq, hw'w]
+      exact (InfinitePlace.mk_conjugate_eq w.embedding).trans w.mk_embedding
+    rwa [← hw]
+  have hs₂' (w : InfinitePlace F) : w.embedding ∈ s₂ → φ w j = Complex.I := by
+    rintro ⟨w', -, hw'w : ComplexEmbedding.conjugate w'.embedding = _⟩
+    exfalso
+    have hw : w' = w := by
+      rw [← w.mk_embedding, ← hw'w]
+      exact ((InfinitePlace.mk_conjugate_eq w'.embedding).trans w'.mk_embedding).symm
+    subst hw
+    exact InfinitePlace.isComplex_iff.mp (IsTotallyComplex.isComplex w') hw'w
   exact {
-    partition := s₁ ⊔ s₂
-    partition_condition ψ := by
-      constructor
-      · rintro (h₁ | h₂)
-        · -- Claude: membership in an image `f '' s` (`Mathlib/Data/Set/Operations.lean`).
-          rw [Set.mem_image InfinitePlace.embedding ({w | φ w j = Complex.I}) ψ] at h₁
-          rcases h₁ with ⟨w, hw, hwψ⟩
-          simp at hw
-          sorry
-        · sorry
-      · sorry
+    partition := s₁ ∪ s₂
+    partition_condition w := by
+      have hI : Complex.I ≠ -Complex.I := fun h ↦ Complex.I_ne_zero (self_eq_neg.mp h)
+      constructor <;> intro h
+      · have hw : φ w j = Complex.I := by
+          rcases h with ⟨w', hw', hw'w⟩ | h
+          · rwa [← InfinitePlace.embedding_inj.mp hw'w]
+          · exact hs₂' w h
+        exact fun h' ↦ hI (hw.symm.trans (h'.elim (hs₁' w) (hs₂ w)))
+      · have hw : φ w j = Complex.I ∨ φ w j = -Complex.I :=
+          mul_self_eq_mul_self_iff.mp (by rw [← map_mul, hj, map_neg, map_one, Complex.I_mul_I])
+        exact Or.inl ⟨w, hw.resolve_right fun hw ↦ h (Or.inr ⟨w, hw, rfl⟩), rfl⟩
   }
