@@ -18,6 +18,7 @@ public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Homomorphism
 public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Homomorphisms.TorsionFree
 public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.TateModule
 public import CMAbelianVarieties.AlgebraicGeometry.Catalogue
+public import CMAbelianVarieties.AlgebraicGeometry.Dimension
 public import CMAbelianVarieties.AlgebraicGeometry.Finite
 public import CMAbelianVarieties.AlgebraicGeometry.InvertibleSheaf
 public import CMAbelianVarieties.AlgebraicGeometry.LieAlgebra.Defn

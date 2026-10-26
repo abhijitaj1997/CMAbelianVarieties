@@ -100,3 +100,13 @@ make (`lean-toolchain`, `lakefile.toml`, `lake-manifest.json`, `CMAbelianVarieti
 - Follow Mathlib style and naming conventions.
 - Keep imports minimal: import the smallest Mathlib/project file that suffices.
 - When searching for Mathlib results, report the exact name and file.
+
+## Cleaning up a term
+When I ask you to clean up a term (a `def`, `lemma`, `theorem`, `instance`, etc.), rewrite
+its body so that it would be admissible in Mathlib:
+- Follow Mathlib's conventions and idioms. Do not use unusual tricks that Mathlib would not
+  use, even if they would shorten the code massively.
+- Remove `let`s and `have`s that are not needed, and shorten the code into something
+  readable and well structured.
+- Do not change the term's name or statement unless I ask.
+- Afterwards, build the module and confirm there are no new errors or warnings.

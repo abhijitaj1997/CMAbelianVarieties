@@ -44,6 +44,7 @@ abbrev lattice := (exponential A).ker
 
 open TensorProduct in
 variable (A) in
+omit [IsProper A.hom] [GeometricallyIntegral A.hom] in
 def lattice_isLattice_map : (ℝ ⊗[ℤ] (lattice A) ≃ₗ[ℝ] Lie A) where
   toFun := by
     let f : ℝ →ₗ[ℤ] lattice A →ₗ[ℤ] Lie A := {
@@ -63,6 +64,12 @@ def lattice_isLattice_map : (ℝ ⊗[ℤ] (lattice A) ≃ₗ[ℝ] Lie A) where
   invFun := sorry
   left_inv := sorry
   right_inv := sorry
+
+open TensorProduct in
+variable (A) in
+omit [IsProper A.hom] [GeometricallyIntegral A.hom] in
+lemma lattice_isLattice_map_tmul (r : ℝ) (l : lattice A) : lattice_isLattice_map A (r ⊗ₜ l) =
+    r • l := rfl
 
 def lattice_representation' (f : End (mk A)) : lattice A →ₗ[ℤ] lattice A := by
   let φ := (lie_algebra_represenation A f).toAddMonoidHom

@@ -10,6 +10,7 @@ public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Homomorphism
 public import CMAbelianVarieties.AbstractNonsense.EndBaseChange
 public import CMAbelianVarieties.preCMType.Defn
 public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Complex
+public import CMAbelianVarieties.AlgebraicGeometry.Dimension
 
 /-!
 ## CM Abelian varieties
@@ -75,16 +76,6 @@ def rational_end_morphism (A : Over (Spec ↧K)) [IsProper A.hom] [Geometrically
     [AddGrpObj A] (K₁ : Type u) [Field K₁] [Algebra K K₁] : End⁰ A →+* End⁰ ((A _ K₁)) :=
   (Algebra.TensorProduct.map (AlgHom.id ℤ ℚ) (End.algHom_ofBaseChange A K₁)).toRingHom
 
-/-
-Hey claude, remind me to move this to another file about dimenions. maybe even a file like
-AlgebraiGeometry.Basic
--/
-#check smoothOfRelativeDimension_isStableUnderBaseChange -- But I don't wanna just prove this
--- for AVs
-lemma dimension_isStableUnderBasechange (X : Over (Spec ↧K)) [LocallyOfFiniteType X.hom]
-    (K₁ : Type u) [Field K₁] [Algebra K K₁] :
-    topologicalKrullDim X.left = topologicalKrullDim (X _ K₁).left := sorry
-
 def basechange (ι : CMStructure A F) (K₁ : Type u) [Field K₁] [Algebra K K₁] :
     CMStructure (A _ K₁) F where
       incl := (rational_end_morphism A K₁).comp ι
@@ -101,15 +92,19 @@ variable {K : Type} [Field K] [Algebra K ℂ]
 variable {A : Over (Spec ↧K)} [IsProper A.hom] [GeometricallyIntegral A.hom] [AddGrpObj A]
 
 -- aided by Claude
-def CMField_ringHom_rationalLattice {F : Type*} [Field F] [NumberField F]
-    [IsCMField F] (ι : CMStructure A F) :
-    F →+* Module.End ℚ (ℚ ⊗[ℤ] (lattice (A _ ℂ))) := by
+variable (A) in
+def rationalEnd_ringHom_rationalLattice : End⁰ (A _ ℂ) →+* Module.End ℚ (ℚ ⊗[ℤ]
+    (lattice (A _ ℂ))) :=
   let L := lattice (A _ ℂ)
   let g₁ : ℚ →ₐ[ℤ] Module.End ℚ (ℚ ⊗[ℤ] L) := (algebraMap ℚ _).toIntAlgHom
   let g₂ : End (AddGrp.mk (A _ ℂ)) →ₐ[ℤ] Module.End ℚ (ℚ ⊗[ℤ] L) :=
     (Module.End.baseChangeHom ℤ ℚ L).comp (lattice_representation (A _ ℂ)).toIntAlgHom
-  let ψ' := (Algebra.TensorProduct.lift g₁ g₂ fun x y ↦ Algebra.commutes x (g₂ y)).toRingHom
-  exact (ψ' : End⁰ (A _ ℂ) →+* Module.End ℚ (ℚ ⊗[ℤ] L)).comp (ι.basechange ℂ)
+  (Algebra.TensorProduct.lift g₁ g₂ fun x y ↦ Algebra.commutes x (g₂ y)).toRingHom
+
+def CMField_ringHom_rationalLattice {F : Type*} [Field F] [NumberField F]
+    [IsCMField F] (ι : CMStructure A F) :
+    F →+* Module.End ℚ (ℚ ⊗[ℤ] (lattice (A _ ℂ))) :=
+  (rationalEnd_ringHom_rationalLattice A).comp (ι.basechange ℂ)
 
 @[instance_reducible]
 def module_rational_lattice_of_CMStructure {F : Type*} [Field F] [NumberField F]
@@ -202,21 +197,17 @@ the complex abelian variety. -/
 def ψ₂ := TensorProduct.AlgebraTensorModule.cancelBaseChange ℤ ℚ ℝ ℝ (lattice (A _ ℂ))
 
 variable (A) in
+omit [IsProper A.hom] [GeometricallyIntegral A.hom] in
 /-- The natural linear map `(ℚ ⊗[ℤ] L) →ₗ[ℤ] (ℝ ⊗[ℤ] L)` -/
 def incl : (ℚ ⊗[ℤ] (lattice (A _ ℂ))) →ₗ[ℤ] (ℝ ⊗[ℤ] (lattice (A _ ℂ))) :=
   TensorProduct.map (algebraMap ℚ ℝ).toAddMonoidHom.toIntLinearMap LinearMap.id
 
-/-
-• `i : ℝ ⊗[ℤ] L ≅ Lie A`
-• `σ x` is the action of `x` on `Lie A`
-• `incl : ℚ ⊗[ℤ] L →ₗ[ℤ] ℝ ⊗[ℤ] L`
+variable (A) in
+omit [IsProper A.hom] [GeometricallyIntegral A.hom] in
+lemma incl_tmul (x : ℚ) (l : lattice (A _ ℂ)) : incl A (x ⊗ₜ[ℤ] l) = ((x : ℝ) ⊗ₜ[ℤ] l) := by
+  rfl
 
-
-in below, `x : F` should be replaced by `ι_x`, in the rational endomorphism
-ring, and we need to consider doing induction on that.
--/
-
--- this is the hard one
+-- aided and cleaned by Claude
 variable (A) in
 lemma lattice_incl_smul {F : Type*} [Field F] [NumberField F] [IsCMField F] (ι : CMStructure A F)
     (x : F) (v : ℚ ⊗[ℤ] (lattice (A _ ℂ))) :
@@ -225,17 +216,22 @@ lemma lattice_incl_smul {F : Type*} [Field F] [NumberField F] [IsCMField F] (ι 
     ((ι.basechange ℂ).incl x) (lattice_isLattice_map (A _ ℂ) (incl A v)) := by
   let := module_rational_lattice_of_CMStructure ι
   induction v using TensorProduct.inductionOn with
-    | tmul r l =>
-        let i := lattice_isLattice_map (A _ ℂ)
-        let σ (x : F) := rationalEnd_lie_algebra_represenation (A _ ℂ) ((ι.basechange ℂ).incl x)
-        let ι_x := (ι.basechange ℂ).incl x
-        have hi : i = lattice_isLattice_map (A _ ℂ) := rfl
-        have hσ (x : F) : σ x = rationalEnd_lie_algebra_represenation (A _ ℂ) ((ι.basechange ℂ).incl
-             x) := rfl
-
-        simp [← hi, ← hσ]
-        sorry
-    | add a b ha hb => simp [smul_add, map_add, ha, hb]
+  | tmul r l =>
+    let f := rationalEnd_ringHom_rationalLattice A
+    suffices ∀ e : End⁰ (A _ ℂ), lattice_isLattice_map (A _ ℂ) (incl A (f e (r ⊗ₜ[ℤ] l))) =
+        rationalEnd_lie_algebra_represenation (A _ ℂ) e
+          (lattice_isLattice_map (A _ ℂ) (incl A (r ⊗ₜ[ℤ] l))) from
+      this ((ι.basechange ℂ).incl x)
+    intro e
+    induction e using TensorProduct.inductionOn with
+    | tmul a φ =>
+      have : f (a ⊗ₜ[ℤ] φ) (r ⊗ₜ[ℤ] l) = (a * r) ⊗ₜ[ℤ] (lattice_representation (A _ ℂ) φ l) :=
+        rfl
+      simp only [this, incl_tmul, lattice_isLattice_map_tmul, LinearMap.map_smul_of_tower,
+        Rat.cast_mul, mul_comm (a : ℝ), mul_smul]
+      congr 1
+    | add F₁ F₂ hF₁ hF₂ => simp only [map_add, LinearMap.add_apply, hF₁, hF₂]
+  | add a b ha hb => simp [smul_add, map_add, ha, hb]
 
 variable (A) in
 omit [IsProper A.hom] [GeometricallyIntegral A.hom] in

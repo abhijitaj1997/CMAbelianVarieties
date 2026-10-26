@@ -6,6 +6,7 @@ Authors: Abhijit A J
 module
 
 public import Mathlib.NumberTheory.NumberField.CMField
+public import CMAbelianVarieties.Algebra.CMField
 
 /-!
 # CM Types
@@ -18,12 +19,12 @@ In this section we define CM types
 
 open ComplexConjugate NumberField
 
-variable {K : Type*} [Field K] [NumberField K] [IsCMField K]
+variable {F : Type*} [Field F] [NumberField F] [IsCMField F]
 
-variable (K) in
+variable (F) in
 structure preCMType where
-  partition : Set (K →+* ℂ)
-  partition_condition : ∀ φ : (K →+* ℂ), φ ∈ partition ↔
+  partition : Set (F →+* ℂ)
+  partition_condition : ∀ φ : (F →+* ℂ), φ ∈ partition ↔
     (conj : ℂ →+* ℂ).comp φ ∈ partitionᶜ
 
 /-
@@ -33,21 +34,48 @@ have a natural map from to the set of places of `K`
 
 section
 
-variable (K : Type*) [Field K] [NumberField K] [IsCMField K]
+variable (F : Type*) [Field F] [NumberField F] [IsCMField F]
 
-#check (Module.finrank ℚ K)
+#check (Module.finrank ℚ F)
 
-#synth Finite (K →+* ℂ)
+#synth Finite (F →+* ℂ)
 
-/- The number of complex embeddings equals the degree `[K : ℚ]`. -/
-#check NumberField.Embeddings.card K ℂ
+/- The number of complex embeddings equals the degree `[F : ℚ]`. -/
+#check NumberField.Embeddings.card F ℂ
 
 /- A totally complex field (e.g. a CM field) has even degree. -/
-#check NumberField.IsTotallyComplex.finrank K
+#check NumberField.IsTotallyComplex.finrank F
 
 #check InfinitePlace.nrComplexPlaces
 
+
+
 end
 
+#check real_tensor_CMField F
+
+/- Written by Claude: for each infinite place `w`, the composition
+`ℝ ⊗[ℚ] F ≃ₐ[ℝ] (InfinitePlace F → ℂ) →ₐ[ℝ] ℂ` of `real_tensor_CMField F` with evaluation at `w`
+(`Pi.evalAlgHom`, in `Mathlib/Algebra/Algebra/Pi.lean`). -/
+#check fun w : InfinitePlace F ↦
+  (Pi.evalAlgHom ℝ (fun _ ↦ ℂ) w).comp (real_tensor_CMField F).toAlgHom
+
 open TensorProduct in
-def preCMType.ofComplexStructure {j : ℝ ⊗[ℚ] K} (hj : j * j = -1) : preCMType K := sorry
+noncomputable def preCMType.ofComplexStructure {j : ℝ ⊗[ℚ] F} (hj : j * j = -1) : preCMType F := by
+  let φ (w : InfinitePlace F) := (Pi.evalAlgHom ℝ (fun _ ↦ ℂ) w).comp
+    (real_tensor_CMField F).toAlgHom
+  let s₁ := InfinitePlace.embedding '' {w | φ w j = Complex.I}
+  let s₂ := (fun w ↦ ComplexEmbedding.conjugate w.embedding) '' {w | φ w j = -Complex.I}
+  exact {
+    partition := s₁ ⊔ s₂
+    partition_condition ψ := by
+      constructor
+      · rintro (h₁ | h₂)
+        · -- Claude: membership in an image `f '' s` (`Mathlib/Data/Set/Operations.lean`).
+          rw [Set.mem_image InfinitePlace.embedding ({w | φ w j = Complex.I}) ψ] at h₁
+          rcases h₁ with ⟨w, hw, hwψ⟩
+          simp at hw
+          sorry
+        · sorry
+      · sorry
+  }
