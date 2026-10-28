@@ -117,4 +117,7 @@ its body so that it would be admissible in Mathlib:
   readable and well structured. This includes `let`s and `have`s that are used (e.g. by
   inlining them), as long as the idea and fundamental steps of the proof are not changed.
 - Do not change the term's name or statement unless I ask.
+- A clean-up request does not mean you have to change anything. If the term is already
+  clean and you do not recommend changing it, say so (without editing it); I will then tell
+  you what I think.
 - Afterwards, build the module and confirm there are no new errors or warnings.

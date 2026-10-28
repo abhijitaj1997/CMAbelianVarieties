@@ -23,34 +23,27 @@ universe u
 
 variable {K : Type u} [Field K]
 
-#check smoothOfRelativeDimension_isStableUnderBaseChange -- But I don't wanna just prove this
--- for AVs
-/-
-(Written by AI.) Possibly useful: dimension of a scheme = sup of dimensions over an open cover.
-Not in Mathlib as a single lemma, but it follows from these. For any open cover `𝒰` of any
-scheme (or quasi-sober T0 space) `X`, `dim X = ⨆ i, dim (𝒰.X i)`; no connected/proper needed.
-Ingredients:
-1. `irreducibleSetEquivPoints : IrreducibleCloseds α ≃o α` (Mathlib/Topology/Sober.lean),
-   needs `[QuasiSober α] [T0Space α]` and `attribute [local instance] specializationOrder`.
-   With `Order.krullDim_eq_of_orderIso`: `topologicalKrullDim X = krullDim X`.
-2. `Order.krullDim_eq_iSup_coheight : krullDim α = ⨆ a, ↑(coheight a)`
-   (Mathlib/Order/KrullDimension.lean).
-3. `Topology.IsOpenEmbedding.coheight_eq : coheight (f x) = coheight x`
-   (Mathlib/Topology/KrullDimension.lean); scheme version
-   `AlgebraicGeometry.coheight_eq_of_isOpenImmersion` (Mathlib/AlgebraicGeometry/Properties.lean).
-4. `topologicalKrullDim_subspace_le`, `Topology.IsInducing.topologicalKrullDim_le`
-   (Mathlib/Topology/KrullDimension.lean): the easy direction `⨆ i, dim Uᵢ ≤ dim X`.
-5. Affine pieces: `PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim`
-   (Mathlib/RingTheory/Spectrum/Prime/Topology.lean); also
-   `AlgebraicGeometry.ringKrullDim_stalk_eq_coheight` (dim X = sup of dims of the stalks).
-Proof outline:
-- `≤`: by 1 and 2, `dim X = ⨆ x, coheight x`. For each `x` pick `i`, `y` with `𝒰.f i y = x`;
-  by 3, `coheight x = coheight y ≤ krullDim (𝒰.X i)` (`Order.coheight_le_krullDim`),
-  and that is `topologicalKrullDim (𝒰.X i)` by 1 again.
-- `≥`: 4 applied to each `𝒰.f i` (an open embedding).
-Example of this style of argument: `IsLocallyArtinian.of_topologicalKrullDim_le_zero`
-(Mathlib/AlgebraicGeometry/Artinian.lean).
+open Order in
+/-- The dimension of a scheme is the supremum of the dimensions of its stalks. -/
+lemma topologicalKrullDim_eq_iSup_ringKrullDim_stalk (X : Scheme) :
+    topologicalKrullDim X = ⨆ x : X, ringKrullDim (X.presheaf.stalk x) := by
+  simp_rw [ringKrullDim_stalk_eq_coheight]
+  rw [← krullDim_eq_iSup_coheight, topologicalKrullDim]
+  exact krullDim_eq_of_orderIso (irreducibleSetEquivPoints (α := X))
 
+-- written by Claude
+/-- The dimension of a scheme is the supremum of the dimensions of the opens of an open cover. -/
+lemma topologicalKrullDim_eq_iSup_openCover {X : Scheme} (𝒰 : X.OpenCover) :
+    topologicalKrullDim X = ⨆ i, topologicalKrullDim (𝒰.X i) := by
+  have h (i) (y : 𝒰.X i) : ringKrullDim ((𝒰.X i).presheaf.stalk y) =
+      ringKrullDim (X.presheaf.stalk (𝒰.f i y)) :=
+    ringKrullDim_eq_of_ringEquiv (asIso ((𝒰.f i).stalkMap y)).commRingCatIsoToRingEquiv.symm
+  simp_rw [topologicalKrullDim_eq_iSup_ringKrullDim_stalk, h]
+  refine le_antisymm (iSup_le fun x ↦ ?_) (iSup₂_le fun i y ↦ le_iSup_of_le (𝒰.f i y) le_rfl)
+  obtain ⟨i, y, rfl⟩ := 𝒰.exists_eq x
+  exact le_iSup₂_of_le i y le_rfl
+
+/-
 (Written by AI.) Affine case: `dim (L ⊗[K] A) = dim A` for a field extension `L/K`.
 Not in Mathlib. Needs `A` of finite type over `K` (false in general: `dim K(t) = 0` but
 `dim (K(t) ⊗[K] K(s)) = 1`); here that comes from `LocallyOfFiniteType`.
@@ -71,8 +64,80 @@ is flat, so `Algebra.HasGoingDown.of_flat` (Mathlib/RingTheory/Ideal/GoingDown.l
 Mathlib/RingTheory/Ideal/KrullsHeightTheorem.lean) gives `ht P = ht p + ht (P in the fibre)`.
 The fibre `κ(p) ⊗[K] L` has dimension 0 only when `L/K` is algebraic.
 -/
+open TensorProduct Algebra in
+lemma ringKrullDim_basechange (A K K₁ : Type*) [CommRing A] [Field K] [Field K₁] [Algebra K A]
+    [FiniteType K A] [Algebra K K₁] : ringKrullDim A = ringKrullDim (K₁ ⊗[K] A) := by
+  sorry
+
+-- aided and cleaned by claude
+open TensorProduct Scheme Algebra in
+lemma topologicalKrullDim_basechange_affine (X : Over (Spec ↧K)) [IsAffine X.left]
+    [LocallyOfFiniteType X.hom] (K₁ : Type u) [Field K₁] [Algebra K K₁] :
+    topologicalKrullDim X.left = topologicalKrullDim (X _ K₁).left := by
+  algebraize [((ΓSpecIso ↧K).inv ≫ X.hom.appTop).hom]
+  have : IsAffine (X _ K₁).left := by dsimp; infer_instance
+  have : FiniteType K Γ(X.left, ⊤) :=
+    (HasRingHomProperty.appTop @LocallyOfFiniteType X.hom ‹_›).comp
+      (.of_surjective _ (ΓSpecIso ↧K).commRingCatIsoToRingEquiv.symm.surjective)
+  have h_dim (α : Scheme.{u}) [IsAffine α] : topologicalKrullDim α = ringKrullDim Γ(α, ⊤) := by
+    rw [← PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim Γ(α, ⊤)]
+    exact IsHomeomorph.topologicalKrullDim_eq (homeoOfIso α.isoSpec)
+      (homeoOfIso α.isoSpec).isHomeomorph
+  have : Γ((X _ K₁).left, ⊤) ≃+* K₁ ⊗[K] Γ(X.left, ⊤) := by
+    have h : X.hom ≫ 𝟙 _ =
+        X.left.isoSpec.hom ≫ Spec.map (ofHom (algebraMap K Γ(X.left, ⊤))) := by
+      rw [Category.comp_id, RingHom.algebraMap_toAlgebra, ofHom_hom, Spec.map_comp,
+        ← Category.assoc, isoSpec_hom_naturality, Category.assoc, isoSpec_Spec_hom,
+        ← Spec.map_comp, Iso.inv_hom_id, Spec.map_id, Category.comp_id]
+    let e := asIso (Limits.pullback.map _ (Spec.map (ofHom (algebraMap K K₁))) _ _
+      X.left.isoSpec.hom (𝟙 _) (𝟙 _) h (by simp)) ≪≫ pullbackSpecIso K Γ(X.left, ⊤) K₁
+    exact ((Scheme.Γ.mapIso e.op).symm ≪≫ ΓSpecIso _).commRingCatIsoToRingEquiv.trans
+      (Algebra.TensorProduct.comm K Γ(X.left, ⊤) K₁).toRingEquiv
+  rw [h_dim, h_dim, ringKrullDim_eq_of_ringEquiv this, ringKrullDim_basechange _ K K₁]
+
+-- written by Claude
+/-- The base change to `X _ K₁` of an open cover `𝒰` of `X`. -/
+def basechangeOpenCover (X : Over (Spec ↧K)) (K₁ : Type u) [Field K₁] [Algebra K K₁]
+    (𝒰 : X.left.OpenCover) : (X _ K₁).left.OpenCover :=
+  𝒰.pullback₁ (Limits.pullback.fst _ _)
+
+-- written by Claude
+/-- The `i`-th open of `basechangeOpenCover X K₁ 𝒰` is the base change `(U i) _ K₁` of the
+`i`-th open `U i` of `𝒰`, viewed as a scheme over `K`. -/
+def basechangeOpenCoverXIso {X : Over (Spec ↧K)} (𝒰 : X.left.OpenCover) (K₁ : Type u) [Field K₁]
+    [Algebra K K₁] (i : 𝒰.I₀) :
+    (basechangeOpenCover X K₁ 𝒰).X i ≅ ((Over.mk (𝒰.f i ≫ X.hom)) _ K₁).left :=
+  Limits.pullbackSymmetry _ _ ≪≫ Limits.pullbackRightPullbackFstIso _ _ _
+
+
+#check smoothOfRelativeDimension_isStableUnderBaseChange -- But I don't wanna just prove this
+-- for AVs
+
 lemma dimension_isStableUnderBasechange (X : Over (Spec ↧K)) [LocallyOfFiniteType X.hom]
     (K₁ : Type u) [Field K₁] [Algebra K K₁] :
-    topologicalKrullDim X.left = topologicalKrullDim (X _ K₁).left := sorry
+    topologicalKrullDim X.left = topologicalKrullDim (X _ K₁).left := by
+  let 𝒰 : X.left.OpenCover := X.left.affineCover
+  -- can be removed eventually
+  have (i : 𝒰.I₀) : IsAffine (𝒰.X i) := by
+    infer_instance
+  have (i : 𝒰.I₀) : IsAffine ((basechangeOpenCover X K₁ 𝒰).X i) := by
+    sorry
+  rw [topologicalKrullDim_eq_iSup_openCover 𝒰, topologicalKrullDim_eq_iSup_openCover
+    (basechangeOpenCover X K₁ 𝒰)]
+  have (i : 𝒰.I₀) : topologicalKrullDim (𝒰.X i) = topologicalKrullDim
+      ((basechangeOpenCover X K₁ 𝒰).X i) := by
+    -- written by Claude
+    rw [IsHomeomorph.topologicalKrullDim_eq (Scheme.homeoOfIso (basechangeOpenCoverXIso 𝒰 K₁ i))
+      (Scheme.homeoOfIso (basechangeOpenCoverXIso 𝒰 K₁ i)).isHomeomorph]
+    have : IsAffine (Over.mk (𝒰.f i ≫ X.hom)).left := by
+      have : (Over.mk (𝒰.f i ≫ X.hom)).left = 𝒰.X i := rfl
+      rw [this]
+      infer_instance
+    have : LocallyOfFiniteType (Over.mk (𝒰.f i ≫ X.hom)).hom := by
+      have : (Over.mk (𝒰.f i ≫ X.hom)).hom = (𝒰.f i ≫ X.hom) := rfl
+      rw [this]
+      exact locallyOfFiniteType_comp (𝒰.f i) X.hom
+    exact topologicalKrullDim_basechange_affine (Over.mk (𝒰.f i ≫ X.hom)) K₁
+  exact iSup_congr this
 
 end

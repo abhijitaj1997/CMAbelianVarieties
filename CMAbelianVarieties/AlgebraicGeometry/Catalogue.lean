@@ -26,6 +26,8 @@ variable {R S : CommRingCat} (π : R ⟶ S)
 variable {C : Type*} [Category* C] {α β : C} {φ : α ⟶ β}
 variable {ψ : α ⟶ β} [IsIso ψ]
 
+variable {Z : Scheme}
+
 -- ## NOTATION
 
 #check (↧A : CommRingCat)         -- the a-coercion
@@ -65,6 +67,14 @@ variable {ψ : α ⟶ β} [IsIso ψ]
 -- ## algebraize TACTIC
 
 /-algebraize[π.hom]-/             -- creates the tactic `Algebra ↑R ↑S` to be used in a proof
+
+-- ## OPEN COVERS
+
+noncomputable def cov :
+  Z.OpenCover := Z.affineCover    -- the affine cover of a scheme
+#check cov.I₀                     -- the index type of the cover
+#check cov.X                      -- the function which takes `i : cov.I₀` to the open subset
+#check cov.f                      -- the function which takes `i : cov.I₀` to the open immersion
 
 -- ## CATEGORY THOERY STUFF
 

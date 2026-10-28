@@ -282,7 +282,7 @@ def J {F : Type*} [Field F] [NumberField F] [IsCMField F] (ι : CMStructure A F)
 
 -- aided by claude
 open LinearMap in
-lemma J_one {F : Type*} [Field F] [NumberField F] [IsCMField F] (ι : CMStructure A F) :
+lemma J_one_mul_self {F : Type*} [Field F] [NumberField F] [IsCMField F] (ι : CMStructure A F) :
     J ι 1 * J ι 1 = -1 := by
   have hJ : ∀ v : ℝ ⊗[ℚ] F, J ι (J ι v) = -v := by
     intro v
@@ -311,7 +311,7 @@ lemma J_one {F : Type*} [Field F] [NumberField F] [IsCMField F] (ι : CMStructur
 a subfield of `ℂ`, and `F` is the CM Field in the CM Structure. The, we have a preCMType
 on the field `F`. -/
 def CMType {F : Type*} [Field F] [NumberField F] [IsCMField F] (ι : CMStructure A F) :
-    preCMType F := preCMType.ofComplexStructure (J_one ι)
+    preCMType F := preCMType.ofComplexStructure (J_one_mul_self ι)
 
 end CMType
 
