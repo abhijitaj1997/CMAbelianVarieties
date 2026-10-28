@@ -108,30 +108,18 @@ def basechangeOpenCoverXIso {X : Over (Spec ↧K)} (𝒰 : X.left.OpenCover) (K�
     (basechangeOpenCover X K₁ 𝒰).X i ≅ ((Over.mk (𝒰.f i ≫ X.hom)) _ K₁).left :=
   Limits.pullbackSymmetry _ _ ≪≫ Limits.pullbackRightPullbackFstIso _ _ _
 
-
-lemma dimension_isStableUnderBasechange (X : Over (Spec ↧K)) [LocallyOfFiniteType X.hom]
+theorem dimension_isStableUnderBasechange (X : Over (Spec ↧K)) [LocallyOfFiniteType X.hom]
     (K₁ : Type u) [Field K₁] [Algebra K K₁] :
     topologicalKrullDim X.left = topologicalKrullDim (X _ K₁).left := by
   let 𝒰 : X.left.OpenCover := X.left.affineCover
-  -- can be removed eventually
-  have (i : 𝒰.I₀) : IsAffine (𝒰.X i) := by
-    infer_instance
-  rw [topologicalKrullDim_eq_iSup_openCover 𝒰, topologicalKrullDim_eq_iSup_openCover
-    (basechangeOpenCover X K₁ 𝒰)]
-  have (i : 𝒰.I₀) : topologicalKrullDim (𝒰.X i) = topologicalKrullDim
-      ((basechangeOpenCover X K₁ 𝒰).X i) := by
-    -- written by Claude
-    rw [IsHomeomorph.topologicalKrullDim_eq (Scheme.homeoOfIso (basechangeOpenCoverXIso 𝒰 K₁ i))
-      (Scheme.homeoOfIso (basechangeOpenCoverXIso 𝒰 K₁ i)).isHomeomorph]
-    have : IsAffine (Over.mk (𝒰.f i ≫ X.hom)).left := by
-      have : (Over.mk (𝒰.f i ≫ X.hom)).left = 𝒰.X i := rfl
-      rw [this]
-      infer_instance
-    have : LocallyOfFiniteType (Over.mk (𝒰.f i ≫ X.hom)).hom := by
-      have : (Over.mk (𝒰.f i ≫ X.hom)).hom = (𝒰.f i ≫ X.hom) := rfl
-      rw [this]
-      exact locallyOfFiniteType_comp (𝒰.f i) X.hom
-    exact topologicalKrullDim_basechange_affine (Over.mk (𝒰.f i ≫ X.hom)) K₁
-  exact iSup_congr this
+  rw [topologicalKrullDim_eq_iSup_openCover 𝒰,
+    topologicalKrullDim_eq_iSup_openCover (basechangeOpenCover X K₁ 𝒰)]
+  refine iSup_congr fun i ↦ ?_
+  rw [IsHomeomorph.topologicalKrullDim_eq (Scheme.homeoOfIso (basechangeOpenCoverXIso 𝒰 K₁ i))
+    (Scheme.homeoOfIso (basechangeOpenCoverXIso 𝒰 K₁ i)).isHomeomorph]
+  have : IsAffine (Over.mk (𝒰.f i ≫ X.hom)).left := inferInstanceAs (IsAffine (𝒰.X i))
+  have : LocallyOfFiniteType (Over.mk (𝒰.f i ≫ X.hom)).hom :=
+    inferInstanceAs (LocallyOfFiniteType (𝒰.f i ≫ X.hom))
+  exact topologicalKrullDim_basechange_affine (Over.mk (𝒰.f i ≫ X.hom)) K₁
 
 end
