@@ -9,7 +9,6 @@ public import CMAbelianVarieties.AlgebraicGeometry.LieAlgebra.Defn
 public import Mathlib.Algebra.Module.SpanRankOperations
 public import Mathlib.AlgebraicGeometry.Group.Smooth
 public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
-public import Mathlib
 
 /-!
 ## Dimension of a group scheme

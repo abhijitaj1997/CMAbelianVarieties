@@ -175,8 +175,10 @@ AlgebraicGeometry/InvertibleSheaf.lean
 
 AlgebraicGeometry/LieAlgebra/Dimension.lean
 --------------------------------
-New file (00aaa88).
-[ ] topologicalKrullDim_eq_finrank_Lie                               (l.118)
+New file (00aaa88). Line numbers as of 2026-10-29 (commit 7129820).
+topologicalKrullDim_eq_iSup_ringKrullDim_stalk and ringKrullDim_basechange
+moved to AlgebraicGeometry/Dimension.lean.
+[ ] topologicalKrullDim_eq_finrank_Lie                               (l.110)
       dim G = finrank (κ_ G) (Lie G). Currently `sorry`; it is used
       (e.g. in Defn.lean) only to know that dim A is finite, which is far
       stronger than needed. Note in the file: move the finiteness of the
@@ -197,7 +199,7 @@ New file (00aaa88).
       regularity and dim Lie G = topologicalKrullDim G (with homogeneity).
 [ ] smooth_of_grpObj is for GrpObj; additivize with to_additive as in
       IntHom.lean to use it for AddGrpObj.
-[ ] Strategy comment l.78: write
+[ ] Strategy comment l.70: write
       `Algebra.IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential`
       (namespace missing).
 
@@ -228,15 +230,26 @@ done (modulo dimension_isStableUnderBasechange, see below).
 
 AlgebraicGeometry/Dimension.lean
 --------------------------------
-Line numbers as of 2026-10-26 (commit 8d41718).
-[ ] dimension_isStableUnderBasechange                                (l.75)
-      dim X = dim (X _ K₁) for X locally of finite type over K.
-      [LocallyOfFiniteType X.hom] is needed: without it the statement is
-      false (X = Spec K(t), K₁ = K(t)). Proof plan (Noether normalization,
-      missing "dim S = dim R for R → S injective integral") is written in
-      the file.
-[ ] Cleanup: `#check smoothOfRelativeDimension_isStableUnderBaseChange`
-      (l.27).
+Line numbers as of 2026-10-29 (commit 7129820). dim X = sup over an
+open cover (topologicalKrullDim_eq_iSup_openCover), the affine case
+topologicalKrullDim_basechange_affine, and basechangeOpenCover /
+basechangeOpenCoverXIso are done; dimension_isStableUnderBasechange
+reduces to ringKrullDim_basechange (no other sorries left).
+[ ] ringKrullDim_basechange                                          (l.67)
+      dim A = dim (K₁ ⊗[K] A) for A of finite type over a field K.
+      [FiniteType K A] is needed (false for A = K(t), K₁ = K(s)). Proof
+      plan (Noether normalization, missing "dim S = dim R for R → S
+      injective integral") is written in the comment at the end of the
+      file.
+[ ] dimension_isStableUnderBasechange: the `have` IsAffine (𝒰.X i)
+      (l.117) is marked "can be removed eventually".
+[ ] Cleanup: eight blank lines before the final comment.
+[ ] Possible refactor: a lemma topologicalKrullDim X = ⨆ x, coheight x,
+      from which both topologicalKrullDim_eq_iSup_ringKrullDim_stalk and
+      topologicalKrullDim_eq_iSup_openCover follow without stalks.
+[ ] Possibly add an instance IsAffine (X _ K₁).left for IsAffine X.left
+      (currently `by dsimp; infer_instance` inside
+      topologicalKrullDim_basechange_affine), e.g. in BaseFieldChange.lean.
 
 
 AlgebraicGeometry/AbelianVarieties/BaseFieldChange.lean

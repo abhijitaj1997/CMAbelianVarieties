@@ -27,10 +27,10 @@ graph TD
     Finite["<b>Finite</b><br/><i>finite over a field ⇒ Artinian</i>"]
     InvertibleSheaf["<b>InvertibleSheaf</b><br/><i>line bundles</i>"]
     TheCube["<b>TheCube</b><br/><i>theorem of the cube</i>"]
-    AGDimension["<b>Dimension</b><br/><i>dim X = dim (X _ K₁) under base change</i>"]
+    AGDimension["<b>Dimension</b><br/><i>dim X = sup of dim 𝒪_{X,x} / over an open cover; dim X = dim (X _ K₁) under base change</i>"]
     subgraph LIE["LieAlgebra/"]
       LieAlgebra["<b>Defn</b><br/><i>Lie G, End G acts on Lie G and on ℂ ⊗ Lie G</i>"]
-      Dimension["<b>Dimension</b><br/><i>dim X = sup of dim 𝒪_{X,x}; dim Lie G vs dim 𝒪_{G,e}</i>"]
+      Dimension["<b>Dimension</b><br/><i>dim Lie G vs dim 𝒪_{G,e}</i>"]
     end
     AGCatalogue["<b>Catalogue</b><br/><i>#check cheat sheet</i>"]
     subgraph AV["AbelianVarieties/"]

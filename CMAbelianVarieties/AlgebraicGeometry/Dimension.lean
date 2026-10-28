@@ -6,7 +6,6 @@ Authors: Abhijit A J
 module
 
 public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.BaseFieldChange
-public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
 
 /-!
 ## Dimension
@@ -110,9 +109,6 @@ def basechangeOpenCoverXIso {X : Over (Spec ↧K)} (𝒰 : X.left.OpenCover) (K�
   Limits.pullbackSymmetry _ _ ≪≫ Limits.pullbackRightPullbackFstIso _ _ _
 
 
-#check smoothOfRelativeDimension_isStableUnderBaseChange -- But I don't wanna just prove this
--- for AVs
-
 lemma dimension_isStableUnderBasechange (X : Over (Spec ↧K)) [LocallyOfFiniteType X.hom]
     (K₁ : Type u) [Field K₁] [Algebra K K₁] :
     topologicalKrullDim X.left = topologicalKrullDim (X _ K₁).left := by
@@ -120,8 +116,6 @@ lemma dimension_isStableUnderBasechange (X : Over (Spec ↧K)) [LocallyOfFiniteT
   -- can be removed eventually
   have (i : 𝒰.I₀) : IsAffine (𝒰.X i) := by
     infer_instance
-  have (i : 𝒰.I₀) : IsAffine ((basechangeOpenCover X K₁ 𝒰).X i) := by
-    sorry
   rw [topologicalKrullDim_eq_iSup_openCover 𝒰, topologicalKrullDim_eq_iSup_openCover
     (basechangeOpenCover X K₁ 𝒰)]
   have (i : 𝒰.I₀) : topologicalKrullDim (𝒰.X i) = topologicalKrullDim
