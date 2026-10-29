@@ -230,11 +230,12 @@ done (modulo dimension_isStableUnderBasechange, see below).
 
 AlgebraicGeometry/Dimension.lean
 --------------------------------
-Line numbers as of 2026-10-29 (commit 7129820). dim X = sup over an
-open cover (topologicalKrullDim_eq_iSup_openCover), the affine case
-topologicalKrullDim_basechange_affine, and basechangeOpenCover /
-basechangeOpenCoverXIso are done; dimension_isStableUnderBasechange
-reduces to ringKrullDim_basechange (no other sorries left).
+Line numbers as of 2026-10-30 (commit 238316e). dim X = sup over an
+open cover (topologicalKrullDim_eq_iSup_openCover) and the affine case
+topologicalKrullDim_basechange_affine are done (basechangeOpenCover /
+basechangeOpenCoverXIso moved to AlgebraicGeometry/Basic.lean);
+dimension_isStableUnderBasechange reduces to ringKrullDim_basechange (no
+other sorries left).
 [ ] ringKrullDim_basechange                                          (l.67)
       dim A = dim (K₁ ⊗[K] A) for A of finite type over a field K.
       [FiniteType K A] is needed (false for A = K(t), K₁ = K(s)). Proof
@@ -242,24 +243,105 @@ reduces to ringKrullDim_basechange (no other sorries left).
       injective integral") is written in the comment at the end of the
       file.
 [ ] dimension_isStableUnderBasechange: the `have` IsAffine (𝒰.X i)
-      (l.117) is marked "can be removed eventually".
+      (l.106) is marked "can be removed eventually".
 [ ] Cleanup: eight blank lines before the final comment.
 [ ] Possible refactor: a lemma topologicalKrullDim X = ⨆ x, coheight x,
       from which both topologicalKrullDim_eq_iSup_ringKrullDim_stalk and
       topologicalKrullDim_eq_iSup_openCover follow without stalks.
 [ ] Possibly add an instance IsAffine (X _ K₁).left for IsAffine X.left
       (currently `by dsimp; infer_instance` inside
-      topologicalKrullDim_basechange_affine), e.g. in BaseFieldChange.lean.
+      topologicalKrullDim_basechange_affine), e.g. in AlgebraicGeometry/Basic.lean.
 
 
-AlgebraicGeometry/AbelianVarieties/BaseFieldChange.lean
--------------------------------------------------------
-New file (1ff4cac), no sorries. Base change of X : Over (Spec K) along
-a field extension K → K₁, `abbrev basechange_over_Over`, notation
-`X _ K₁`, and instances IsProper, GeometricallyIntegral, AddGrpObj,
-IsCommAddMonObj for X _ K₁.
-[ ] Cleanup: unused `variable {A …}` (l.27); typo "Them" in docstring;
-      the notation uses `_`, which is also the placeholder token.
+AlgebraicGeometry/Basic.lean
+----------------------------
+New file (2026-10-30), replaces AbelianVarieties/BaseFieldChange.lean
+(deleted). Basic AG results used elsewhere. Section BaseChange:
+`abbrev basechange_over_Over`, notation `X _ K₁`, instances IsProper,
+GeometricallyIntegral, AddGrpObj, IsCommAddMonObj for X _ K₁. Section
+Covers: basechangeOpenCover / basechangeOpenCoverXIso (from
+Dimension.lean). Section CompactofProper: CompactSpace X.left for X proper
+over a field. Line numbers as of 2026-10-30 (commit 238316e).
+[ ] basechange_over_Over_trans : (X _ K₁) _ K₂ ≅ X _ K₂              (l.39)
+      Currently `sorry`. Also needed: an AddGrpObj version (iso of group
+      objects), see AbelianVarieties/RationalModel.lean. "Hey claude"
+      note (l.36): should it use IntermediateField? To discuss.
+[ ] Cleanup: unused `variable {A …}` (l.29); the notation uses `_`,
+      which is also the placeholder token.
+[ ] CompactofProper instance could assume only [QuasiCompact X.hom].
+
+
+AlgebraicGeometry/RationalModel/Affine.lean
+-------------------------------------------
+New file (2026-10-30), no sorries. exists_model_of_finiteType (algebra)
+and exists_model_of_isAffine_of_locallyOfFiniteType (an affine X of
+finite type over K̄ has an affine model of finite type over a finite
+E/K ⊆ K̄).
+[ ] Cleanup: module docstring typos ("a affine", "seperated").
+
+
+AlgebraicGeometry/RationalModel/Separated.lean
+----------------------------------------------
+New file (2026-10-30, renamed from IntegralModel/Model.lean). Line
+numbers as of 2026-10-30 (commit 238316e).
+[ ] nameless (l.31): intersections of affine opens of a separated X are
+      affine. Needs a name; `sorry` (not found by instance search).
+[ ] exists_model_of_isSeparated_of_locallyOfFiniteType               (l.41)
+      Statement: the conclusion says IsAffine X₀.left; should be
+      IsSeparated X₀.hom (a non-affine X has no affine model).
+      Proof: finite affine cover, models E' i, compositum E (finite).
+      Still `sorry`: Algebra (E' i) E (l.54; should be the inclusion
+      via `letI`, not a `have`), and the gluing. The plan (Scheme.GlueData,
+      descent of opens / transition maps / cocycle, enlarging E) is in
+      the comment in the proof. Base change commutes with gluing is
+      not in Mathlib.
+[ ] Cleanup: module docstring typos ("seperated").
+
+
+AlgebraicGeometry/RationalModel/Morphism.lean
+---------------------------------------------
+New file (2026-10-30). Properties of the model chosen by
+exists_model_of_isSeparated_of_locallyOfFiniteType.
+[ ] isProper_model                                                   (l.28)
+      Descend along Spec K̄ → Spec E (surjective, flat, quasi-compact):
+      UniversallyClosed and LocallyOfFiniteType descend in Mathlib
+      (FlatDescent.lean, LocalFlatDescent.lean); IsSeparated does not
+      (would need descent of closed immersions) — or get it from the
+      statement once it says IsSeparated X₀.hom.
+[ ] geometricallyIntegral_model                                      (l.33)
+[ ] Module docstring is empty.
+
+
+AlgebraicGeometry/RationalModel/GroupStructure.lean
+---------------------------------------------------
+New file (2026-10-30). Group structures descend to a finite extension.
+[ ] fieldOfDefintion (l.31), FiniteDimensional_ofFieldOfDefintion
+      (l.34), AddGroupObj_overFieldOfDefintion (l.38): all `sorry`.
+[ ] Cleanup: typo fieldOfDefintion → fieldOfDefinition; instance names
+      (lowerCamelCase).
+
+
+AlgebraicGeometry/AbelianVarieties/RationalModel.lean
+-----------------------------------------------------
+(Renamed from IntegralModel/Theorem.lean.) Line numbers as of 2026-10-30
+(commit 238316e).
+[ ] AbelianVarieties.exists_finiteDimensional_model                  (l.92)
+      Skeleton: model A₁ over E₁, E := fieldOfDefintion A₁ K̄, witness
+      E.restrictScalars K and A₁ _ E. Still `sorry`: IsProper A₁.hom
+      (l.99), GeometricallyIntegral A₁.hom (l.100) (use Morphism.lean),
+      AddGrpObj (A₁ _ K̄) (l.102), and the final iso (l.116), which
+      needs an AddGrpObj version of basechange_over_Over_trans.
+      Note: instances on (A₁ _ E) must be proved before `refine`, since
+      inside the goal E appears as E.restrictScalars K.
+
+
+Theorem.lean
+------------
+Line numbers as of 2026-10-30 (commit 238316e).
+[ ] CMStructure.exists_algClosureRat_model                           (l.40)
+[ ] CMStructure.exists_finiteDimensional_model                       (l.47)
+[ ] exists_numberField_model: the `have : IsScalarTower E …` (l.65) is
+      probably redundant now (E is an IntermediateField).
 
 
 AbstractNonsense/EndBaseChange.lean

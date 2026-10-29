@@ -5,8 +5,6 @@ Authors: Abhijit A J
 -/
 module
 
-public import CMAbelianVarieties.AlgebraicGeometry.Basic
-public import Mathlib.NumberTheory.NumberField.Basic
 public import CMAbelianVarieties.AlgebraicGeometry.RationalModel.GroupStructure
 public import CMAbelianVarieties.AlgebraicGeometry.RationalModel.Morphism
 

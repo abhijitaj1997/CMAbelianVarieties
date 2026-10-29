@@ -5,8 +5,8 @@ Authors: Abhijit A J
 -/
 module
 
-public import Mathlib
 public import CMAbelianVarieties.AlgebraicGeometry.Basic
+public import Mathlib.FieldTheory.IntermediateField.Basic
 
 /-!
 ## Goal
@@ -28,7 +28,7 @@ universe u
 variable {K Kₐ : Type u} [Field K] [Field Kₐ] [Algebra K Kₐ] [IsAlgebraic K Kₐ]
 variable {G : Over (Spec ↧K)} [AddGrpObj (G _ Kₐ)]
 
-def fieldOfDefintion (G : Over (Spec ↧K)) (Kₐ : Type u)[Field Kₐ] [Algebra K Kₐ]
+def fieldOfDefintion (G : Over (Spec ↧K)) (Kₐ : Type u) [Field Kₐ] [Algebra K Kₐ]
     [IsAlgebraic K Kₐ] [AddGrpObj (G _ Kₐ)] : IntermediateField K Kₐ := sorry
 
 instance FiniteDimensional_ofFieldOfDefintion (G : Over (Spec ↧K)) (Kₐ : Type u) [Field Kₐ]

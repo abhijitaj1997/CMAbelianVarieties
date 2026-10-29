@@ -5,9 +5,7 @@ Authors: Abhijit A J
 -/
 module
 
-public import CMAbelianVarieties.AlgebraicGeometry.Basic
 public import CMAbelianVarieties.AlgebraicGeometry.RationalModel.Affine
-public import Mathlib.NumberTheory.NumberField.Basic
 
 /-!
 ## Goal

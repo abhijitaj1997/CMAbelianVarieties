@@ -6,7 +6,6 @@ public import CMAbelianVarieties.AbstractNonsense.IntHom
 public import CMAbelianVarieties.AbstractNonsense.PullbackAddGrp
 public import CMAbelianVarieties.Algebra.CMField
 public import CMAbelianVarieties.Algebra.FieldRepresentations
-public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.BaseFieldChange
 public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Catalogue
 public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Commutativity
 public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Complex
@@ -16,13 +15,19 @@ public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Homomorphism
 public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Homomorphisms.IntHom
 public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Homomorphisms.Integral
 public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Homomorphisms.TorsionFree
+public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.RationalModel
 public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.TateModule
+public import CMAbelianVarieties.AlgebraicGeometry.Basic
 public import CMAbelianVarieties.AlgebraicGeometry.Catalogue
 public import CMAbelianVarieties.AlgebraicGeometry.Dimension
 public import CMAbelianVarieties.AlgebraicGeometry.Finite
 public import CMAbelianVarieties.AlgebraicGeometry.InvertibleSheaf
 public import CMAbelianVarieties.AlgebraicGeometry.LieAlgebra.Defn
 public import CMAbelianVarieties.AlgebraicGeometry.LieAlgebra.Dimension
+public import CMAbelianVarieties.AlgebraicGeometry.RationalModel.Affine
+public import CMAbelianVarieties.AlgebraicGeometry.RationalModel.GroupStructure
+public import CMAbelianVarieties.AlgebraicGeometry.RationalModel.Morphism
+public import CMAbelianVarieties.AlgebraicGeometry.RationalModel.Separated
 public import CMAbelianVarieties.AlgebraicGeometry.TheCube
 public import CMAbelianVarieties.Defn
 public import CMAbelianVarieties.ForMathlib.Endomorphism

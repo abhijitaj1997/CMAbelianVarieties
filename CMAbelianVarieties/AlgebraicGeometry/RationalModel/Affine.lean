@@ -6,7 +6,8 @@ Authors: Abhijit A J
 module
 
 public import CMAbelianVarieties.AlgebraicGeometry.Basic
-public import Mathlib.NumberTheory.NumberField.Basic
+public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 public import Mathlib.RingTheory.Extension.Presentation.Core
 
 /-!

@@ -27,7 +27,15 @@ graph TD
     Finite["<b>Finite</b><br/><i>finite over a field ⇒ Artinian</i>"]
     InvertibleSheaf["<b>InvertibleSheaf</b><br/><i>line bundles</i>"]
     TheCube["<b>TheCube</b><br/><i>theorem of the cube</i>"]
+    AGBasic["<b>Basic</b><br/><i>base change X _ K₁ (+ instances), base change of open covers, proper ⇒ quasi-compact</i>"]
     AGDimension["<b>Dimension</b><br/><i>dim X = sup of dim 𝒪_{X,x} / over an open cover; dim X = dim (X _ K₁) under base change</i>"]
+    subgraph RM["RationalModel/"]
+      direction TB
+      RMAffine["<b>Affine</b><br/><i>affine X of finite type over K̄ has a model over a finite E/K</i>"]
+      RMSeparated["<b>Separated</b><br/><i>same for separated X, by gluing affine models</i>"]
+      RMMorphism["<b>Morphism</b><br/><i>the model is proper / geometrically integral</i>"]
+      RMGroupStructure["<b>GroupStructure</b><br/><i>group structures descend to a field of definition</i>"]
+    end
     subgraph LIE["LieAlgebra/"]
       LieAlgebra["<b>Defn</b><br/><i>Lie G, End G acts on Lie G and on ℂ ⊗ Lie G</i>"]
       Dimension["<b>Dimension</b><br/><i>dim Lie G vs dim 𝒪_{G,e}</i>"]
@@ -37,7 +45,7 @@ graph TD
       direction TB
       GlobalSections["<b>GlobalSections</b><br/><i>Γ(A) ≅ K</i>"]
       TateModule["<b>TateModule</b><br/><i>torsion points, Tate module</i>"]
-      BaseFieldChange["<b>BaseFieldChange</b><br/><i>A _ K₁, base change to K₁</i>"]
+      AVRationalModel["<b>RationalModel</b><br/><i>an abelian variety over K̄ has a model over a finite E/K</i>"]
       AVCatalogue["<b>Catalogue</b><br/><i>#check cheat sheet</i>"]
       Commutativity["<b>Commutativity</b> ★<br/><i>abelian varieties are commutative</i>"]
       Complex["<b>Complex</b><br/><i>complex abelian varieties: exp, lattice, ℝ ⊗ lattice ≅ Lie A, free of rank 2g</i>"]
@@ -80,13 +88,20 @@ graph TD
 
   %% ---------- imports ----------
   Theorem --> Defn
+  Theorem --> AVRationalModel
   Defn --> EndomorphismRing
   Defn --> CMDefn
   Defn --> AGDimension
-  AGDimension --> BaseFieldChange
+  AGDimension --> AGBasic
   Defn --> EndBaseChange
   Defn --> Complex
-  BaseFieldChange --> FunctorCommAddObj
+  AGBasic --> FunctorCommAddObj
+  AVRationalModel --> RMGroupStructure
+  AVRationalModel --> RMMorphism
+  RMMorphism --> RMSeparated
+  RMSeparated --> RMAffine
+  RMAffine --> AGBasic
+  RMGroupStructure --> AGBasic
   EndBaseChange --> Endomorphism
   EndBaseChange --> FunctorCommAddObj
   EndomorphismRing --> Commutativity
@@ -118,7 +133,7 @@ graph TD
 
   class Theorem goal
   class Commutativity hub
-  class EndomorphismRing,FiniteGen,IntHomAV,Complex,TorsionFree,TateModule,GlobalSections,IntHomAN,PullbackAddGrp,Finite,Endomorphism,LieAlgebra,CMDefn,Test,BaseFieldChange,EndBaseChange,FunctorCommAddObj,Defn,EndRingIso,Dimension,Integral,AGDimension,CMField,FieldRepresentations connected
+  class EndomorphismRing,FiniteGen,IntHomAV,Complex,TorsionFree,TateModule,GlobalSections,IntHomAN,PullbackAddGrp,Finite,Endomorphism,LieAlgebra,CMDefn,Test,AGBasic,AVRationalModel,RMAffine,RMSeparated,RMMorphism,RMGroupStructure,EndBaseChange,FunctorCommAddObj,Defn,EndRingIso,Dimension,Integral,AGDimension,CMField,FieldRepresentations connected
   class AVCatalogue,InvertibleSheaf,TheCube,AGCatalogue,CMAlgebra,Test1 unused
 ```
 
