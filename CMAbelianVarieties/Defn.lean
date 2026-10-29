@@ -81,6 +81,23 @@ def basechange (ι : CMStructure A F) (K₁ : Type u) [Field K₁] [Algebra K K�
       finrank_of_CM_field := by
         rw [ι.finrank_of_CM_field, dimension_isStableUnderBasechange A K₁]
 
+def basechange_trans (ι : CMStructure A F) (K₁ K₂ : Type u) [Field K₁] [Field K₂] [Algebra K K₁]
+    [Algebra K K₂] [Algebra K₁ K₂] [IsScalarTower K K₁ K₂] :
+    ((ι.basechange K₁).basechange K₂).Iso (ι.basechange K₂) := by
+  let φ : AddGrp.mk ((A _ K₁) _ K₂) ≅ AddGrp.mk (A _ K₂) := by
+    sorry
+  have : (conjAlgEquiv φ).toRingHom.comp ((ι.basechange K₁).basechange K₂).incl
+      = (ι.basechange K₂) := sorry
+  exact ⟨φ, this⟩
+
+def Iso_trans {K₁ K₂ : Type u} [Field K₁] [Field K₂] [Algebra K K₁]
+    [Algebra K K₂] [Algebra K₁ K₂] [IsScalarTower K K₁ K₂] {ι : CMStructure A F}
+    {B : Over (Spec ↧K₁)} [IsProper B.hom] [GeometricallyIntegral B.hom] [AddGrpObj B]
+    {ι₁ : CMStructure B F} {C : Over (Spec ↧K₂)} [IsProper C.hom] [GeometricallyIntegral C.hom]
+    [AddGrpObj C] {ι₂ : CMStructure C F} (φ : (ι.basechange K₁).Iso ι₁)
+    (ψ : (ι₁.basechange K₂).Iso ι₂) : (ι.basechange K₂).Iso ι₂ := by
+  sorry
+
 end BaseChange
 
 end CMStructure
