@@ -5,7 +5,7 @@ Authors: Abhijit A J
 -/
 module
 
-public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.BaseFieldChange
+public import CMAbelianVarieties.AlgebraicGeometry.Basic
 
 /-!
 ## Dimension
@@ -93,20 +93,6 @@ lemma topologicalKrullDim_basechange_affine (X : Over (Spec ↧K)) [IsAffine X.l
     exact ((Scheme.Γ.mapIso e.op).symm ≪≫ ΓSpecIso _).commRingCatIsoToRingEquiv.trans
       (Algebra.TensorProduct.comm K Γ(X.left, ⊤) K₁).toRingEquiv
   rw [h_dim, h_dim, ringKrullDim_eq_of_ringEquiv this, ringKrullDim_basechange _ K K₁]
-
--- written by Claude
-/-- The base change to `X _ K₁` of an open cover `𝒰` of `X`. -/
-def basechangeOpenCover (X : Over (Spec ↧K)) (K₁ : Type u) [Field K₁] [Algebra K K₁]
-    (𝒰 : X.left.OpenCover) : (X _ K₁).left.OpenCover :=
-  𝒰.pullback₁ (Limits.pullback.fst _ _)
-
--- written by Claude
-/-- The `i`-th open of `basechangeOpenCover X K₁ 𝒰` is the base change `(U i) _ K₁` of the
-`i`-th open `U i` of `𝒰`, viewed as a scheme over `K`. -/
-def basechangeOpenCoverXIso {X : Over (Spec ↧K)} (𝒰 : X.left.OpenCover) (K₁ : Type u) [Field K₁]
-    [Algebra K K₁] (i : 𝒰.I₀) :
-    (basechangeOpenCover X K₁ 𝒰).X i ≅ ((Over.mk (𝒰.f i ≫ X.hom)) _ K₁).left :=
-  Limits.pullbackSymmetry _ _ ≪≫ Limits.pullbackRightPullbackFstIso _ _ _
 
 theorem dimension_isStableUnderBasechange (X : Over (Spec ↧K)) [LocallyOfFiniteType X.hom]
     (K₁ : Type u) [Field K₁] [Algebra K K₁] :

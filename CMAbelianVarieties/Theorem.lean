@@ -6,7 +6,7 @@ Authors: Abhijit A J
 module
 
 public import CMAbelianVarieties.Defn
-public import CMAbelianVarieties.AlgebraicGeometry.IntegralModel.Theorem
+public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.RationalModel
 
 /-!
 ## Goal
@@ -44,14 +44,14 @@ theorem exists_algClosureRat_model (ι : CMStructure A F) :
 
   sorry
 
-theorem exists_numberField_model_of__over_algClosureRat
-    {A : Over (Spec ↧(AlgebraicClosure ℚ))} [IsProper A.hom] [GeometricallyIntegral A.hom]
-    [AddGrpObj A] (ι : CMStructure A F) : ∃ (E : Type) (_ : Field E) (_ : NumberField E)
-    (_ : Algebra E (AlgebraicClosure ℚ)) (A₀ : Over (Spec ↧E)) (_ : IsProper A₀.hom)
+theorem exists_finiteDimensional_model {Q : Type*} [Field Q]
+    {A : Over (Spec ↧(AlgebraicClosure Q))} [IsProper A.hom] [GeometricallyIntegral A.hom]
+    [AddGrpObj A] (ι : CMStructure A F) : ∃ (E : IntermediateField Q (AlgebraicClosure Q))
+    (_ : FiniteDimensional Q E) (A₀ : Over (Spec ↧E)) (_ : IsProper A₀.hom)
     (_ : GeometricallyIntegral A₀.hom) (_ : AddGrpObj A₀) (ι₀ : CMStructure A₀ F),
-    Nonempty ((ι₀.basechange (AlgebraicClosure ℚ)).Iso ι) := by
-  rcases AbelianVarieties.exists_numberField_model_of__over_algClosureRat A with
-    ⟨E₀, _, _, _, A₀, _, _, _, hφ⟩
+    Nonempty ((ι₀.basechange (AlgebraicClosure Q)).Iso ι) := by
+  rcases AbelianVarieties.exists_finiteDimensional_model A with
+    ⟨E₀, _, A₀, _, _, _, hφ⟩
   #check hφ.some
   sorry
 
@@ -60,9 +60,8 @@ theorem exists_numberField_model (ι : CMStructure A F) :
     (A₀ : Over (Spec ↧E)) (_ : IsProper A₀.hom) (_ : GeometricallyIntegral A₀.hom)
     (_ : AddGrpObj A₀) (ι₀ : CMStructure A₀ F), Nonempty ((ι₀.basechange K).Iso ι) := by
   rcases exists_algClosureRat_model ι with ⟨_, A₁, _, _, _, ι₁, hψ⟩
-  rcases exists_numberField_model_of__over_algClosureRat ι₁ with
-    ⟨E, _, _, _, A₀, _, _, _, ι₀, hφ⟩
-  algebraize [(Algebra.algebraMap _ K).comp (Algebra.algebraMap E (AlgebraicClosure ℚ))]
+  rcases exists_finiteDimensional_model ι₁ with ⟨E, _, A₀, _, _, _, ι₀, hφ⟩
+  have : NumberField E := .of_module_finite ℚ E
   have : IsScalarTower E (AlgebraicClosure ℚ) K :={smul_assoc e r k := by simp}
   use E, (by infer_instance), (by infer_instance), (by infer_instance), A₀, (by infer_instance),
     (by infer_instance), (by infer_instance), ι₀

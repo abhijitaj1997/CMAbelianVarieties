@@ -10,15 +10,16 @@ public import Mathlib.AlgebraicGeometry.Geometrically.Integral
 public import Mathlib.AlgebraicGeometry.Morphisms.Proper
 
 /-!
-## Goal
+## Basic results
 
-Given an abelian variety `A` over a field `K`, and if `K₁` is another field
-such that `K` is a subfield of it. Them, `A` base changed to `K₁` is itself
-an abelian variety.
+This file contains basic results in algebraic geometry that are needed in other files of the
+project.
 
 -/
 
 @[expose] public noncomputable section
+
+section BaseChange
 
 open AlgebraicGeometry CategoryTheory CommRingCat Spec
 
@@ -31,6 +32,14 @@ abbrev basechange_over_Over (X : Over (Spec ↧K)) (K₁ : Type u) [Field K₁] 
     Over (Spec ↧K₁) := ((Over.pullback (map (ofHom (Algebra.algebraMap K K₁)))).obj X)
 
 notation X "_" E:arg => basechange_over_Over X E
+
+/-
+Hey claude, Should I use `IntermediateFiled`? Tell me to give this a good thought
+-/
+abbrev basechange_over_Over_trans (X : Over (Spec ↧K)) (K₁ K₂ : Type u) [Field K₁] [Field K₂]
+    [Algebra K K₁] [Algebra K K₂] [Algebra K₁ K₂] [IsScalarTower K K₁ K₂] :
+    (X _ K₁) _ K₂ ≅ X _ K₂ :=
+  sorry
 
 instance {X : Over (Spec ↧K)} [IsProper X.hom] {K₁ : Type u} [Field K₁] [Algebra K K₁] :
     IsProper (X _ K₁).hom :=
@@ -50,3 +59,42 @@ instance {G : Over (Spec ↧K)} [AddGrpObj G] {K₁ : Type u} [Field K₁] [Alge
 instance {G : Over (Spec ↧K)} [AddGrpObj G] [IsCommAddMonObj G] {K₁ : Type u} [Field K₁]
     [Algebra K K₁] : IsCommAddMonObj (G _ K₁) :=
   Functor.isCommAddMonObj_obj (Over.pullback (map (ofHom (Algebra.algebraMap K K₁))))
+
+end BaseChange
+
+section Covers
+
+open AlgebraicGeometry CategoryTheory
+
+universe u
+
+variable {K : Type u} [Field K]
+
+-- written by Claude
+/-- The base change to `X _ K₁` of an open cover `𝒰` of `X`. -/
+def basechangeOpenCover (X : Over (Spec ↧K)) (K₁ : Type u) [Field K₁] [Algebra K K₁]
+    (𝒰 : X.left.OpenCover) : (X _ K₁).left.OpenCover :=
+  𝒰.pullback₁ (Limits.pullback.fst _ _)
+
+-- written by Claude
+/-- The `i`-th open of `basechangeOpenCover X K₁ 𝒰` is the base change `(U i) _ K₁` of the
+`i`-th open `U i` of `𝒰`, viewed as a scheme over `K`. -/
+def basechangeOpenCoverXIso {X : Over (Spec ↧K)} (𝒰 : X.left.OpenCover) (K₁ : Type u) [Field K₁]
+    [Algebra K K₁] (i : 𝒰.I₀) :
+    (basechangeOpenCover X K₁ 𝒰).X i ≅ ((Over.mk (𝒰.f i ≫ X.hom)) _ K₁).left :=
+  Limits.pullbackSymmetry _ _ ≪≫ Limits.pullbackRightPullbackFstIso _ _ _
+
+end Covers
+
+section CompactofProper
+
+open AlgebraicGeometry CategoryTheory
+
+variable {K : Type*} [Field K]
+
+-- written by Claude
+/-- A proper scheme over a field is quasi-compact. -/
+instance {X : Over (Spec ↧K)} [IsProper X.hom] : CompactSpace X.left :=
+  QuasiCompact.compactSpace_of_compactSpace X.hom
+
+end CompactofProper
