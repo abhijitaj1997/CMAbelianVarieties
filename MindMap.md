@@ -10,7 +10,8 @@ An arrow `A --> B` means "A imports B". `CMAbelianVarieties.lean` imports every 
 graph TD
   %% ---------- top level ----------
   Theorem["<b>Theorem</b><br/><i>main theorem: CM abelian varieties have models over number fields</i>"]
-  Defn["<b>Defn</b><br/><i>CMStructure, F-module ℚ ⊗ lattice ≅ F, u_ℝ : ℝ ⊗ F ≅ Lie A, complex structure J, CMType</i>"]
+  Pottentially["<b>Pottentially</b><br/><i>potentially CM structures: CM over K̄, descend to a finite extension</i>"]
+  Defn["<b>Defn</b><br/><i>CMStructure, isomorphisms and base change of CM structures, F-module ℚ ⊗ lattice ≅ F, u_ℝ : ℝ ⊗ F ≅ Lie A, complex structure J, CMType</i>"]
 
   %% ---------- AbstractNonsense ----------
   subgraph AN["AbstractNonsense/"]
@@ -27,7 +28,7 @@ graph TD
     Finite["<b>Finite</b><br/><i>finite over a field ⇒ Artinian</i>"]
     InvertibleSheaf["<b>InvertibleSheaf</b><br/><i>line bundles</i>"]
     TheCube["<b>TheCube</b><br/><i>theorem of the cube</i>"]
-    AGBasic["<b>Basic</b><br/><i>base change X _ K₁ (+ instances), base change of open covers, proper ⇒ quasi-compact</i>"]
+    AGBasic["<b>Basic</b><br/><i>base change X _ K₁ (+ instances, X ≅ X _ K, (X _ K₁) _ K₂ ≅ X _ K₂), base change of open covers, proper ⇒ quasi-compact</i>"]
     AGDimension["<b>Dimension</b><br/><i>dim X = sup of dim 𝒪_{X,x} / over an open cover; dim X = dim (X _ K₁) under base change</i>"]
     subgraph RM["RationalModel/"]
       direction TB
@@ -51,7 +52,7 @@ graph TD
       Complex["<b>Complex</b><br/><i>complex abelian varieties: exp, lattice, ℝ ⊗ lattice ≅ Lie A, free of rank 2g</i>"]
       subgraph HOM["Homomorphisms/"]
         direction TB
-        EndomorphismRing["<b>EndomorphismRing</b><br/><i>End A, End A ⊗ ℚ</i>"]
+        EndomorphismRing["<b>EndomorphismRing</b><br/><i>End A, End A ⊗ ℚ, conjugation by isomorphisms</i>"]
         FiniteGen["<b>FiniteGen</b><br/><i>Hom(A, B) finitely generated</i>"]
         TorsionFree["<b>TorsionFree</b><br/><i>Hom(A, B) torsion free</i>"]
         IntHomAV["<b>IntHom</b><br/><i>[n], A[n] finite & discrete</i>"]
@@ -87,7 +88,8 @@ graph TD
   end
 
   %% ---------- imports ----------
-  Theorem --> Defn
+  Theorem --> Pottentially
+  Pottentially --> Defn
   Theorem --> AVRationalModel
   Defn --> EndomorphismRing
   Defn --> CMDefn
@@ -133,7 +135,7 @@ graph TD
 
   class Theorem goal
   class Commutativity hub
-  class EndomorphismRing,FiniteGen,IntHomAV,Complex,TorsionFree,TateModule,GlobalSections,IntHomAN,PullbackAddGrp,Finite,Endomorphism,LieAlgebra,CMDefn,Test,AGBasic,AVRationalModel,RMAffine,RMSeparated,RMMorphism,RMGroupStructure,EndBaseChange,FunctorCommAddObj,Defn,EndRingIso,Dimension,Integral,AGDimension,CMField,FieldRepresentations connected
+  class EndomorphismRing,FiniteGen,IntHomAV,Complex,TorsionFree,TateModule,GlobalSections,IntHomAN,PullbackAddGrp,Finite,Endomorphism,LieAlgebra,CMDefn,Test,AGBasic,AVRationalModel,RMAffine,RMSeparated,RMMorphism,RMGroupStructure,EndBaseChange,FunctorCommAddObj,Defn,Pottentially,EndRingIso,Dimension,Integral,AGDimension,CMField,FieldRepresentations connected
   class AVCatalogue,InvertibleSheaf,TheCube,AGCatalogue,CMAlgebra,Test1 unused
 ```
 

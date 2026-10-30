@@ -32,6 +32,7 @@ public import CMAbelianVarieties.AlgebraicGeometry.TheCube
 public import CMAbelianVarieties.Defn
 public import CMAbelianVarieties.ForMathlib.Endomorphism
 public import CMAbelianVarieties.ForMathlib.FunctorCommAddObj
+public import CMAbelianVarieties.Pottentially
 public import CMAbelianVarieties.Theorem
 public import CMAbelianVarieties.preCMType.Algebra
 public import CMAbelianVarieties.preCMType.Defn

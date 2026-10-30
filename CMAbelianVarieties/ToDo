@@ -164,6 +164,8 @@ notation `End⁰ A` (scoped in RationalEnd).
 [ ] Module.Finite ℚ (End⁰ A)                                         (l.35)
       Should follow from fin_gen_hom (FiniteGen.lean).
 [ ] Collect the remaining instances from the Hom files for End A.
+[ ] Naming: conjAlgEquiv.refl / .symm / .trans would be conjAlgEquiv_refl
+      / _symm / _trans in Mathlib style.
 
 
 AlgebraicGeometry/InvertibleSheaf.lean
@@ -211,21 +213,32 @@ AlgebraicGeometry/TheCube.lean
 
 Defn.lean (CM abelian varieties)
 --------------------------------
-Line numbers as of 2026-10-26 (commit 8d41718). No sorries left in this
-file. CMStructure, basechange, the F-module structure on the rational
-lattice, u, u_ℝ and CMType ι := preCMType.ofComplexStructure (J_one ι) are
-done (modulo dimension_isStableUnderBasechange, see below).
+Line numbers as of 2026-10-30 (commit a0e8564). CMStructure, ofIso,
+Iso (with refl / symm / trans), basechange, the F-module structure on the
+rational lattice, u, u_ℝ and CMType ι := preCMType.ofComplexStructure
+(J_one ι) are done (modulo dimension_isStableUnderBasechange).
+[ ] basechange.refl : (ι.basechange K).Iso ι                         (l.128)
+      `sorry`. A draft of val (Functor.mapAddGrpNatIso of
+      eqToIso ≪≫ Over.pullbackId, then Functor.mapAddGrpIdIso) compiled;
+      property not done. Could use basechange_over_Field.refl (Basic.lean).
+[ ] basechange.trans                                                 (l.132)
+      `sorry` (the iso φ and its compatibility). Could use
+      basechange_over_Field.trans_addGrpObj (Basic.lean).
+[ ] Iso.basechangeTrans                                              (l.145)
+      `sorry`.
 [ ] Check the dimension condition: Module.finrank ℚ F : ℕ is compared
       with topologicalKrullDim A.left : WithBot ℕ∞ (via a cast). Decide
       whether to state dim A as a natural number instead. (In
       finrank_rational_lattice_of_CMStructure the cast is undone with
       `norm_cast`.)
-[ ] End.algHom_ofBaseChange (l.71) lives in namespace CMStructure, but is
+[ ] End.algHom_ofBaseChange (l.114) lives in namespace CMStructure, but is
       a general fact about endomorphisms; could be moved out.
-[ ] Cleanup: `#check lattice_isLattice_map` (l.250). u_ℚ_mul (l.177)
-      could be proved by `exact u_mul ι a b`. ψ₂_tmul (l.239) uses
+[ ] Cleanup: `#check lattice_isLattice_map` (l.318). u_ℚ_mul (l.245)
+      could be proved by `exact u_mul ι a b`. ψ₂_tmul (l.307) uses
       `erw [TensorProduct.map_tmul]`; an `incl_tmul` rfl lemma would
       avoid it.
+[ ] Naming: basechange.refl / basechange.trans make `basechange` a
+      namespace, so dot notation `ι.basechange.trans` does not work.
 
 
 AlgebraicGeometry/Dimension.lean
@@ -261,13 +274,24 @@ New file (2026-10-30), replaces AbelianVarieties/BaseFieldChange.lean
 GeometricallyIntegral, AddGrpObj, IsCommAddMonObj for X _ K₁. Section
 Covers: basechangeOpenCover / basechangeOpenCoverXIso (from
 Dimension.lean). Section CompactofProper: CompactSpace X.left for X proper
-over a field. Line numbers as of 2026-10-30 (commit 238316e).
-[ ] basechange_over_Field.trans : (X _ K₁) _ K₂ ≅ X _ K₂              (l.39)
-      Currently `sorry`. Also needed: an AddGrpObj version (iso of group
-      objects), see AbelianVarieties/RationalModel.lean. "Hey claude"
-      note (l.36): should it use IntermediateField? To discuss.
-[ ] Cleanup: unused `variable {A …}` (l.29); the notation uses `_`,
-      which is also the placeholder token.
+over a field. Line numbers as of 2026-10-30 (commit a0e8564).
+basechange_over_Field.refl : X ≅ X _ K (via Over.pullbackId) and
+basechange_over_Field.trans : (X _ K₁) _ K₂ ≅ X _ K₂ are done, as are
+basechange_over_Field_addGrpObj_zero(_eqn) (ζ[G _ K₁] as a pullback.lift).
+[ ] basechange_over_Field.refl_addGroup_hom                          (l.91)
+      zero_hom and add_hom are `sorry`. `simp [basechange_over_Field.refl]`
+      runs out of memory. Plan: first prove (refl G).hom.left ≫ pullback.fst
+      = 𝟙 and (refl G).hom.left ≫ pullback.snd = G.hom (or define refl as a
+      pullback.lift), then use basechange_over_Field_addGrpObj_zero and
+      pullback.hom_ext.
+[ ] basechange_over_Field.trans_addGroup_hom                         (l.97)
+      `sorry`; needed for basechange_over_Field.trans_addGrpObj.
+[ ] "Hey claude" notes (l.47, l.103): should trans / trans_addGrpObj use
+      IntermediateField? To discuss.
+[ ] Cleanup: unused `variable {A …}` (l.29).
+[ ] The notation `X "_" E` clashes with Mathlib's `𝟙_ C`: `𝟙_ (Over …)`
+      is parsed as base change of `𝟙` (in every file importing Basic.lean).
+      Consider e.g. `X "_[" E "]"` or making the notation scoped.
 [ ] CompactofProper instance could assume only [QuasiCompact X.hom].
 
 
@@ -335,13 +359,30 @@ AlgebraicGeometry/AbelianVarieties/RationalModel.lean
       inside the goal E appears as E.restrictScalars K.
 
 
+Pottentially.lean
+-----------------
+potentiallyCMStructure A F: a CM structure on A _ (AlgebraicClosure K).
+of_CMStructure is done. Line numbers as of 2026-10-30 (commit a0e8564).
+[ ] potentiallyCMStructure.exists_cmStructure_basechange_iso         (l.36)
+      `sorry`: descends to a finite E ⊆ AlgebraicClosure K.
+[ ] Typo in the file name and docstring: "Pottentially".
+
+
 Theorem.lean
 ------------
-Line numbers as of 2026-10-30 (commit 238316e).
+Line numbers as of 2026-10-30 (commit a0e8564).
+CMStructure.exists_finiteDimensional_model (l.47) has no `sorry` of its
+own; it depends on the sorries of basechange.refl, basechange.trans,
+Iso.basechangeTrans (Defn.lean), exists_cmStructure_basechange_iso
+(Pottentially.lean) and AbelianVarieties.exists_finiteDimensional_model.
 [ ] CMStructure.exists_algClosureRat_model                           (l.40)
-[ ] CMStructure.exists_finiteDimensional_model                       (l.47)
-[ ] exists_numberField_model: the `have : IsScalarTower E …` (l.65) is
+[ ] exists_numberField_model: the `have : IsScalarTower E …` (l.120) is
       probably redundant now (E is an IntermediateField).
+[ ] The comment block below exists_finiteDimensional_model listing the
+      sorries it depends on is out of date.
+[ ] exists_finiteDimensional_model: the local instances (Algebra/SMul,
+      IsScalarTower) are declared twice (for ι'' and in P₁); could be
+      merged.
 
 
 AbstractNonsense/EndBaseChange.lean
