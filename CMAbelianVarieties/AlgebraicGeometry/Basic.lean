@@ -28,18 +28,22 @@ universe u
 variable {K : Type u} [Field K]
 variable {A : Over (Spec ↧K)} [IsProper A.hom] [GeometricallyIntegral A.hom] [AddGrpObj A]
 
-abbrev basechange_over_Over (X : Over (Spec ↧K)) (K₁ : Type u) [Field K₁] [Algebra K K₁] :
+abbrev basechange_over_Field (X : Over (Spec ↧K)) (K₁ : Type u) [Field K₁] [Algebra K K₁] :
     Over (Spec ↧K₁) := ((Over.pullback (map (ofHom (Algebra.algebraMap K K₁)))).obj X)
 
-notation X "_" E:arg => basechange_over_Over X E
+notation X "_" E:arg => basechange_over_Field X E
 
 /-
 Hey claude, Should I use `IntermediateFiled`? Tell me to give this a good thought
 -/
-abbrev basechange_over_Over_trans (X : Over (Spec ↧K)) (K₁ K₂ : Type u) [Field K₁] [Field K₂]
+def basechange_over_Field_trans (X : Over (Spec ↧K)) (K₁ K₂ : Type u) [Field K₁] [Field K₂]
     [Algebra K K₁] [Algebra K K₂] [Algebra K₁ K₂] [IsScalarTower K K₁ K₂] :
     (X _ K₁) _ K₂ ≅ X _ K₂ :=
-  sorry
+  let φ := (map (ofHom (Algebra.algebraMap K K₁)))
+  let ψ := (map (ofHom (Algebra.algebraMap K₁ K₂)))
+  have h : ψ ≫ φ = map (ofHom (Algebra.algebraMap K K₂)) := by
+    rw [← map_comp, ← ofHom_comp, ← IsScalarTower.algebraMap_eq]
+  ((Over.pullbackComp ψ φ).app X).symm ≪≫ eqToIso (by simp only [h])
 
 instance {X : Over (Spec ↧K)} [IsProper X.hom] {K₁ : Type u} [Field K₁] [Algebra K K₁] :
     IsProper (X _ K₁).hom :=
@@ -59,6 +63,22 @@ instance {G : Over (Spec ↧K)} [AddGrpObj G] {K₁ : Type u} [Field K₁] [Alge
 instance {G : Over (Spec ↧K)} [AddGrpObj G] [IsCommAddMonObj G] {K₁ : Type u} [Field K₁]
     [Algebra K K₁] : IsCommAddMonObj (G _ K₁) :=
   Functor.isCommAddMonObj_obj (Over.pullback (map (ofHom (Algebra.algebraMap K K₁))))
+
+lemma basechange_over_Field_trans_addGroup_hom (G : Over (Spec ↧K)) [AddGrpObj G] (K₁ K₂ : Type u)
+    [Field K₁] [Field K₂] [Algebra K K₁] [Algebra K K₂] [Algebra K₁ K₂] [IsScalarTower K K₁ K₂] :
+    IsAddMonHom (basechange_over_Field_trans G K₁ K₂).hom := by
+  sorry
+
+/-
+Hey claude, Should I use `IntermediateFiled`? Tell me to give this a good thought
+-/
+open AddGrp in
+def basechange_over_Field_trans_addGrpObj (G : Over (Spec ↧K)) [AddGrpObj G] (K₁ K₂ : Type u)
+    [Field K₁] [Field K₂] [Algebra K K₁] [Algebra K K₂] [Algebra K₁ K₂] [IsScalarTower K K₁ K₂] :
+    mk ((G _ K₁) _ K₂) ≅ mk (G _ K₂) :=
+  have : IsAddMonHom (basechange_over_Field_trans G K₁ K₂).hom :=
+    basechange_over_Field_trans_addGroup_hom G K₁ K₂
+  AddGrp.mkIso' (basechange_over_Field_trans G K₁ K₂)
 
 end BaseChange
 

@@ -5,7 +5,7 @@ Authors: Abhijit A J
 -/
 module
 
-public import CMAbelianVarieties.Defn
+public import CMAbelianVarieties.Pottentially
 public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.RationalModel
 
 /-!
@@ -44,16 +44,40 @@ theorem exists_algClosureRat_model (ι : CMStructure A F) :
 
   sorry
 
-theorem exists_finiteDimensional_model {Q : Type*} [Field Q]
-    {A : Over (Spec ↧(AlgebraicClosure Q))} [IsProper A.hom] [GeometricallyIntegral A.hom]
-    [AddGrpObj A] (ι : CMStructure A F) : ∃ (E : IntermediateField Q (AlgebraicClosure Q))
-    (_ : FiniteDimensional Q E) (A₀ : Over (Spec ↧E)) (_ : IsProper A₀.hom)
+theorem exists_finiteDimensional_model {L : Type*} [Field L]
+    {A : Over (Spec ↧(AlgebraicClosure L))} [IsProper A.hom] [GeometricallyIntegral A.hom]
+    [AddGrpObj A] (ι : CMStructure A F) : ∃ (E : IntermediateField L (AlgebraicClosure L))
+    (_ : FiniteDimensional L E) (A₀ : Over (Spec ↧E)) (_ : IsProper A₀.hom)
     (_ : GeometricallyIntegral A₀.hom) (_ : AddGrpObj A₀) (ι₀ : CMStructure A₀ F),
-    Nonempty ((ι₀.basechange (AlgebraicClosure Q)).Iso ι) := by
+    Nonempty ((ι₀.basechange (AlgebraicClosure L)).Iso ι) := by
   rcases AbelianVarieties.exists_finiteDimensional_model A with
-    ⟨E₀, _, A₀, _, _, _, hφ⟩
-  #check hφ.some
+    ⟨E₁, _, A₁, _, _, _, hφ⟩
+  let ι' : CMStructure (A₁ _ (AlgebraicClosure L)) F := ι.ofIso hφ.some.symm
+  have : IsAlgClosure E₁ (AlgebraicClosure L) := ⟨inferInstance, .tower_top (K := L) E₁⟩
+  let ιₚ := potentiallyCMStructure.of_CMStructure ι'
+  rcases potentiallyCMStructure.exists_cmStructure_basechange_iso ιₚ with ⟨E', _, ι₀', h⟩
+  -- written by Claude
+  let E : IntermediateField L (AlgebraicClosure L) := E'.restrictScalars L
+  have h_fin : FiniteDimensional L E := (Module.Finite.trans E₁ E' : FiniteDimensional L E')
+  let e : E' ≃+* E := RingEquiv.refl E'
+  algebraize [e.toRingHom]
+  algebraize [e.toRingHom.comp (Algebra.algebraMap E₁ E')]
+  use E, h_fin
+  let ι₀ : CMStructure (A₁ _ E) F :=
+    (ι₀'.basechange E).ofIso (basechange_over_Field_trans_addGrpObj A₁ E' E)
+  use A₁ _ E, by infer_instance, by infer_instance, by infer_instance, ι₀
   sorry
+
+/-
+(Written by Claude, 2026-10-30.) Definitions with a `sorry` that
+`CMStructure.exists_finiteDimensional_model` depends on (found by walking its dependencies
+in Lean):
+
+- `AlgebraicGeometry/RationalModel/GroupStructure.lean`: `fieldOfDefintion`,
+  `AddGroupObj_overFieldOfDefintion` (instance), `AddGroupObj_overFieldOfDefintion_Iso`.
+- `Defn.lean`: `CMStructure.ofIso`.
+- `Pottentially.lean`: `potentiallyCMStructure.of_CMStructure`.
+-/
 
 theorem exists_numberField_model (ι : CMStructure A F) :
     ∃ (E : Type) (_ : Field E) (_ : NumberField E) (_ : Algebra E K)

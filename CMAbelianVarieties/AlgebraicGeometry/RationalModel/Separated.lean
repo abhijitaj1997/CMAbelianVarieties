@@ -26,7 +26,7 @@ universe u
 variable {K : Type u} [Field K]
 variable {X : Over (Spec ↧(AlgebraicClosure K))} [IsSeparated X.hom]
 
-lemma nameless (𝒰 : X.left.OpenCover)
+lemma isAffine_opensRange_inf_opensRange (𝒰 : X.left.OpenCover)
     [∀ i : 𝒰.I₀, IsAffine (𝒰.X i)]:
     ∀ i j : 𝒰.I₀, IsAffine ((𝒰.f i).opensRange ⊓ (𝒰.f j).opensRange : X.left.Opens) := by
   intro i j
@@ -39,7 +39,7 @@ variable (X) in
 theorem exists_model_of_isSeparated_of_locallyOfFiniteType [LocallyOfFiniteType X.hom]
     [CompactSpace X.left] :
     ∃ E : IntermediateField K (AlgebraicClosure K), FiniteDimensional K E ∧
-    ∃ X₀ : Over (Spec ↧E), IsAffine X₀.left ∧ LocallyOfFiniteType X₀.hom ∧
+    ∃ X₀ : Over (Spec ↧E), IsSeparated X₀.hom ∧ LocallyOfFiniteType X₀.hom ∧
     Nonempty ((X₀ _ (AlgebraicClosure K)) ≅ X) := by
   let 𝒰 : X.left.OpenCover := X.left.affineCover.finiteSubcover
   have (i : 𝒰.I₀) : IsAffine (Over.mk (𝒰.f i ≫ X.hom)).left := inferInstanceAs (IsAffine (𝒰.X i))

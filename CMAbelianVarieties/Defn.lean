@@ -63,6 +63,9 @@ open CommRingCat Spec
 
 variable {F : Type*} [Field F] [NumberField F] [IsCMField F]
 
+def ofIso {B : Over (Spec ↧K)} [IsProper B.hom] [GeometricallyIntegral B.hom] [AddGrpObj B]
+    (ι_A : CMStructure A F) (φ : AddGrp.mk A ≅ AddGrp.mk B) : CMStructure B F := sorry
+
 def Iso {B : Over (Spec ↧K)} [IsProper B.hom] [GeometricallyIntegral B.hom] [AddGrpObj B]
     (ι_A : CMStructure A F) (ι_B : CMStructure B F) :=
   {φ : AddGrp.mk A ≅ AddGrp.mk B // (conjAlgEquiv φ).toRingHom.comp ι_A.incl = ι_B}

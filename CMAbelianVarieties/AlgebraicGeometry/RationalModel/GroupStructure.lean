@@ -39,4 +39,11 @@ instance AddGroupObj_overFieldOfDefintion (G : Over (Spec ↧K)) (Kₐ : Type u)
     [Algebra K Kₐ] [IsAlgebraic K Kₐ] [AddGrpObj (G _ Kₐ)] :
     AddGrpObj (G _ (fieldOfDefintion G Kₐ)) := sorry
 
+open AddGrp in
+def AddGroupObj_overFieldOfDefintion_Iso (G : Over (Spec ↧K)) (Kₐ : Type u) [Field Kₐ]
+    [Algebra K Kₐ] [IsAlgebraic K Kₐ] [AddGrpObj (G _ Kₐ)] :
+    letI := AddGroupObj_overFieldOfDefintion G Kₐ
+    mk ((G _ (fieldOfDefintion G Kₐ)) _ Kₐ) ≅ mk (G _ Kₐ) := by
+  sorry
+
 end GroupStructure

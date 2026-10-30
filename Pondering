@@ -5,3 +5,59 @@ Steps I need to accomplish:
 3. Using the inclusion `F →+* End⁰ A`, we get a map `F →+* (Lie A →[k] Lie A)`
 4. after base change to `ℂ`, we have a morphism `F →+* (ℂ ⊗ Lie A →[ℂ] ℂ ⊗ Lie A)`
 5. The above map should give `dim A` many inclusions into `ℂ` which should be a `preCMType`. 
+
+
+
+
+
+All the results to be proven before I can finish `exists_finiteDimensional_model`:
+(I read this as `CMStructure.exists_finiteDimensional_model` in `Theorem.lean`; part A is
+exactly what `AbelianVarieties.exists_finiteDimensional_model` still needs.)
+
+A. The abelian variety has a model (`AbelianVarieties.exists_finiteDimensional_model`)
+1. `isAffine_opensRange_inf_opensRange` (`RationalModel/Separated.lean`): intersections of
+   affine opens of a separated `X` are affine.
+2. `exists_model_of_isSeparated_of_locallyOfFiniteType` (`RationalModel/Separated.lean`):
+   - fix the statement: `IsSeparated X₀.hom` instead of `IsAffine X₀.left`;
+   - `Algebra (E' i) E` (the inclusion, via `letI`);
+   - the gluing: descend the overlaps `V (i, j)`, the transition maps `t`, `t'` and the
+     glue-data axioms to a finite extension, glue with `Scheme.GlueData`, and show that
+     base change commutes with gluing (not in Mathlib).
+3. `isProper_model` (`RationalModel/Morphism.lean`): properness descends to the model.
+4. `geometricallyIntegral_model` (`RationalModel/Morphism.lean`).
+5. `AddGrpObj (A₁ _ (AlgebraicClosure K))`: transport the group structure of `A` along the
+   iso `A₁ _ K̄ ≅ A` from 2.
+6. `fieldOfDefintion`, `FiniteDimensional_ofFieldOfDefintion`,
+   `AddGroupObj_overFieldOfDefintion` (`RationalModel/GroupStructure.lean`): the group law
+   (zero, add, neg and the group axioms) descends to a finite extension.
+7. `basechange_over_Field_trans` (`AlgebraicGeometry/Basic.lean`): `(X _ K₁) _ K₂ ≅ X _ K₂`,
+   plus an `AddGrpObj` version, i.e. an iso `AddGrp.mk ((X _ K₁) _ K₂) ≅ AddGrp.mk (X _ K₂)`.
+   It must be compatible with the group law of 6, i.e. the group law on `A₁ _ E` base
+   changed to `K̄` is the one transported from `A` in 5.
+8. The final iso `AddGrp.mk ((A₁ _ E) _ K̄) ≅ AddGrp.mk A`: compose 7 with the iso from 2
+   (which then has to be shown to be an iso of group objects).
+
+B. The CM structure descends
+9.  Transport `ι` along the iso `φ : A₀ _ K̄ ≅ A` from A: `ι' := (conjAlgEquiv φ).symm ∘ ι`,
+    a `CMStructure (A₀ _ K̄) F`, with `φ` itself giving `ι'.Iso ι`.
+    Needs: `topologicalKrullDim` is invariant under isomorphism (for `finrank_of_CM_field`).
+10. `ringKrullDim_basechange` (`AlgebraicGeometry/Dimension.lean`): needed by
+    `dimension_isStableUnderBasechange`, hence by `CMStructure.basechange`, and for
+    `dim A₀ = dim (A₀ _ K̄)` in the `finrank_of_CM_field` field of `ι₀`.
+11. Endomorphisms descend: a group-object endomorphism of `A₀ _ K̄` comes from one of
+    `A₀ _ E'` for some finite `E'/E` (`Scheme.exists_hom_hom_comp_eq_comp_of_locallyOfFiniteType`
+    / `Scheme.preservesColimit_yoneda` in `Mathlib/AlgebraicGeometry/AffineTransitionLimit.lean`,
+    with `Spec K̄ = lim Spec E'`); the equations saying it is a group homomorphism also
+    descend after enlarging `E'`.
+12. Base change of endomorphisms is injective: `rational_end_morphism A₀ K̄ : End⁰ A₀ →+* End⁰ (A₀ _ K̄)`
+    is injective (`Spec K̄ → Spec E` is faithfully flat, hence an epimorphism).
+13. Descend `ι'`: `F` is finite over `ℚ`, so pick a primitive element `α` and `n ≠ 0` with
+    `n • ι' α ∈ End (A₀ _ K̄)`; descend it by 11 to some finite `E'`, and define `ι₀ : F →+* End⁰ (A₀ _ E')`
+    from it. That this is a ring hom (the minimal polynomial of `α` is sent to 0) follows
+    from 12. Base changing along `E ⊆ E'` uses 7 again, and the result `E'` is still finite
+    over `Q` (`Module.Finite.trans`).
+14. `(ι₀.basechange K̄).Iso ι'`: by construction, up to the iso of 7. This is a version of
+    `CMStructure.basechange_trans` (`Defn.lean`, still `sorry`).
+15. Composition of CM isos over the same base, `ι₁.Iso ι₂ → ι₂.Iso ι₃ → ι₁.Iso ι₃`, to
+    combine 14 with 9 (not in `Defn.lean` yet; `Iso_trans` there is a different statement
+    and is still `sorry`).

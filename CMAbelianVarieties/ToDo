@@ -257,12 +257,12 @@ AlgebraicGeometry/Basic.lean
 ----------------------------
 New file (2026-10-30), replaces AbelianVarieties/BaseFieldChange.lean
 (deleted). Basic AG results used elsewhere. Section BaseChange:
-`abbrev basechange_over_Over`, notation `X _ K₁`, instances IsProper,
+`abbrev basechange_over_Field`, notation `X _ K₁`, instances IsProper,
 GeometricallyIntegral, AddGrpObj, IsCommAddMonObj for X _ K₁. Section
 Covers: basechangeOpenCover / basechangeOpenCoverXIso (from
 Dimension.lean). Section CompactofProper: CompactSpace X.left for X proper
 over a field. Line numbers as of 2026-10-30 (commit 238316e).
-[ ] basechange_over_Over_trans : (X _ K₁) _ K₂ ≅ X _ K₂              (l.39)
+[ ] basechange_over_Field_trans : (X _ K₁) _ K₂ ≅ X _ K₂              (l.39)
       Currently `sorry`. Also needed: an AddGrpObj version (iso of group
       objects), see AbelianVarieties/RationalModel.lean. "Hey claude"
       note (l.36): should it use IntermediateField? To discuss.
@@ -330,7 +330,7 @@ AlgebraicGeometry/AbelianVarieties/RationalModel.lean
       E.restrictScalars K and A₁ _ E. Still `sorry`: IsProper A₁.hom
       (l.99), GeometricallyIntegral A₁.hom (l.100) (use Morphism.lean),
       AddGrpObj (A₁ _ K̄) (l.102), and the final iso (l.116), which
-      needs an AddGrpObj version of basechange_over_Over_trans.
+      needs an AddGrpObj version of basechange_over_Field_trans.
       Note: instances on (A₁ _ E) must be proved before `refine`, since
       inside the goal E appears as E.restrictScalars K.
 
