@@ -33,10 +33,21 @@ abbrev basechange_over_Field (X : Over (Spec ↧K)) (K₁ : Type u) [Field K₁]
 
 notation X "_" E:arg => basechange_over_Field X E
 
+open Limits in
+lemma basechange_over_Field_left (X : Over (Spec ↧K)) (K₁ : Type u) [Field K₁] [Algebra K K₁] :
+    (X _ K₁).left = pullback (X.hom) (map (ofHom (Algebra.algebraMap K K₁))) := rfl
+
+open Limits in
+lemma basechange_over_Field_hom (X : Over (Spec ↧K)) (K₁ : Type u) [Field K₁] [Algebra K K₁] :
+    (X _ K₁).hom = pullback.snd (X.hom) (map (ofHom (Algebra.algebraMap K K₁))) := rfl
+
+def basechange_over_Field.refl (X : Over (Spec ↧K)) : X ≅ X _ K :=
+  (eqToIso (by congr 1; simp [Algebra.algebraMap_self]) ≪≫ Over.pullbackId).symm.app X
+
 /-
 Hey claude, Should I use `IntermediateFiled`? Tell me to give this a good thought
 -/
-def basechange_over_Field_trans (X : Over (Spec ↧K)) (K₁ K₂ : Type u) [Field K₁] [Field K₂]
+def basechange_over_Field.trans (X : Over (Spec ↧K)) (K₁ K₂ : Type u) [Field K₁] [Field K₂]
     [Algebra K K₁] [Algebra K K₂] [Algebra K₁ K₂] [IsScalarTower K K₁ K₂] :
     (X _ K₁) _ K₂ ≅ X _ K₂ :=
   let φ := (map (ofHom (Algebra.algebraMap K K₁)))
@@ -64,21 +75,40 @@ instance {G : Over (Spec ↧K)} [AddGrpObj G] [IsCommAddMonObj G] {K₁ : Type u
     [Algebra K K₁] : IsCommAddMonObj (G _ K₁) :=
   Functor.isCommAddMonObj_obj (Over.pullback (map (ofHom (Algebra.algebraMap K K₁))))
 
-lemma basechange_over_Field_trans_addGroup_hom (G : Over (Spec ↧K)) [AddGrpObj G] (K₁ K₂ : Type u)
+open AddMonObj MonoidalCategoryStruct in
+lemma basechange_over_Field_addGrpObj_zero_eqn (G : Over (Spec ↧K)) [AddGrpObj G] (K₁ : Type u)
+    [Field K₁] [Algebra K K₁] : ((map (ofHom (Algebra.algebraMap K K₁))) ≫ ζ[G].left) ≫ G.hom =
+      ζ[tensorUnit (Over (Spec ↧K₁))].left ≫ (map (ofHom (Algebra.algebraMap K K₁))) := by simp
+
+open AddMonObj Limits MonoidalCategoryStruct in
+lemma basechange_over_Field_addGrpObj_zero (G : Over (Spec ↧K)) [AddGrpObj G] (K₁ : Type u)
+    [Field K₁] [Algebra K K₁] : ζ[G _ K₁].left = pullback.lift ((map (ofHom (Algebra.algebraMap K
+    K₁))) ≫ ζ[G].left) ζ[tensorUnit (Over (Spec ↧K₁))].left
+    (basechange_over_Field_addGrpObj_zero_eqn G K₁) := by
+  apply pullback.hom_ext <;> simp
+
+-- _Claude struggled to solve this_
+lemma basechange_over_Field.refl_addGroup_hom (G : Over (Spec ↧K)) [AddGrpObj G] :
+    IsAddMonHom (basechange_over_Field.refl G).hom where
+      zero_hom := sorry
+      add_hom := sorry
+
+-- _Claude struggled to solve this_
+lemma basechange_over_Field.trans_addGroup_hom (G : Over (Spec ↧K)) [AddGrpObj G] (K₁ K₂ : Type u)
     [Field K₁] [Field K₂] [Algebra K K₁] [Algebra K K₂] [Algebra K₁ K₂] [IsScalarTower K K₁ K₂] :
-    IsAddMonHom (basechange_over_Field_trans G K₁ K₂).hom := by
+    IsAddMonHom (basechange_over_Field.trans G K₁ K₂).hom := by
   sorry
 
 /-
 Hey claude, Should I use `IntermediateFiled`? Tell me to give this a good thought
 -/
 open AddGrp in
-def basechange_over_Field_trans_addGrpObj (G : Over (Spec ↧K)) [AddGrpObj G] (K₁ K₂ : Type u)
+def basechange_over_Field.trans_addGrpObj (G : Over (Spec ↧K)) [AddGrpObj G] (K₁ K₂ : Type u)
     [Field K₁] [Field K₂] [Algebra K K₁] [Algebra K K₂] [Algebra K₁ K₂] [IsScalarTower K K₁ K₂] :
     mk ((G _ K₁) _ K₂) ≅ mk (G _ K₂) :=
-  have : IsAddMonHom (basechange_over_Field_trans G K₁ K₂).hom :=
-    basechange_over_Field_trans_addGroup_hom G K₁ K₂
-  AddGrp.mkIso' (basechange_over_Field_trans G K₁ K₂)
+  have : IsAddMonHom (basechange_over_Field.trans G K₁ K₂).hom :=
+    basechange_over_Field.trans_addGroup_hom G K₁ K₂
+  AddGrp.mkIso' (basechange_over_Field.trans G K₁ K₂)
 
 end BaseChange
 

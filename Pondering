@@ -30,7 +30,7 @@ A. The abelian variety has a model (`AbelianVarieties.exists_finiteDimensional_m
 6. `fieldOfDefintion`, `FiniteDimensional_ofFieldOfDefintion`,
    `AddGroupObj_overFieldOfDefintion` (`RationalModel/GroupStructure.lean`): the group law
    (zero, add, neg and the group axioms) descends to a finite extension.
-7. `basechange_over_Field_trans` (`AlgebraicGeometry/Basic.lean`): `(X _ K₁) _ K₂ ≅ X _ K₂`,
+7. `basechange_over_Field.trans` (`AlgebraicGeometry/Basic.lean`): `(X _ K₁) _ K₂ ≅ X _ K₂`,
    plus an `AddGrpObj` version, i.e. an iso `AddGrp.mk ((X _ K₁) _ K₂) ≅ AddGrp.mk (X _ K₂)`.
    It must be compatible with the group law of 6, i.e. the group law on `A₁ _ E` base
    changed to `K̄` is the one transported from `A` in 5.
@@ -57,7 +57,7 @@ B. The CM structure descends
     from 12. Base changing along `E ⊆ E'` uses 7 again, and the result `E'` is still finite
     over `Q` (`Module.Finite.trans`).
 14. `(ι₀.basechange K̄).Iso ι'`: by construction, up to the iso of 7. This is a version of
-    `CMStructure.basechange_trans` (`Defn.lean`, still `sorry`).
+    `CMStructure.basechange.trans` (`Defn.lean`, still `sorry`).
 15. Composition of CM isos over the same base, `ι₁.Iso ι₂ → ι₂.Iso ι₃ → ι₁.Iso ι₃`, to
-    combine 14 with 9 (not in `Defn.lean` yet; `Iso_trans` there is a different statement
+    combine 14 with 9 (not in `Defn.lean` yet; `Iso.basechangeTrans` there is a different statement
     and is still `sorry`).

@@ -17,7 +17,7 @@ we will define `(End A) ⊗[ℤ] ℚ`
 
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
 open CategoryTheory AlgebraicGeometry AddGrp
 open scoped TensorProduct End
@@ -38,8 +38,37 @@ instance : Module.Finite ℚ (End⁰ A) := sorry
 induces an isomorphism `End⁰ A ≃ₐ[ℤ] End⁰ B` of their rational endomorphism algebras, given by
 conjugation `f ↦ φ.inv ≫ f ≫ φ.hom`. It is obtained by tensoring the `ℤ`-algebra isomorphism
 `Iso.conjAlgEquiv φ : End A ≃ₐ[ℤ] End B` with `ℚ`. -/
-noncomputable def conjAlgEquiv {B : Over (Spec ↧K)} [IsProper B.hom] [GeometricallyIntegral B.hom]
+def conjAlgEquiv {B : Over (Spec ↧K)} [IsProper B.hom] [GeometricallyIntegral B.hom]
     [AddGrpObj B] (φ : mk A ≅ mk B) : End⁰ A ≃ₐ[ℤ] End⁰ B :=
   Algebra.TensorProduct.congr AlgEquiv.refl (Iso.conjAlgEquiv φ)
+
+variable (A) in
+lemma conjAlgEquiv.refl : conjAlgEquiv (Iso.refl (mk A)) =
+    (AlgEquiv.refl : End⁰ A ≃ₐ[ℤ] End⁰ A) := by
+  simp only [conjAlgEquiv]
+  ext x
+  induction x using TensorProduct.inductionOn with
+  | tmul q f => simp [Iso.conjAlgEquiv, Iso.conjRingEquiv]
+  | add x y hx hy => simp only [map_add, hx, hy]
+
+-- proof written by Claude
+lemma conjAlgEquiv.symm {B : Over (Spec ↧K)} [IsProper B.hom] [GeometricallyIntegral B.hom]
+    [AddGrpObj B] (φAB : mk A ≅ mk B) : (conjAlgEquiv φAB).symm = conjAlgEquiv φAB.symm := by
+  ext x
+  induction x using TensorProduct.inductionOn with
+  | tmul q f =>
+    rw [AlgEquiv.symm_apply_eq]
+    simp [conjAlgEquiv, Iso.conjAlgEquiv, Iso.conjRingEquiv, ← Iso.trans_conj]
+  | add x y hx hy => simp only [map_add, hx, hy]
+
+-- proof written by Claude
+lemma conjAlgEquiv.trans {B : Over (Spec ↧K)} [IsProper B.hom] [GeometricallyIntegral B.hom]
+    [AddGrpObj B] {C : Over (Spec ↧K)} [IsProper C.hom] [GeometricallyIntegral C.hom]
+    [AddGrpObj C] (φAB : mk A ≅ mk B) (φBC : mk B ≅ mk C) :
+    (conjAlgEquiv φAB).trans (conjAlgEquiv φBC) = conjAlgEquiv (φAB ≪≫ φBC) := by
+  ext x
+  induction x using TensorProduct.inductionOn with
+  | tmul q f => simp [conjAlgEquiv, Iso.conjAlgEquiv, Iso.conjRingEquiv, Iso.trans_conj]
+  | add x y hx hy => simp only [map_add, hx, hy]
 
 end RationalEnd

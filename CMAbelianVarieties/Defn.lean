@@ -57,18 +57,59 @@ instance {F : Type*} [Field F] [NumberField F] [IsCMField F] :
 
 namespace CMStructure
 
-section BaseChange
+section Iso
 
 open CommRingCat Spec
 
 variable {F : Type*} [Field F] [NumberField F] [IsCMField F]
 
 def ofIso {B : Over (Spec ↧K)} [IsProper B.hom] [GeometricallyIntegral B.hom] [AddGrpObj B]
-    (ι_A : CMStructure A F) (φ : AddGrp.mk A ≅ AddGrp.mk B) : CMStructure B F := sorry
+    (ι_A : CMStructure A F) (φ : AddGrp.mk A ≅ AddGrp.mk B) : CMStructure B F :=
+  let f :=  conjAlgEquiv φ
+  have : topologicalKrullDim A.left = topologicalKrullDim B.left :=
+    IsHomeomorph.topologicalKrullDim_eq _
+      (Scheme.homeoOfIso ((Over.forget _).mapIso ((AddGrp.forget _).mapIso φ))).isHomeomorph
+  { incl := (f.toRingHom).comp ι_A.incl
+    finrank_of_CM_field := by
+      rw [ι_A.finrank_of_CM_field, this]}
 
 def Iso {B : Over (Spec ↧K)} [IsProper B.hom] [GeometricallyIntegral B.hom] [AddGrpObj B]
     (ι_A : CMStructure A F) (ι_B : CMStructure B F) :=
   {φ : AddGrp.mk A ≅ AddGrp.mk B // (conjAlgEquiv φ).toRingHom.comp ι_A.incl = ι_B}
+
+def Iso.refl (ι : CMStructure A F) : ι.Iso ι where
+  val := by apply CategoryTheory.Iso.refl
+  property := by
+    simp [conjAlgEquiv.refl A]
+
+def Iso.symm {B : Over (Spec ↧K)} [IsProper B.hom] [GeometricallyIntegral B.hom] [AddGrpObj B]
+    {ι_A : CMStructure A F} {ι_B : CMStructure B F} (hAB : ι_A.Iso ι_B) : ι_B.Iso ι_A where
+      val := hAB.val.symm
+      property := by
+        simp only [RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_toRingHom, ← conjAlgEquiv.symm,
+          AlgEquiv.symm_toRingEquiv, RingEquiv.symm_mk, AlgEquiv.toEquiv_eq_coe,
+          AlgEquiv.symm_toEquiv_eq_symm, ← hAB.property, ← RingHom.comp_assoc]
+        ext x
+        simp
+
+def Iso.trans {B : Over (Spec ↧K)} [IsProper B.hom] [GeometricallyIntegral B.hom] [AddGrpObj B]
+    {C : Over (Spec ↧K)} [IsProper C.hom] [GeometricallyIntegral C.hom] [AddGrpObj C]
+    {ι_A : CMStructure A F} {ι_B : CMStructure B F} {ι_C : CMStructure C F} (hAB : ι_A.Iso ι_B)
+    (hBC : ι_B.Iso ι_C) : ι_A.Iso ι_C := by
+  exact {
+    val := hAB.val ≪≫ hBC.val
+    property := by
+      simp [← conjAlgEquiv.trans hAB.val hBC.val, RingHom.comp_assoc, ← hBC.property,
+        ← hAB.property]
+  }
+
+end Iso
+
+section BaseChange
+
+open CommRingCat Spec
+
+variable {F : Type*} [Field F] [NumberField F] [IsCMField F]
 
 def End.algHom_ofBaseChange (A : Over (Spec ↧K)) [AddGrpObj A] [IsCommAddMonObj A] (K₁ : Type u)
     [Field K₁] [Algebra K K₁] : End (AddGrp.mk A) →ₐ[ℤ] End (AddGrp.mk (A _ K₁)) :=
@@ -84,7 +125,11 @@ def basechange (ι : CMStructure A F) (K₁ : Type u) [Field K₁] [Algebra K K�
       finrank_of_CM_field := by
         rw [ι.finrank_of_CM_field, dimension_isStableUnderBasechange A K₁]
 
-def basechange_trans (ι : CMStructure A F) (K₁ K₂ : Type u) [Field K₁] [Field K₂] [Algebra K K₁]
+def basechange.refl (ι : CMStructure A F) : (ι.basechange K).Iso ι where
+  val := by sorry
+  property := sorry
+
+def basechange.trans (ι : CMStructure A F) (K₁ K₂ : Type u) [Field K₁] [Field K₂] [Algebra K K₁]
     [Algebra K K₂] [Algebra K₁ K₂] [IsScalarTower K K₁ K₂] :
     ((ι.basechange K₁).basechange K₂).Iso (ι.basechange K₂) := by
   let φ : AddGrp.mk ((A _ K₁) _ K₂) ≅ AddGrp.mk (A _ K₂) := by
@@ -93,7 +138,11 @@ def basechange_trans (ι : CMStructure A F) (K₁ K₂ : Type u) [Field K₁] [F
       = (ι.basechange K₂) := sorry
   exact ⟨φ, this⟩
 
-def Iso_trans {K₁ K₂ : Type u} [Field K₁] [Field K₂] [Algebra K K₁]
+/-- Transitivity of models along a tower of fields `K → K₁ → K₂`: if `ι₁` on `B / K₁` is
+isomorphic to the base change of `ι` from `K` to `K₁`, and `ι₂` on `C / K₂` is isomorphic to the
+base change of `ι₁` from `K₁` to `K₂`, then `ι₂` is isomorphic to the base change of `ι` from `K`
+to `K₂`. -/
+def Iso.basechangeTrans {K₁ K₂ : Type u} [Field K₁] [Field K₂] [Algebra K K₁]
     [Algebra K K₂] [Algebra K₁ K₂] [IsScalarTower K K₁ K₂] {ι : CMStructure A F}
     {B : Over (Spec ↧K₁)} [IsProper B.hom] [GeometricallyIntegral B.hom] [AddGrpObj B]
     {ι₁ : CMStructure B F} {C : Over (Spec ↧K₂)} [IsProper C.hom] [GeometricallyIntegral C.hom]

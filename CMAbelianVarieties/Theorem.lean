@@ -41,43 +41,74 @@ theorem exists_algClosureRat_model (ι : CMStructure A F) :
     ∃ (_ : Algebra (AlgebraicClosure ℚ) K) (A₀ : Over (Spec ↧((AlgebraicClosure ℚ))))
     (_ : IsProper A₀.hom) (_ : GeometricallyIntegral A₀.hom) (_ : AddGrpObj A₀)
     (ι₀ : CMStructure A₀ F), Nonempty ((ι₀.basechange K).Iso ι) := by
-
   sorry
 
+-- partly solved and cleaned up by claude
 theorem exists_finiteDimensional_model {L : Type*} [Field L]
     {A : Over (Spec ↧(AlgebraicClosure L))} [IsProper A.hom] [GeometricallyIntegral A.hom]
     [AddGrpObj A] (ι : CMStructure A F) : ∃ (E : IntermediateField L (AlgebraicClosure L))
     (_ : FiniteDimensional L E) (A₀ : Over (Spec ↧E)) (_ : IsProper A₀.hom)
     (_ : GeometricallyIntegral A₀.hom) (_ : AddGrpObj A₀) (ι₀ : CMStructure A₀ F),
     Nonempty ((ι₀.basechange (AlgebraicClosure L)).Iso ι) := by
-  rcases AbelianVarieties.exists_finiteDimensional_model A with
-    ⟨E₁, _, A₁, _, _, _, hφ⟩
+  obtain ⟨E₁, _, A₁, _, _, _, hφ⟩ := AbelianVarieties.exists_finiteDimensional_model A
   let ι' : CMStructure (A₁ _ (AlgebraicClosure L)) F := ι.ofIso hφ.some.symm
   have : IsAlgClosure E₁ (AlgebraicClosure L) := ⟨inferInstance, .tower_top (K := L) E₁⟩
-  let ιₚ := potentiallyCMStructure.of_CMStructure ι'
-  rcases potentiallyCMStructure.exists_cmStructure_basechange_iso ιₚ with ⟨E', _, ι₀', h⟩
-  -- written by Claude
-  let E : IntermediateField L (AlgebraicClosure L) := E'.restrictScalars L
-  have h_fin : FiniteDimensional L E := (Module.Finite.trans E₁ E' : FiniteDimensional L E')
-  let e : E' ≃+* E := RingEquiv.refl E'
+  let σ : AlgebraicClosure L ≃ₐ[E₁] AlgebraicClosure E₁ :=
+    IsAlgClosure.equiv E₁ (AlgebraicClosure L) (AlgebraicClosure E₁)
+  let ι'' : CMStructure (A₁ _ (AlgebraicClosure E₁)) F :=
+    letI : Algebra (AlgebraicClosure L) (AlgebraicClosure E₁) := σ.toRingHom.toAlgebra
+    letI : Algebra E₁ (AlgebraicClosure E₁) := AlgebraicClosure.instAlgebra E₁
+    letI : SMul E₁ (AlgebraicClosure E₁) := (AlgebraicClosure.instAlgebra E₁).toSMul
+    haveI : IsScalarTower E₁ (AlgebraicClosure L) (AlgebraicClosure E₁) :=
+      .of_algebraMap_eq fun x ↦ (σ.commutes x).symm
+    (ι'.basechange (AlgebraicClosure E₁)).ofIso
+      (basechange_over_Field.trans_addGrpObj A₁ (AlgebraicClosure L) (AlgebraicClosure E₁))
+  obtain ⟨E', _, ι₀', h⟩ := potentiallyCMStructure.exists_cmStructure_basechange_iso
+    (potentiallyCMStructure.of_CMStructure ι'')
+  let E : IntermediateField L (AlgebraicClosure L) := (E'.map σ.symm.toAlgHom).restrictScalars L
+  let e : E' ≃+* E := (E'.equivMap σ.symm.toAlgHom).toRingEquiv
+  have : FiniteDimensional E₁ (E'.map σ.symm.toAlgHom) :=
+    (E'.equivMap σ.symm.toAlgHom).toLinearEquiv.finiteDimensional
+  have h_fin : FiniteDimensional L E :=
+    (Module.Finite.trans E₁ (E'.map σ.symm.toAlgHom) : FiniteDimensional L _)
   algebraize [e.toRingHom]
   algebraize [e.toRingHom.comp (Algebra.algebraMap E₁ E')]
-  use E, h_fin
   let ι₀ : CMStructure (A₁ _ E) F :=
-    (ι₀'.basechange E).ofIso (basechange_over_Field_trans_addGrpObj A₁ E' E)
-  use A₁ _ E, by infer_instance, by infer_instance, by infer_instance, ι₀
-  sorry
-
-/-
-(Written by Claude, 2026-10-30.) Definitions with a `sorry` that
-`CMStructure.exists_finiteDimensional_model` depends on (found by walking its dependencies
-in Lean):
-
-- `AlgebraicGeometry/RationalModel/GroupStructure.lean`: `fieldOfDefintion`,
-  `AddGroupObj_overFieldOfDefintion` (instance), `AddGroupObj_overFieldOfDefintion_Iso`.
-- `Defn.lean`: `CMStructure.ofIso`.
-- `Pottentially.lean`: `potentiallyCMStructure.of_CMStructure`.
--/
+    (ι₀'.basechange E).ofIso (basechange_over_Field.trans_addGrpObj A₁ E' E)
+  refine ⟨E, h_fin, A₁ _ E, inferInstance, inferInstance, inferInstance, ι₀, ?_⟩
+  have hι : ι'.Iso ι := CMStructure.Iso.symm (ι_A := ι) ⟨hφ.some.symm, rfl⟩
+  let : Algebra (AlgebraicClosure E₁) (AlgebraicClosure L) := σ.symm.toRingHom.toAlgebra
+  have P₁ : (ι'.basechange (AlgebraicClosure L)).Iso (ι''.basechange (AlgebraicClosure L)) :=
+    letI : Algebra (AlgebraicClosure L) (AlgebraicClosure E₁) := σ.toRingHom.toAlgebra
+    letI : Algebra E₁ (AlgebraicClosure E₁) := AlgebraicClosure.instAlgebra E₁
+    letI : SMul E₁ (AlgebraicClosure E₁) := (AlgebraicClosure.instAlgebra E₁).toSMul
+    haveI : IsScalarTower E₁ (AlgebraicClosure L) (AlgebraicClosure E₁) :=
+      .of_algebraMap_eq fun x ↦ (σ.commutes x).symm
+    haveI : IsScalarTower (AlgebraicClosure L) (AlgebraicClosure E₁) (AlgebraicClosure L) :=
+      .of_algebraMap_eq fun x ↦ (σ.symm_apply_apply x).symm
+    CMStructure.Iso.basechangeTrans (K₁ := AlgebraicClosure E₁)
+      ⟨basechange_over_Field.trans_addGrpObj A₁ (AlgebraicClosure L) (AlgebraicClosure E₁), rfl⟩
+      (CMStructure.Iso.refl _)
+  let : Algebra E (AlgebraicClosure E₁) :=
+    ((algebraMap E' (AlgebraicClosure E₁)).comp e.symm.toRingHom).toAlgebra
+  have : IsScalarTower E' E (AlgebraicClosure E₁) :=
+    .of_algebraMap_eq fun x ↦ by simp [RingHom.algebraMap_toAlgebra]
+  have : IsScalarTower E (AlgebraicClosure E₁) (AlgebraicClosure L) :=
+    .of_algebraMap_eq fun x ↦ by
+      obtain ⟨y, rfl⟩ := e.surjective x
+      simp only [RingHom.algebraMap_toAlgebra, RingHom.coe_comp, Function.comp_apply,
+        RingEquiv.toRingHom_eq_coe, RingEquiv.coe_toRingHom, e.symm_apply_apply]
+      rfl
+  have P₂ : (ι₀.basechange (AlgebraicClosure E₁)).Iso ι'' :=
+    CMStructure.Iso.trans (CMStructure.Iso.basechangeTrans (K₁ := E)
+      (CMStructure.Iso.trans (basechange.refl ι₀)
+        (CMStructure.Iso.symm (ι_A := ι₀'.basechange E)
+          ⟨basechange_over_Field.trans_addGrpObj A₁ E' E, rfl⟩))
+      (basechange.trans ι₀' E (AlgebraicClosure E₁)))
+      (CMStructure.Iso.trans (ι_A := ι₀'.basechange (AlgebraicClosure E₁))
+        ⟨basechange_over_Field.trans_addGrpObj A₁ E' (AlgebraicClosure E₁), rfl⟩ h.some)
+  exact ⟨(CMStructure.Iso.basechangeTrans (K₁ := AlgebraicClosure E₁) P₂
+    (CMStructure.Iso.refl _)).trans (P₁.symm.trans ((basechange.refl ι').trans hι))⟩
 
 theorem exists_numberField_model (ι : CMStructure A F) :
     ∃ (E : Type) (_ : Field E) (_ : NumberField E) (_ : Algebra E K)
@@ -89,6 +120,6 @@ theorem exists_numberField_model (ι : CMStructure A F) :
   have : IsScalarTower E (AlgebraicClosure ℚ) K :={smul_assoc e r k := by simp}
   use E, (by infer_instance), (by infer_instance), (by infer_instance), A₀, (by infer_instance),
     (by infer_instance), (by infer_instance), ι₀
-  exact ⟨Iso_trans hφ.some hψ.some⟩
+  exact ⟨hφ.some.basechangeTrans hψ.some⟩
 
 end CMStructure
