@@ -79,12 +79,21 @@ skipping steps that changed nothing.
       in the types and values of declarations (including auxiliary ones such
       as `_proof_n`, `match_n`, `eq_n`, which count towards their parent)
       and keeps only the declarations from CMAbelianVarieties modules. Record
-      for each declaration whether its own value uses `sorryAx`. Then regenerate
-      the diagram: add terms that are new, remove terms that are no longer
-      used, update the arrows, and recolour boxes (red = contains a `sorry`,
-      green = no `sorry`, golden = the main result). Keep the
-      `%%{init: ...}%%` line at the top of the diagram (it keeps the font
-      readable).
+      for each declaration whether its own value uses `sorryAx`, and, for an
+      instance with an auto-generated name (`inst...`), its type. Then
+      regenerate the diagrams: add terms that are new, remove terms that are
+      no longer used, update the arrows, and recolour boxes (red = contains a
+      `sorry`, green = no `sorry`, golden = the main result).
+      The map is split into several `graph LR` diagrams, one per part; the
+      header lists the parts and which folders/files belong to each, and
+      states the labelling rules. Keep to them: arrows into another part go to
+      one grey stub box per file of that part, and arrows are transitively
+      reduced within each diagram. If a new file does not clearly belong to
+      one of the parts, ask the user where to put it. Keep the
+      `%%{init: ...}%%` line at the top of every diagram (it sets the font
+      size and spacing). GitHub shrinks a wide diagram to the page width, so
+      if a part becomes much wider than now, tell the user and suggest
+      splitting it further.
 
 7. Build the whole project and check for errors:
        lake build

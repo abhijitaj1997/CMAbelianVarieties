@@ -2,147 +2,169 @@
 
 Every definition, lemma, theorem and instance from this project that
 `CMStructure.exists_finiteDimensional_model` (in `CMAbelianVarieties/Theorem.lean`) depends on,
-directly or indirectly. Mathlib is omitted. Boxes are grouped by file.
+directly or indirectly. Mathlib is omitted.
 
-An arrow `A --> B` means "A uses B". To keep the picture readable, an arrow `A --> B` is left out
-when `B` is already reachable from `A` through other arrows.
+So that it stays readable, the picture is split into parts, one diagram each:
+1. [Main argument: CM structures, potentially CM, the main theorem](#part-1) (`Theorem`, `Pottentially`, `Defn`)
+2. [Endomorphism rings](#part-2) (`AlgebraicGeometry/AbelianVarieties/Homomorphism`, `AbstractNonsense/EndRingIso`, `AbstractNonsense/EndBaseChange`, `ForMathlib/Endomorphism`, `ForMathlib/FunctorCommAddObj`, `AlgebraicGeometry/AbelianVarieties/Commutativity`)
+3. [Base change of schemes and dimension](#part-3) (`AlgebraicGeometry/Basic`, `AlgebraicGeometry/Dimension`)
+4. [Rational models (descent to a finitely generated field)](#part-4) (`AlgebraicGeometry/AbelianVarieties/RationalModel`, `AlgebraicGeometry/RationalModel`)
 
+Inside a part, boxes are grouped by file (labelled by file name only; the folders are listed above).
+
+- An arrow `A --> B` means "A uses B". An arrow `A --> B` is left out when `B` is already
+  reachable from `A` through other arrows of the same diagram. Arrows point from left to right.
 - 🟨 **golden**: the main result `CMStructure.exists_finiteDimensional_model`
 - 🟩 **green**: no `sorry` in its own definition/proof (it may still use red terms)
 - 🟥 **red**: contains a `sorry`
+- ⬜ **grey, dashed**: a file of another part; an arrow into it means "uses some term of
+  that file". The terms themselves (with their colours) are shown in that part.
 
-Constructors and projections of `CMStructure` and `potentiallyCMStructure` are merged into the
-structure itself.
+Labels: the namespaces `AlgebraicGeometry` and `CategoryTheory` are dropped, long names are
+broken over several lines, and an instance with an auto-generated name (`inst...`, possibly inside a namespace) is shown by
+its type. Constructors and projections of `CMStructure` and `potentiallyCMStructure` are merged
+into the structure itself.
 
 > **How to view this as a picture (VS Code):** open this file and press
-> **`Ctrl + Shift + V`** to see the rendered diagram.
+> **`Ctrl + Shift + V`** to see the rendered diagrams.
+
+<a id="part-1"></a>
+## Part 1: Main argument: CM structures, potentially CM, the main theorem
 
 ```mermaid
-%%{init: {"flowchart": {"useMaxWidth": false}, "themeVariables": {"fontSize": "28px"}}}%%
-graph TD
-  subgraph n_m_CMAbelianVarieties_AbstractNonsense_EndBaseChange["AbstractNonsense/EndBaseChange.lean"]
-    direction TB
-    n_AddGrp_End_algHom_ofBaseChange["<b>AddGrp.End.algHom_ofBaseChange</b>"]
-  end
-  subgraph n_m_CMAbelianVarieties_AbstractNonsense_EndRingIso["AbstractNonsense/EndRingIso.lean"]
-    direction TB
-    n_CategoryTheory_Iso_conjAlgEquiv["<b>CategoryTheory.Iso.conjAlgEquiv</b>"]
-    n_CategoryTheory_Iso_conjRingEquiv["<b>CategoryTheory.Iso.conjRingEquiv</b>"]
-  end
-  subgraph n_m_CMAbelianVarieties_AlgebraicGeometry_AbelianVarieties_Commutativity["AlgebraicGeometry/AbelianVarieties/Commutativity.lean"]
-    direction TB
-    n_AlgebraicGeometry_isClosedImmersion_zero_left["<b>AlgebraicGeometry.isClosedImmersion_zero_left</b>"]
-    n_AlgebraicGeometry_isCommAddMonObj_of_isProper_of_geometricallyIntegral["<b>AlgebraicGeometry.isCommAddMonObj_of_isProper_of_geometricallyIntegral</b>"]
-    n_AlgebraicGeometry_isCommAddMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed["<b>AlgebraicGeometry.isCommAddMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed</b>"]
-    n_instIsCommAddMonObjOverSchemeSpecOf_cMAbelianVarieties["<b>instIsCommAddMonObjOverSchemeSpecOf_cMAbelianVarieties</b>"]
-  end
-  subgraph n_m_CMAbelianVarieties_AlgebraicGeometry_AbelianVarieties_Homomorphism_EndomorphismRing["AlgebraicGeometry/AbelianVarieties/Homomorphism/EndomorphismRing.lean"]
-    direction TB
-    n_RationalEnd["<b>RationalEnd</b>"]
-    n_RationalEnd_End_algHom_ofBaseChange["<b>RationalEnd.End.algHom_ofBaseChange</b>"]
-    n_RationalEnd_conjAlgEquiv["<b>RationalEnd.conjAlgEquiv</b>"]
-    n_RationalEnd_conjAlgEquiv_refl["<b>RationalEnd.conjAlgEquiv.refl</b>"]
-    n_RationalEnd_conjAlgEquiv_symm["<b>RationalEnd.conjAlgEquiv.symm</b>"]
-    n_RationalEnd_conjAlgEquiv_trans["<b>RationalEnd.conjAlgEquiv.trans</b>"]
-    n_RationalEnd_exists_finiteDimensional_model["<b>RationalEnd.exists_finiteDimensional_model</b>"]
-    n_RationalEnd_rational_end_morphism["<b>RationalEnd.rational_end_morphism</b>"]
-  end
-  subgraph n_m_CMAbelianVarieties_AlgebraicGeometry_AbelianVarieties_RationalModel["AlgebraicGeometry/AbelianVarieties/RationalModel.lean"]
-    direction TB
-    n_AbelianVarieties_exists_finiteDimensional_model["<b>AbelianVarieties.exists_finiteDimensional_model</b>"]
-  end
-  subgraph n_m_CMAbelianVarieties_AlgebraicGeometry_Basic["AlgebraicGeometry/Basic.lean"]
-    direction TB
-    n_basechangeOpenCover["<b>basechangeOpenCover</b>"]
-    n_basechangeOpenCoverXIso["<b>basechangeOpenCoverXIso</b>"]
-    n_basechange_over_Field["<b>basechange_over_Field</b>"]
-    n_basechange_over_Field_refl["<b>basechange_over_Field.refl</b>"]
-    n_basechange_over_Field_refl_addGroup_hom["<b>basechange_over_Field.refl_addGroup_hom</b>"]
-    n_basechange_over_Field_refl_hom_eqn["<b>basechange_over_Field.refl_hom_eqn</b>"]
-    n_basechange_over_Field_trans["<b>basechange_over_Field.trans</b>"]
-    n_basechange_over_Field_trans_addGroup_hom["<b>basechange_over_Field.trans_addGroup_hom</b>"]
-    n_basechange_over_Field_trans_addGrpObj["<b>basechange_over_Field.trans_addGrpObj</b>"]
-    n_basechange_over_Field_trans_map_comp["<b>basechange_over_Field.trans_map_comp</b>"]
-    n_basechange_over_Field_hom["<b>basechange_over_Field_hom</b>"]
-    n_instAddGrpObjOverSchemeSpecOfBasechange_over_Field["<b>instAddGrpObjOverSchemeSpecOfBasechange_over_Field</b>"]
-    n_instCompactSpaceCarrierCarrierCommRingCatLeftSchemeOfIsProperHom_cMAbelianVarieties["<b>instCompactSpaceCarrierCarrierCommRingCatLeftSchemeOfIsProperHom_cMAbelianVarieties</b>"]
-    n_instGeometricallyIntegralHomSchemeBasechange_over_Field["<b>instGeometricallyIntegralHomSchemeBasechange_over_Field</b>"]
-    n_instIsCommAddMonObjOverSchemeSpecOfBasechange_over_Field["<b>instIsCommAddMonObjOverSchemeSpecOfBasechange_over_Field</b>"]
-    n_instIsProperHomSchemeBasechange_over_Field["<b>instIsProperHomSchemeBasechange_over_Field</b>"]
-  end
-  subgraph n_m_CMAbelianVarieties_AlgebraicGeometry_Dimension["AlgebraicGeometry/Dimension.lean"]
-    direction TB
-    n_dimension_isStableUnderBasechange["<b>dimension_isStableUnderBasechange</b>"]
-    n_ringKrullDim_basechange["<b>ringKrullDim_basechange</b>"]
-    n_topologicalKrullDim_basechange_affine["<b>topologicalKrullDim_basechange_affine</b>"]
-    n_topologicalKrullDim_eq_iSup_openCover["<b>topologicalKrullDim_eq_iSup_openCover</b>"]
-    n_topologicalKrullDim_eq_iSup_ringKrullDim_stalk["<b>topologicalKrullDim_eq_iSup_ringKrullDim_stalk</b>"]
-  end
-  subgraph n_m_CMAbelianVarieties_AlgebraicGeometry_RationalModel_Affine["AlgebraicGeometry/RationalModel/Affine.lean"]
-    direction TB
-    n_exists_model_of_finiteType["<b>exists_model_of_finiteType</b>"]
-    n_exists_model_of_isAffine_of_locallyOfFiniteType["<b>exists_model_of_isAffine_of_locallyOfFiniteType</b>"]
-  end
-  subgraph n_m_CMAbelianVarieties_AlgebraicGeometry_RationalModel_GroupStructure["AlgebraicGeometry/RationalModel/GroupStructure.lean"]
-    direction TB
-    n_GroupStructure_AddGroupObj_overFieldOfDefintion["<b>GroupStructure.AddGroupObj_overFieldOfDefintion</b>"]
-    n_GroupStructure_AddGroupObj_overFieldOfDefintion_Iso["<b>GroupStructure.AddGroupObj_overFieldOfDefintion_Iso</b>"]
-    n_GroupStructure_FiniteDimensional_ofFieldOfDefintion["<b>GroupStructure.FiniteDimensional_ofFieldOfDefintion</b>"]
-    n_GroupStructure_fieldOfDefintion["<b>GroupStructure.fieldOfDefintion</b>"]
-  end
-  subgraph n_m_CMAbelianVarieties_AlgebraicGeometry_RationalModel_Morphism["AlgebraicGeometry/RationalModel/Morphism.lean"]
-    direction TB
-    n_geometricallyIntegral_model["<b>geometricallyIntegral_model</b>"]
-    n_isProper_model["<b>isProper_model</b>"]
-  end
-  subgraph n_m_CMAbelianVarieties_AlgebraicGeometry_RationalModel_Separated["AlgebraicGeometry/RationalModel/Separated.lean"]
-    direction TB
-    n_exists_model_of_isSeparated_of_locallyOfFiniteType["<b>exists_model_of_isSeparated_of_locallyOfFiniteType</b>"]
-  end
-  subgraph n_m_CMAbelianVarieties_Defn["Defn.lean"]
+%%{init: {"flowchart": {"useMaxWidth": false, "rankSpacing": 25, "nodeSpacing": 20}, "themeVariables": {"fontSize": "28px"}}}%%
+graph LR
+  subgraph m_CMAbelianVarieties_Defn["Defn.lean"]
     direction TB
     n_CMStructure["<b>CMStructure</b>"]
     n_CMStructure_Iso["<b>CMStructure.Iso</b>"]
-    n_CMStructure_Iso_basechangeTrans["<b>CMStructure.Iso.basechangeTrans</b>"]
+    n_CMStructure_Iso_basechangeTrans["<b>CMStructure.Iso.<br/>basechangeTrans</b>"]
     n_CMStructure_Iso_refl["<b>CMStructure.Iso.refl</b>"]
     n_CMStructure_Iso_symm["<b>CMStructure.Iso.symm</b>"]
-    n_CMStructure_Iso_trans["<b>CMStructure.Iso.trans</b>"]
-    n_CMStructure_basechange["<b>CMStructure.basechange</b>"]
-    n_CMStructure_basechange_ofIso["<b>CMStructure.basechange.ofIso</b>"]
-    n_CMStructure_basechange_refl["<b>CMStructure.basechange.refl</b>"]
-    n_CMStructure_basechange_trans["<b>CMStructure.basechange.trans</b>"]
+    n_CMStructure_Iso_trans["<b>CMStructure.Iso.<br/>trans</b>"]
+    n_CMStructure_basechange["<b>CMStructure.<br/>basechange</b>"]
+    n_CMStructure_basechange_ofIso["<b>CMStructure.<br/>basechange.ofIso</b>"]
+    n_CMStructure_basechange_refl["<b>CMStructure.<br/>basechange.refl</b>"]
+    n_CMStructure_basechange_trans["<b>CMStructure.<br/>basechange.trans</b>"]
     n_CMStructure_ofIso["<b>CMStructure.ofIso</b>"]
-    n_instCoeCMStructureRingHomRationalEnd["<b>instCoeCMStructureRingHomRationalEnd</b>"]
+    n_instCoeCMStructureRingHomRationalEnd["<i>instance</i><br/>Coe (CMStructure A F)<br/>(F →+* End⁰ A)"]
   end
-  subgraph n_m_CMAbelianVarieties_ForMathlib_Endomorphism["ForMathlib/Endomorphism.lean"]
-    direction TB
-    n_AddGrp_End_instAddCommGroupEndAddGrpOfIsCommAddMonObjX_cMAbelianVarieties["<b>AddGrp.End.instAddCommGroupEndAddGrpOfIsCommAddMonObjX_cMAbelianVarieties</b>"]
-    n_AddGrp_End_instAddEndAddGrpOfIsCommAddMonObjX_cMAbelianVarieties["<b>AddGrp.End.instAddEndAddGrpOfIsCommAddMonObjX_cMAbelianVarieties</b>"]
-    n_AddGrp_End_instRingEndAddGrpOfIsCommAddMonObjX_cMAbelianVarieties["<b>AddGrp.End.instRingEndAddGrpOfIsCommAddMonObjX_cMAbelianVarieties</b>"]
-    n_AddGrp_End_instZeroEndAddGrp_cMAbelianVarieties["<b>AddGrp.End.instZeroEndAddGrp_cMAbelianVarieties</b>"]
-    n_AddMon_End_instAddCommMonoidEndAddMonOfIsCommAddMonObjX_cMAbelianVarieties["<b>AddMon.End.instAddCommMonoidEndAddMonOfIsCommAddMonObjX_cMAbelianVarieties</b>"]
-  end
-  subgraph n_m_CMAbelianVarieties_ForMathlib_FunctorCommAddObj["ForMathlib/FunctorCommAddObj.lean"]
-    direction TB
-    n_Functor_isCommAddMonObj_obj["<b>Functor.isCommAddMonObj_obj</b>"]
-  end
-  subgraph n_m_CMAbelianVarieties_Pottentially["Pottentially.lean"]
+  subgraph m_CMAbelianVarieties_Pottentially["Pottentially.lean"]
     direction TB
     n_potentiallyCMStructure["<b>potentiallyCMStructure</b>"]
-    n_potentiallyCMStructure_exists_cmStructure_basechange_iso["<b>potentiallyCMStructure.exists_cmStructure_basechange_iso</b>"]
-    n_potentiallyCMStructure_of_CMStructure["<b>potentiallyCMStructure.of_CMStructure</b>"]
+    n_potentiallyCMStructure_exists_cmStructure_basechange_iso["<b>potentiallyCMStructure.<br/>exists_cmStructure_<br/>basechange_iso</b>"]
+    n_potentiallyCMStructure_of_CMStructure["<b>potentiallyCMStructure.<br/>of_CMStructure</b>"]
   end
-  subgraph n_m_CMAbelianVarieties_Theorem["Theorem.lean"]
+  subgraph m_CMAbelianVarieties_Theorem["Theorem.lean"]
     direction TB
-    n_CMStructure_exists_finiteDimensional_model["<b>CMStructure.exists_finiteDimensional_model</b>"]
+    n_CMStructure_exists_finiteDimensional_model["<b>CMStructure.exists_<br/>finiteDimensional_<br/>model</b>"]
   end
+  x_CMAbelianVarieties_AbstractNonsense_EndBaseChange["EndBaseChange.lean<br/><i>see Part 2</i>"]
+  x_CMAbelianVarieties_AbstractNonsense_EndRingIso["EndRingIso.lean<br/><i>see Part 2</i>"]
+  x_CMAbelianVarieties_AlgebraicGeometry_AbelianVarieties_Commutativity["Commutativity.lean<br/><i>see Part 2</i>"]
+  x_CMAbelianVarieties_AlgebraicGeometry_AbelianVarieties_Homomorphism_EndomorphismRing["EndomorphismRing.lean<br/><i>see Part 2</i>"]
+  x_CMAbelianVarieties_AlgebraicGeometry_AbelianVarieties_RationalModel["RationalModel.lean<br/><i>see Part 4</i>"]
+  x_CMAbelianVarieties_AlgebraicGeometry_Basic["Basic.lean<br/><i>see Part 3</i>"]
+  x_CMAbelianVarieties_AlgebraicGeometry_Dimension["Dimension.lean<br/><i>see Part 3</i>"]
+  x_CMAbelianVarieties_ForMathlib_Endomorphism["Endomorphism.lean<br/><i>see Part 2</i>"]
 
-  n_AbelianVarieties_exists_finiteDimensional_model --> n_GroupStructure_AddGroupObj_overFieldOfDefintion_Iso
-  n_AbelianVarieties_exists_finiteDimensional_model --> n_GroupStructure_FiniteDimensional_ofFieldOfDefintion
-  n_AbelianVarieties_exists_finiteDimensional_model --> n_geometricallyIntegral_model
-  n_AbelianVarieties_exists_finiteDimensional_model --> n_instGeometricallyIntegralHomSchemeBasechange_over_Field
-  n_AbelianVarieties_exists_finiteDimensional_model --> n_instIsProperHomSchemeBasechange_over_Field
-  n_AbelianVarieties_exists_finiteDimensional_model --> n_isProper_model
+  n_CMStructure --> x_CMAbelianVarieties_AlgebraicGeometry_AbelianVarieties_Commutativity
+  n_CMStructure --> x_CMAbelianVarieties_AlgebraicGeometry_AbelianVarieties_Homomorphism_EndomorphismRing
+  n_CMStructure --> x_CMAbelianVarieties_ForMathlib_Endomorphism
+  n_CMStructure_Iso --> n_CMStructure
+  n_CMStructure_Iso --> n_instCoeCMStructureRingHomRationalEnd
+  n_CMStructure_Iso_basechangeTrans --> n_CMStructure_Iso_symm
+  n_CMStructure_Iso_basechangeTrans --> n_CMStructure_Iso_trans
+  n_CMStructure_Iso_basechangeTrans --> n_CMStructure_basechange_trans
+  n_CMStructure_Iso_refl --> n_CMStructure_Iso
+  n_CMStructure_Iso_symm --> n_CMStructure_Iso
+  n_CMStructure_Iso_trans --> n_CMStructure_Iso
+  n_CMStructure_basechange --> n_CMStructure
+  n_CMStructure_basechange --> x_CMAbelianVarieties_AlgebraicGeometry_Basic
+  n_CMStructure_basechange --> x_CMAbelianVarieties_AlgebraicGeometry_Dimension
+  n_CMStructure_basechange --> n_instCoeCMStructureRingHomRationalEnd
+  n_CMStructure_basechange_ofIso --> n_CMStructure_Iso
+  n_CMStructure_basechange_ofIso --> n_CMStructure_basechange
+  n_CMStructure_basechange_ofIso --> x_CMAbelianVarieties_AbstractNonsense_EndBaseChange
+  n_CMStructure_basechange_ofIso --> x_CMAbelianVarieties_AbstractNonsense_EndRingIso
+  n_CMStructure_basechange_refl --> n_CMStructure_Iso
+  n_CMStructure_basechange_refl --> n_CMStructure_basechange
+  n_CMStructure_basechange_refl --> x_CMAbelianVarieties_AbstractNonsense_EndRingIso
+  n_CMStructure_basechange_trans --> n_CMStructure_basechange_ofIso
+  n_CMStructure_exists_finiteDimensional_model --> n_CMStructure_Iso_basechangeTrans
+  n_CMStructure_exists_finiteDimensional_model --> n_CMStructure_Iso_refl
+  n_CMStructure_exists_finiteDimensional_model --> n_CMStructure_basechange_refl
+  n_CMStructure_exists_finiteDimensional_model --> x_CMAbelianVarieties_AlgebraicGeometry_AbelianVarieties_RationalModel
+  n_CMStructure_exists_finiteDimensional_model --> n_potentiallyCMStructure_exists_cmStructure_basechange_iso
+  n_CMStructure_exists_finiteDimensional_model --> n_potentiallyCMStructure_of_CMStructure
+  n_CMStructure_ofIso --> n_CMStructure
+  n_CMStructure_ofIso --> n_instCoeCMStructureRingHomRationalEnd
+  n_instCoeCMStructureRingHomRationalEnd --> x_CMAbelianVarieties_AlgebraicGeometry_AbelianVarieties_Commutativity
+  n_instCoeCMStructureRingHomRationalEnd --> x_CMAbelianVarieties_ForMathlib_Endomorphism
+  n_potentiallyCMStructure --> n_CMStructure
+  n_potentiallyCMStructure --> x_CMAbelianVarieties_AlgebraicGeometry_Basic
+  n_potentiallyCMStructure_exists_cmStructure_basechange_iso --> n_CMStructure_Iso
+  n_potentiallyCMStructure_exists_cmStructure_basechange_iso --> n_CMStructure_basechange
+  n_potentiallyCMStructure_exists_cmStructure_basechange_iso --> n_CMStructure_ofIso
+  n_potentiallyCMStructure_exists_cmStructure_basechange_iso --> n_potentiallyCMStructure
+  n_potentiallyCMStructure_of_CMStructure --> n_potentiallyCMStructure
+
+  classDef ok fill:#c8e6c9,stroke:#2e7d32,color:#000
+  classDef bad fill:#ffcdd2,stroke:#c62828,color:#000
+  classDef main fill:#ffd54f,stroke:#b8860b,stroke-width:3px,color:#000
+  classDef ext fill:#eeeeee,stroke:#9e9e9e,stroke-dasharray:5 5,color:#555
+  class n_CMStructure,n_CMStructure_Iso,n_CMStructure_Iso_basechangeTrans,n_CMStructure_Iso_refl,n_CMStructure_Iso_symm,n_CMStructure_Iso_trans,n_CMStructure_basechange,n_CMStructure_basechange_ofIso,n_CMStructure_basechange_refl,n_CMStructure_basechange_trans,n_CMStructure_ofIso,n_instCoeCMStructureRingHomRationalEnd,n_potentiallyCMStructure,n_potentiallyCMStructure_exists_cmStructure_basechange_iso,n_potentiallyCMStructure_of_CMStructure ok
+  class n_CMStructure_exists_finiteDimensional_model main
+  class x_CMAbelianVarieties_AbstractNonsense_EndBaseChange,x_CMAbelianVarieties_AbstractNonsense_EndRingIso,x_CMAbelianVarieties_AlgebraicGeometry_AbelianVarieties_Commutativity,x_CMAbelianVarieties_AlgebraicGeometry_AbelianVarieties_Homomorphism_EndomorphismRing,x_CMAbelianVarieties_AlgebraicGeometry_AbelianVarieties_RationalModel,x_CMAbelianVarieties_AlgebraicGeometry_Basic,x_CMAbelianVarieties_AlgebraicGeometry_Dimension,x_CMAbelianVarieties_ForMathlib_Endomorphism ext
+```
+
+<a id="part-2"></a>
+## Part 2: Endomorphism rings
+
+```mermaid
+%%{init: {"flowchart": {"useMaxWidth": false, "rankSpacing": 25, "nodeSpacing": 20}, "themeVariables": {"fontSize": "28px"}}}%%
+graph LR
+  subgraph m_CMAbelianVarieties_AbstractNonsense_EndBaseChange["EndBaseChange.lean"]
+    direction TB
+    n_AddGrp_End_algHom_ofBaseChange["<b>AddGrp.End.algHom_<br/>ofBaseChange</b>"]
+  end
+  subgraph m_CMAbelianVarieties_AbstractNonsense_EndRingIso["EndRingIso.lean"]
+    direction TB
+    n_CategoryTheory_Iso_conjAlgEquiv["<b>Iso.conjAlgEquiv</b>"]
+    n_CategoryTheory_Iso_conjRingEquiv["<b>Iso.conjRingEquiv</b>"]
+  end
+  subgraph m_CMAbelianVarieties_AlgebraicGeometry_AbelianVarieties_Commutativity["Commutativity.lean"]
+    direction TB
+    n_AlgebraicGeometry_isClosedImmersion_zero_left["<b>isClosedImmersion_<br/>zero_left</b>"]
+    n_AlgebraicGeometry_isCommAddMonObj_of_isProper_of_geometricallyIntegral["<b>isCommAddMonObj_of_<br/>isProper_of_<br/>geometricallyIntegral</b>"]
+    n_AlgebraicGeometry_isCommAddMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed["<b>isCommAddMonObj_of_<br/>isProper_of_<br/>isIntegral_<br/>tensorObj_of_<br/>isAlgClosed</b>"]
+    n_instIsCommAddMonObjOverSchemeSpecOf_cMAbelianVarieties["<i>instance</i><br/>IsCommAddMonObj A"]
+  end
+  subgraph m_CMAbelianVarieties_AlgebraicGeometry_AbelianVarieties_Homomorphism_EndomorphismRing["EndomorphismRing.lean"]
+    direction TB
+    n_RationalEnd["<b>RationalEnd</b>"]
+    n_RationalEnd_End_algHom_ofBaseChange["<b>RationalEnd.End.<br/>algHom_ofBaseChange</b>"]
+    n_RationalEnd_conjAlgEquiv["<b>RationalEnd.<br/>conjAlgEquiv</b>"]
+    n_RationalEnd_conjAlgEquiv_refl["<b>RationalEnd.<br/>conjAlgEquiv.refl</b>"]
+    n_RationalEnd_conjAlgEquiv_symm["<b>RationalEnd.<br/>conjAlgEquiv.symm</b>"]
+    n_RationalEnd_conjAlgEquiv_trans["<b>RationalEnd.<br/>conjAlgEquiv.trans</b>"]
+    n_RationalEnd_exists_finiteDimensional_model["<b>RationalEnd.exists_<br/>finiteDimensional_<br/>model</b>"]
+    n_RationalEnd_rational_end_morphism["<b>RationalEnd.<br/>rational_end_<br/>morphism</b>"]
+  end
+  subgraph m_CMAbelianVarieties_ForMathlib_Endomorphism["Endomorphism.lean"]
+    direction TB
+    n_AddGrp_End_instAddCommGroupEndAddGrpOfIsCommAddMonObjX_cMAbelianVarieties["<i>instance</i><br/>AddCommGroup (End G)"]
+    n_AddGrp_End_instAddEndAddGrpOfIsCommAddMonObjX_cMAbelianVarieties["<i>instance</i><br/>Add (End G)"]
+    n_AddGrp_End_instRingEndAddGrpOfIsCommAddMonObjX_cMAbelianVarieties["<i>instance</i><br/>Ring (End G)"]
+    n_AddGrp_End_instZeroEndAddGrp_cMAbelianVarieties["<i>instance</i><br/>Zero (End G)"]
+    n_AddMon_End_instAddCommMonoidEndAddMonOfIsCommAddMonObjX_cMAbelianVarieties["<i>instance</i><br/>AddCommMonoid (End G)"]
+  end
+  subgraph m_CMAbelianVarieties_ForMathlib_FunctorCommAddObj["FunctorCommAddObj.lean"]
+    direction TB
+    n_Functor_isCommAddMonObj_obj["<b>Functor.<br/>isCommAddMonObj_obj</b>"]
+  end
+  x_CMAbelianVarieties_AlgebraicGeometry_Basic["Basic.lean<br/><i>see Part 3</i>"]
+
   n_AddGrp_End_algHom_ofBaseChange --> n_AddGrp_End_instRingEndAddGrpOfIsCommAddMonObjX_cMAbelianVarieties
   n_AddGrp_End_algHom_ofBaseChange --> n_Functor_isCommAddMonObj_obj
   n_AddGrp_End_instAddCommGroupEndAddGrpOfIsCommAddMonObjX_cMAbelianVarieties --> n_AddGrp_End_instAddEndAddGrpOfIsCommAddMonObjX_cMAbelianVarieties
@@ -151,53 +173,13 @@ graph TD
   n_AddGrp_End_instRingEndAddGrpOfIsCommAddMonObjX_cMAbelianVarieties --> n_AddGrp_End_instAddCommGroupEndAddGrpOfIsCommAddMonObjX_cMAbelianVarieties
   n_AlgebraicGeometry_isCommAddMonObj_of_isProper_of_geometricallyIntegral --> n_AlgebraicGeometry_isCommAddMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed
   n_AlgebraicGeometry_isCommAddMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed --> n_AlgebraicGeometry_isClosedImmersion_zero_left
-  n_CMStructure --> n_RationalEnd
-  n_CMStructure_Iso --> n_CMStructure
-  n_CMStructure_Iso --> n_RationalEnd_conjAlgEquiv
-  n_CMStructure_Iso --> n_instCoeCMStructureRingHomRationalEnd
-  n_CMStructure_Iso_basechangeTrans --> n_CMStructure_Iso_symm
-  n_CMStructure_Iso_basechangeTrans --> n_CMStructure_Iso_trans
-  n_CMStructure_Iso_basechangeTrans --> n_CMStructure_basechange_trans
-  n_CMStructure_Iso_refl --> n_CMStructure_Iso
-  n_CMStructure_Iso_refl --> n_RationalEnd_conjAlgEquiv_refl
-  n_CMStructure_Iso_symm --> n_CMStructure_Iso
-  n_CMStructure_Iso_symm --> n_RationalEnd_conjAlgEquiv_symm
-  n_CMStructure_Iso_trans --> n_CMStructure_Iso
-  n_CMStructure_Iso_trans --> n_RationalEnd_conjAlgEquiv_trans
-  n_CMStructure_basechange --> n_CMStructure
-  n_CMStructure_basechange --> n_RationalEnd_rational_end_morphism
-  n_CMStructure_basechange --> n_dimension_isStableUnderBasechange
-  n_CMStructure_basechange --> n_instCoeCMStructureRingHomRationalEnd
-  n_CMStructure_basechange_ofIso --> n_CMStructure_Iso
-  n_CMStructure_basechange_ofIso --> n_CMStructure_basechange
-  n_CMStructure_basechange_refl --> n_CMStructure_Iso
-  n_CMStructure_basechange_refl --> n_CMStructure_basechange
-  n_CMStructure_basechange_refl --> n_RationalEnd_conjAlgEquiv_refl
-  n_CMStructure_basechange_refl --> n_RationalEnd_conjAlgEquiv_trans
-  n_CMStructure_basechange_refl --> n_basechange_over_Field_refl_addGroup_hom
-  n_CMStructure_basechange_trans --> n_CMStructure_basechange_ofIso
-  n_CMStructure_basechange_trans --> n_basechange_over_Field_trans_addGrpObj
-  n_CMStructure_exists_finiteDimensional_model --> n_AbelianVarieties_exists_finiteDimensional_model
-  n_CMStructure_exists_finiteDimensional_model --> n_CMStructure_Iso_basechangeTrans
-  n_CMStructure_exists_finiteDimensional_model --> n_CMStructure_Iso_refl
-  n_CMStructure_exists_finiteDimensional_model --> n_CMStructure_basechange_refl
-  n_CMStructure_exists_finiteDimensional_model --> n_potentiallyCMStructure_exists_cmStructure_basechange_iso
-  n_CMStructure_exists_finiteDimensional_model --> n_potentiallyCMStructure_of_CMStructure
-  n_CMStructure_ofIso --> n_CMStructure
-  n_CMStructure_ofIso --> n_RationalEnd_conjAlgEquiv
-  n_CMStructure_ofIso --> n_instCoeCMStructureRingHomRationalEnd
   n_CategoryTheory_Iso_conjAlgEquiv --> n_AddGrp_End_instRingEndAddGrpOfIsCommAddMonObjX_cMAbelianVarieties
   n_CategoryTheory_Iso_conjAlgEquiv --> n_CategoryTheory_Iso_conjRingEquiv
   n_CategoryTheory_Iso_conjRingEquiv --> n_AddGrp_End_instAddEndAddGrpOfIsCommAddMonObjX_cMAbelianVarieties
-  n_GroupStructure_AddGroupObj_overFieldOfDefintion --> n_GroupStructure_fieldOfDefintion
-  n_GroupStructure_AddGroupObj_overFieldOfDefintion_Iso --> n_GroupStructure_AddGroupObj_overFieldOfDefintion
-  n_GroupStructure_AddGroupObj_overFieldOfDefintion_Iso --> n_instAddGrpObjOverSchemeSpecOfBasechange_over_Field
-  n_GroupStructure_FiniteDimensional_ofFieldOfDefintion --> n_GroupStructure_fieldOfDefintion
-  n_GroupStructure_fieldOfDefintion --> n_basechange_over_Field
   n_RationalEnd --> n_AddGrp_End_instRingEndAddGrpOfIsCommAddMonObjX_cMAbelianVarieties
   n_RationalEnd --> n_instIsCommAddMonObjOverSchemeSpecOf_cMAbelianVarieties
   n_RationalEnd_End_algHom_ofBaseChange --> n_AddGrp_End_algHom_ofBaseChange
-  n_RationalEnd_End_algHom_ofBaseChange --> n_instIsCommAddMonObjOverSchemeSpecOfBasechange_over_Field
+  n_RationalEnd_End_algHom_ofBaseChange --> x_CMAbelianVarieties_AlgebraicGeometry_Basic
   n_RationalEnd_conjAlgEquiv --> n_CategoryTheory_Iso_conjAlgEquiv
   n_RationalEnd_conjAlgEquiv --> n_RationalEnd
   n_RationalEnd_conjAlgEquiv_refl --> n_RationalEnd_conjAlgEquiv
@@ -206,8 +188,52 @@ graph TD
   n_RationalEnd_exists_finiteDimensional_model --> n_RationalEnd_rational_end_morphism
   n_RationalEnd_rational_end_morphism --> n_RationalEnd_End_algHom_ofBaseChange
   n_RationalEnd_rational_end_morphism --> n_RationalEnd_conjAlgEquiv
-  n_RationalEnd_rational_end_morphism --> n_instGeometricallyIntegralHomSchemeBasechange_over_Field
-  n_RationalEnd_rational_end_morphism --> n_instIsProperHomSchemeBasechange_over_Field
+  n_instIsCommAddMonObjOverSchemeSpecOf_cMAbelianVarieties --> n_AlgebraicGeometry_isCommAddMonObj_of_isProper_of_geometricallyIntegral
+
+  classDef ok fill:#c8e6c9,stroke:#2e7d32,color:#000
+  classDef bad fill:#ffcdd2,stroke:#c62828,color:#000
+  classDef main fill:#ffd54f,stroke:#b8860b,stroke-width:3px,color:#000
+  classDef ext fill:#eeeeee,stroke:#9e9e9e,stroke-dasharray:5 5,color:#555
+  class n_AddGrp_End_algHom_ofBaseChange,n_AddGrp_End_instAddCommGroupEndAddGrpOfIsCommAddMonObjX_cMAbelianVarieties,n_AddGrp_End_instAddEndAddGrpOfIsCommAddMonObjX_cMAbelianVarieties,n_AddGrp_End_instRingEndAddGrpOfIsCommAddMonObjX_cMAbelianVarieties,n_AddGrp_End_instZeroEndAddGrp_cMAbelianVarieties,n_AddMon_End_instAddCommMonoidEndAddMonOfIsCommAddMonObjX_cMAbelianVarieties,n_AlgebraicGeometry_isClosedImmersion_zero_left,n_AlgebraicGeometry_isCommAddMonObj_of_isProper_of_geometricallyIntegral,n_AlgebraicGeometry_isCommAddMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed,n_CategoryTheory_Iso_conjAlgEquiv,n_CategoryTheory_Iso_conjRingEquiv,n_Functor_isCommAddMonObj_obj,n_RationalEnd,n_RationalEnd_End_algHom_ofBaseChange,n_RationalEnd_conjAlgEquiv,n_RationalEnd_conjAlgEquiv_refl,n_RationalEnd_conjAlgEquiv_symm,n_RationalEnd_conjAlgEquiv_trans,n_RationalEnd_rational_end_morphism,n_instIsCommAddMonObjOverSchemeSpecOf_cMAbelianVarieties ok
+  class n_RationalEnd_exists_finiteDimensional_model bad
+  class x_CMAbelianVarieties_AlgebraicGeometry_Basic ext
+```
+
+<a id="part-3"></a>
+## Part 3: Base change of schemes and dimension
+
+```mermaid
+%%{init: {"flowchart": {"useMaxWidth": false, "rankSpacing": 25, "nodeSpacing": 20}, "themeVariables": {"fontSize": "28px"}}}%%
+graph LR
+  subgraph m_CMAbelianVarieties_AlgebraicGeometry_Basic["Basic.lean"]
+    direction TB
+    n_basechangeOpenCover["<b>basechangeOpenCover</b>"]
+    n_basechangeOpenCoverXIso["<b>basechangeOpenCoverXIso</b>"]
+    n_basechange_over_Field["<b>basechange_over_<br/>Field</b>"]
+    n_basechange_over_Field_refl["<b>basechange_over_<br/>Field.refl</b>"]
+    n_basechange_over_Field_refl_addGroup_hom["<b>basechange_over_<br/>Field.refl_addGroup_<br/>hom</b>"]
+    n_basechange_over_Field_refl_hom_eqn["<b>basechange_over_<br/>Field.refl_hom_eqn</b>"]
+    n_basechange_over_Field_trans["<b>basechange_over_<br/>Field.trans</b>"]
+    n_basechange_over_Field_trans_addGroup_hom["<b>basechange_over_<br/>Field.trans_<br/>addGroup_hom</b>"]
+    n_basechange_over_Field_trans_addGrpObj["<b>basechange_over_<br/>Field.trans_<br/>addGrpObj</b>"]
+    n_basechange_over_Field_trans_map_comp["<b>basechange_over_<br/>Field.trans_map_comp</b>"]
+    n_basechange_over_Field_hom["<b>basechange_over_<br/>Field_hom</b>"]
+    n_instAddGrpObjOverSchemeSpecOfBasechange_over_Field["<i>instance</i><br/>AddGrpObj (G _ K₁)"]
+    n_instCompactSpaceCarrierCarrierCommRingCatLeftSchemeOfIsProperHom_cMAbelianVarieties["<i>instance</i><br/>CompactSpace ↥X.left"]
+    n_instGeometricallyIntegralHomSchemeBasechange_over_Field["<i>instance</i><br/>GeometricallyIntegral<br/>(X _ K₁).hom"]
+    n_instIsCommAddMonObjOverSchemeSpecOfBasechange_over_Field["<i>instance</i><br/>IsCommAddMonObj (G _ K₁)"]
+    n_instIsProperHomSchemeBasechange_over_Field["<i>instance</i><br/>IsProper (X _ K₁).hom"]
+  end
+  subgraph m_CMAbelianVarieties_AlgebraicGeometry_Dimension["Dimension.lean"]
+    direction TB
+    n_dimension_isStableUnderBasechange["<b>dimension_<br/>isStableUnderBasechange</b>"]
+    n_ringKrullDim_basechange["<b>ringKrullDim_<br/>basechange</b>"]
+    n_topologicalKrullDim_basechange_affine["<b>topologicalKrullDim_<br/>basechange_affine</b>"]
+    n_topologicalKrullDim_eq_iSup_openCover["<b>topologicalKrullDim_<br/>eq_iSup_openCover</b>"]
+    n_topologicalKrullDim_eq_iSup_ringKrullDim_stalk["<b>topologicalKrullDim_<br/>eq_iSup_<br/>ringKrullDim_stalk</b>"]
+  end
+  x_CMAbelianVarieties_ForMathlib_FunctorCommAddObj["FunctorCommAddObj.lean<br/><i>see Part 2</i>"]
+
   n_basechangeOpenCover --> n_basechange_over_Field_trans
   n_basechangeOpenCoverXIso --> n_basechangeOpenCover
   n_basechange_over_Field_refl --> n_basechange_over_Field
@@ -223,32 +249,11 @@ graph TD
   n_dimension_isStableUnderBasechange --> n_basechangeOpenCoverXIso
   n_dimension_isStableUnderBasechange --> n_topologicalKrullDim_basechange_affine
   n_dimension_isStableUnderBasechange --> n_topologicalKrullDim_eq_iSup_openCover
-  n_exists_model_of_isAffine_of_locallyOfFiniteType --> n_basechange_over_Field
-  n_exists_model_of_isAffine_of_locallyOfFiniteType --> n_exists_model_of_finiteType
-  n_exists_model_of_isSeparated_of_locallyOfFiniteType --> n_exists_model_of_isAffine_of_locallyOfFiniteType
-  n_geometricallyIntegral_model --> n_exists_model_of_isSeparated_of_locallyOfFiniteType
   n_instAddGrpObjOverSchemeSpecOfBasechange_over_Field --> n_basechange_over_Field
-  n_instCoeCMStructureRingHomRationalEnd --> n_AddGrp_End_instRingEndAddGrpOfIsCommAddMonObjX_cMAbelianVarieties
-  n_instCoeCMStructureRingHomRationalEnd --> n_instIsCommAddMonObjOverSchemeSpecOf_cMAbelianVarieties
   n_instGeometricallyIntegralHomSchemeBasechange_over_Field --> n_basechange_over_Field
-  n_instIsCommAddMonObjOverSchemeSpecOfBasechange_over_Field --> n_Functor_isCommAddMonObj_obj
+  n_instIsCommAddMonObjOverSchemeSpecOfBasechange_over_Field --> x_CMAbelianVarieties_ForMathlib_FunctorCommAddObj
   n_instIsCommAddMonObjOverSchemeSpecOfBasechange_over_Field --> n_instAddGrpObjOverSchemeSpecOfBasechange_over_Field
-  n_instIsCommAddMonObjOverSchemeSpecOf_cMAbelianVarieties --> n_AlgebraicGeometry_isCommAddMonObj_of_isProper_of_geometricallyIntegral
   n_instIsProperHomSchemeBasechange_over_Field --> n_basechange_over_Field
-  n_isProper_model --> n_exists_model_of_isSeparated_of_locallyOfFiniteType
-  n_isProper_model --> n_instCompactSpaceCarrierCarrierCommRingCatLeftSchemeOfIsProperHom_cMAbelianVarieties
-  n_potentiallyCMStructure --> n_CMStructure
-  n_potentiallyCMStructure --> n_instAddGrpObjOverSchemeSpecOfBasechange_over_Field
-  n_potentiallyCMStructure --> n_instGeometricallyIntegralHomSchemeBasechange_over_Field
-  n_potentiallyCMStructure --> n_instIsProperHomSchemeBasechange_over_Field
-  n_potentiallyCMStructure_exists_cmStructure_basechange_iso --> n_CMStructure_Iso
-  n_potentiallyCMStructure_exists_cmStructure_basechange_iso --> n_CMStructure_basechange
-  n_potentiallyCMStructure_exists_cmStructure_basechange_iso --> n_CMStructure_ofIso
-  n_potentiallyCMStructure_exists_cmStructure_basechange_iso --> n_RationalEnd_conjAlgEquiv_refl
-  n_potentiallyCMStructure_exists_cmStructure_basechange_iso --> n_RationalEnd_exists_finiteDimensional_model
-  n_potentiallyCMStructure_exists_cmStructure_basechange_iso --> n_basechange_over_Field_trans_addGrpObj
-  n_potentiallyCMStructure_exists_cmStructure_basechange_iso --> n_potentiallyCMStructure
-  n_potentiallyCMStructure_of_CMStructure --> n_potentiallyCMStructure
   n_topologicalKrullDim_basechange_affine --> n_basechange_over_Field
   n_topologicalKrullDim_basechange_affine --> n_ringKrullDim_basechange
   n_topologicalKrullDim_eq_iSup_openCover --> n_topologicalKrullDim_eq_iSup_ringKrullDim_stalk
@@ -256,7 +261,64 @@ graph TD
   classDef ok fill:#c8e6c9,stroke:#2e7d32,color:#000
   classDef bad fill:#ffcdd2,stroke:#c62828,color:#000
   classDef main fill:#ffd54f,stroke:#b8860b,stroke-width:3px,color:#000
-  class n_AbelianVarieties_exists_finiteDimensional_model,n_AddGrp_End_algHom_ofBaseChange,n_AddGrp_End_instAddCommGroupEndAddGrpOfIsCommAddMonObjX_cMAbelianVarieties,n_AddGrp_End_instAddEndAddGrpOfIsCommAddMonObjX_cMAbelianVarieties,n_AddGrp_End_instRingEndAddGrpOfIsCommAddMonObjX_cMAbelianVarieties,n_AddGrp_End_instZeroEndAddGrp_cMAbelianVarieties,n_AddMon_End_instAddCommMonoidEndAddMonOfIsCommAddMonObjX_cMAbelianVarieties,n_AlgebraicGeometry_isClosedImmersion_zero_left,n_AlgebraicGeometry_isCommAddMonObj_of_isProper_of_geometricallyIntegral,n_AlgebraicGeometry_isCommAddMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed,n_CMStructure,n_CMStructure_Iso,n_CMStructure_Iso_basechangeTrans,n_CMStructure_Iso_refl,n_CMStructure_Iso_symm,n_CMStructure_Iso_trans,n_CMStructure_basechange,n_CMStructure_basechange_ofIso,n_CMStructure_basechange_refl,n_CMStructure_basechange_trans,n_CMStructure_ofIso,n_CategoryTheory_Iso_conjAlgEquiv,n_CategoryTheory_Iso_conjRingEquiv,n_Functor_isCommAddMonObj_obj,n_RationalEnd,n_RationalEnd_End_algHom_ofBaseChange,n_RationalEnd_conjAlgEquiv,n_RationalEnd_conjAlgEquiv_refl,n_RationalEnd_conjAlgEquiv_symm,n_RationalEnd_conjAlgEquiv_trans,n_RationalEnd_rational_end_morphism,n_basechangeOpenCover,n_basechangeOpenCoverXIso,n_basechange_over_Field,n_basechange_over_Field_refl,n_basechange_over_Field_refl_addGroup_hom,n_basechange_over_Field_refl_hom_eqn,n_basechange_over_Field_trans,n_basechange_over_Field_trans_addGroup_hom,n_basechange_over_Field_trans_addGrpObj,n_basechange_over_Field_trans_map_comp,n_basechange_over_Field_hom,n_dimension_isStableUnderBasechange,n_exists_model_of_finiteType,n_exists_model_of_isAffine_of_locallyOfFiniteType,n_instAddGrpObjOverSchemeSpecOfBasechange_over_Field,n_instCoeCMStructureRingHomRationalEnd,n_instCompactSpaceCarrierCarrierCommRingCatLeftSchemeOfIsProperHom_cMAbelianVarieties,n_instGeometricallyIntegralHomSchemeBasechange_over_Field,n_instIsCommAddMonObjOverSchemeSpecOfBasechange_over_Field,n_instIsCommAddMonObjOverSchemeSpecOf_cMAbelianVarieties,n_instIsProperHomSchemeBasechange_over_Field,n_potentiallyCMStructure,n_potentiallyCMStructure_exists_cmStructure_basechange_iso,n_potentiallyCMStructure_of_CMStructure,n_topologicalKrullDim_basechange_affine,n_topologicalKrullDim_eq_iSup_openCover,n_topologicalKrullDim_eq_iSup_ringKrullDim_stalk ok
-  class n_GroupStructure_AddGroupObj_overFieldOfDefintion,n_GroupStructure_AddGroupObj_overFieldOfDefintion_Iso,n_GroupStructure_FiniteDimensional_ofFieldOfDefintion,n_GroupStructure_fieldOfDefintion,n_RationalEnd_exists_finiteDimensional_model,n_exists_model_of_isSeparated_of_locallyOfFiniteType,n_geometricallyIntegral_model,n_isProper_model,n_ringKrullDim_basechange bad
-  class n_CMStructure_exists_finiteDimensional_model main
+  classDef ext fill:#eeeeee,stroke:#9e9e9e,stroke-dasharray:5 5,color:#555
+  class n_basechangeOpenCover,n_basechangeOpenCoverXIso,n_basechange_over_Field,n_basechange_over_Field_refl,n_basechange_over_Field_refl_addGroup_hom,n_basechange_over_Field_refl_hom_eqn,n_basechange_over_Field_trans,n_basechange_over_Field_trans_addGroup_hom,n_basechange_over_Field_trans_addGrpObj,n_basechange_over_Field_trans_map_comp,n_basechange_over_Field_hom,n_dimension_isStableUnderBasechange,n_instAddGrpObjOverSchemeSpecOfBasechange_over_Field,n_instCompactSpaceCarrierCarrierCommRingCatLeftSchemeOfIsProperHom_cMAbelianVarieties,n_instGeometricallyIntegralHomSchemeBasechange_over_Field,n_instIsCommAddMonObjOverSchemeSpecOfBasechange_over_Field,n_instIsProperHomSchemeBasechange_over_Field,n_topologicalKrullDim_basechange_affine,n_topologicalKrullDim_eq_iSup_openCover,n_topologicalKrullDim_eq_iSup_ringKrullDim_stalk ok
+  class n_ringKrullDim_basechange bad
+  class x_CMAbelianVarieties_ForMathlib_FunctorCommAddObj ext
+```
+
+<a id="part-4"></a>
+## Part 4: Rational models (descent to a finitely generated field)
+
+```mermaid
+%%{init: {"flowchart": {"useMaxWidth": false, "rankSpacing": 25, "nodeSpacing": 20}, "themeVariables": {"fontSize": "28px"}}}%%
+graph LR
+  subgraph m_CMAbelianVarieties_AlgebraicGeometry_AbelianVarieties_RationalModel["RationalModel.lean"]
+    direction TB
+    n_AbelianVarieties_exists_finiteDimensional_model["<b>AbelianVarieties.<br/>exists_<br/>finiteDimensional_<br/>model</b>"]
+  end
+  subgraph m_CMAbelianVarieties_AlgebraicGeometry_RationalModel_Affine["Affine.lean"]
+    direction TB
+    n_exists_model_of_finiteType["<b>exists_model_of_<br/>finiteType</b>"]
+    n_exists_model_of_isAffine_of_locallyOfFiniteType["<b>exists_model_of_<br/>isAffine_of_<br/>locallyOfFiniteType</b>"]
+  end
+  subgraph m_CMAbelianVarieties_AlgebraicGeometry_RationalModel_GroupStructure["GroupStructure.lean"]
+    direction TB
+    n_GroupStructure_AddGroupObj_overFieldOfDefintion["<b>GroupStructure.<br/>AddGroupObj_<br/>overFieldOfDefintion</b>"]
+    n_GroupStructure_AddGroupObj_overFieldOfDefintion_Iso["<b>GroupStructure.<br/>AddGroupObj_<br/>overFieldOfDefintion_<br/>Iso</b>"]
+    n_GroupStructure_FiniteDimensional_ofFieldOfDefintion["<b>GroupStructure.<br/>FiniteDimensional_<br/>ofFieldOfDefintion</b>"]
+    n_GroupStructure_fieldOfDefintion["<b>GroupStructure.<br/>fieldOfDefintion</b>"]
+  end
+  subgraph m_CMAbelianVarieties_AlgebraicGeometry_RationalModel_Morphism["Morphism.lean"]
+    direction TB
+    n_geometricallyIntegral_model["<b>geometricallyIntegral_<br/>model</b>"]
+    n_isProper_model["<b>isProper_model</b>"]
+  end
+  subgraph m_CMAbelianVarieties_AlgebraicGeometry_RationalModel_Separated["Separated.lean"]
+    direction TB
+    n_exists_model_of_isSeparated_of_locallyOfFiniteType["<b>exists_model_of_<br/>isSeparated_of_<br/>locallyOfFiniteType</b>"]
+  end
+  x_CMAbelianVarieties_AlgebraicGeometry_Basic["Basic.lean<br/><i>see Part 3</i>"]
+
+  n_AbelianVarieties_exists_finiteDimensional_model --> n_GroupStructure_AddGroupObj_overFieldOfDefintion_Iso
+  n_AbelianVarieties_exists_finiteDimensional_model --> n_GroupStructure_FiniteDimensional_ofFieldOfDefintion
+  n_AbelianVarieties_exists_finiteDimensional_model --> n_geometricallyIntegral_model
+  n_AbelianVarieties_exists_finiteDimensional_model --> n_isProper_model
+  n_GroupStructure_AddGroupObj_overFieldOfDefintion --> n_GroupStructure_fieldOfDefintion
+  n_GroupStructure_AddGroupObj_overFieldOfDefintion_Iso --> n_GroupStructure_AddGroupObj_overFieldOfDefintion
+  n_GroupStructure_FiniteDimensional_ofFieldOfDefintion --> n_GroupStructure_fieldOfDefintion
+  n_GroupStructure_fieldOfDefintion --> x_CMAbelianVarieties_AlgebraicGeometry_Basic
+  n_exists_model_of_isAffine_of_locallyOfFiniteType --> x_CMAbelianVarieties_AlgebraicGeometry_Basic
+  n_exists_model_of_isAffine_of_locallyOfFiniteType --> n_exists_model_of_finiteType
+  n_exists_model_of_isSeparated_of_locallyOfFiniteType --> n_exists_model_of_isAffine_of_locallyOfFiniteType
+  n_geometricallyIntegral_model --> n_exists_model_of_isSeparated_of_locallyOfFiniteType
+  n_isProper_model --> n_exists_model_of_isSeparated_of_locallyOfFiniteType
+
+  classDef ok fill:#c8e6c9,stroke:#2e7d32,color:#000
+  classDef bad fill:#ffcdd2,stroke:#c62828,color:#000
+  classDef main fill:#ffd54f,stroke:#b8860b,stroke-width:3px,color:#000
+  classDef ext fill:#eeeeee,stroke:#9e9e9e,stroke-dasharray:5 5,color:#555
+  class n_AbelianVarieties_exists_finiteDimensional_model,n_exists_model_of_finiteType,n_exists_model_of_isAffine_of_locallyOfFiniteType ok
+  class n_GroupStructure_AddGroupObj_overFieldOfDefintion,n_GroupStructure_AddGroupObj_overFieldOfDefintion_Iso,n_GroupStructure_FiniteDimensional_ofFieldOfDefintion,n_GroupStructure_fieldOfDefintion,n_exists_model_of_isSeparated_of_locallyOfFiniteType,n_geometricallyIntegral_model,n_isProper_model bad
+  class x_CMAbelianVarieties_AlgebraicGeometry_Basic ext
 ```
