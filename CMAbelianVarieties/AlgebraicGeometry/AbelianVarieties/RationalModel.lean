@@ -23,6 +23,7 @@ For `K = ℚ`, `E` is a number field.
 @[expose] public section
 
 open CategoryTheory AlgebraicGeometry GroupStructure
+open scoped BaseChange
 open Algebra (IsAlgebraic)
 
 universe u

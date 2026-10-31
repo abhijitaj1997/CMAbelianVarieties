@@ -19,6 +19,7 @@ a Rational model
 @[expose] public section
 
 open CategoryTheory AlgebraicGeometry
+open scoped BaseChange
 open Algebra (IsAlgebraic)
 
 namespace GroupStructure

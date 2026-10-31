@@ -20,6 +20,7 @@ type `X₀` over `E`, such that `X₀ _ (AlgebraicClosure ℚ) ≅ X`.
 @[expose] public section
 
 open CategoryTheory AlgebraicGeometry
+open scoped BaseChange
 
 universe u
 

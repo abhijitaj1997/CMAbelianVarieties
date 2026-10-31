@@ -50,7 +50,7 @@ graph TD
       AVCatalogue["<b>Catalogue</b><br/><i>#check cheat sheet</i>"]
       Commutativity["<b>Commutativity</b> ★<br/><i>abelian varieties are commutative</i>"]
       Complex["<b>Complex</b><br/><i>complex abelian varieties: exp, lattice, ℝ ⊗ lattice ≅ Lie A, free of rank 2g</i>"]
-      subgraph HOM["Homomorphisms/"]
+      subgraph HOM["Homomorphism/"]
         direction TB
         EndomorphismRing["<b>EndomorphismRing</b><br/><i>End A, End A ⊗ ℚ, conjugation by isomorphisms</i>"]
         FiniteGen["<b>FiniteGen</b><br/><i>Hom(A, B) finitely generated</i>"]

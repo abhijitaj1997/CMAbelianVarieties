@@ -5,7 +5,7 @@ Authors: Abhijit A J
 -/
 module
 
-public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Homomorphisms.EndomorphismRing
+public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Homomorphism.EndomorphismRing
 
 /-!
 ## Goal

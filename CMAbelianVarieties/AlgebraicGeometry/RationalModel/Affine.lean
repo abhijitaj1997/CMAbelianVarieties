@@ -24,6 +24,7 @@ seperated scheme of finite type `X₀` over `E`, such that
 @[expose] public section
 
 open CategoryTheory AlgebraicGeometry
+open scoped BaseChange
 
 universe u
 

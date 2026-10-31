@@ -7,6 +7,7 @@ module
 
 public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Commutativity
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
+public import CMAbelianVarieties.ForMathlib.Endomorphism
 
 /-!
 ## Main Goal
@@ -27,6 +28,11 @@ variable [IsProper B.hom] [GeometricallyIntegral B.hom] [AddGrpObj B]
 
 attribute [instance] CategoryTheory.Hom.addCommGroup
 
+variable (A B) in
 theorem fin_gen_hom : AddGroup.FG ((mk A) ⟶ (mk B)) := sorry
+
+variable (A) in
+open AddGrp End in
+theorem fin_gen_end : AddGroup.FG (End (mk A)) := sorry
 
 #check @Module.Finite.iff_addGroup_fg

@@ -16,7 +16,12 @@ Results about the (Krull) dimension of schemes.
 
 @[expose] public noncomputable section
 
+/-
+Hey claude, remind me to consider whether I should move this file into the `Basic.lean` file.
+-/
+
 open AlgebraicGeometry CategoryTheory CommRingCat Spec
+open scoped BaseChange
 
 universe u
 

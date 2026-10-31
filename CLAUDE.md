@@ -14,9 +14,34 @@ lives in `CMAbelianVarieties/Theorem.lean` (not yet proven).
 - If you write a proof or definition, mark it with a comment directly above it
   saying it was written by AI (see "AI usage" in README.md).
 
+## IMPORTANT: always check for `eqToIso` / `eqToHom`
+This is extremely important. Check it EVERY time, for every Lean task (a `to claude` command,
+finishing or cleaning up a proof, writing a definition, answering a question about code, ...),
+BEFORE you start working on it:
+- Look for `eqToIso` / `eqToHom` in the code involved: the term itself, AND the project
+  definitions it uses or unfolds (e.g. if a proof is about `basechange_over_Field.trans`, check
+  how `basechange_over_Field.trans` is defined).
+- If you find any, STOP and flag it to me first, with file and line, and suggest an explicit
+  construction instead (e.g. `Over.isoMk` with the hom and inverse given by `pullback.lift`).
+  Do not work around it (e.g. with helper lemmas) without asking me.
+- Also flag it immediately if, while working, you hit a kernel `deterministic timeout` or run out
+  of memory and `eqToIso` / `eqToHom` may be the cause.
+- Never introduce `eqToIso` / `eqToHom` yourself.
+
+Why: `eqToHom h` is the identity transported along `h`, so when a proof unfolds it (e.g. `simp`
+with only `rfl`-lemmas, whose proof is just `id`), the kernel must check the two sides of `h`
+definitionally equal, e.g. `Spec.map (ofHom (algebraMap K K))` and `𝟙 (Spec ↧K)`, by unfolding
+the construction of `Spec`. This runs out of memory or times out. (`basechange_over_Field.refl`
+was originally defined with `eqToIso`, and `simp [refl]` ran out of memory; `eqToIso` in
+`basechange_over_Field.trans` caused kernel timeouts.)
+
 ## `to claude` comments
 - I sometimes leave instructions for you as comments in the code, of the form
   `-- to claude: ...` (spacing and capitalisation may vary, e.g. `to claude : ...`).
+  A `to claude` command always *begins* with `to claude` (right after the comment marker).
+  A comment that only mentions it later (e.g. "when executing the to claude command, put the
+  def here") is not a command; it is a note belonging to a command, so follow it while
+  executing that command, and do not count it when checking how many commands there are.
 - Do not act on them by yourself. Only act when I tell you to execute a
   `to claude` command.
 - When I do, first search every file of the project (excluding `.lake/` and
@@ -27,6 +52,12 @@ lives in `CMAbelianVarieties/Theorem.lean` (not yet proven).
   - If there is exactly one, follow it. Executing it counts as permission to make
     the edits that instruction asks for (and only those).
   - Once it has been executed, delete the `to claude` comment itself.
+  - If the instruction asks for a term (e.g. "is there something that gives ...?") and you
+    find one, but I did not explicitly say how to edit the file, you may answer it in the
+    file with `#check`s:
+    - a single `#check` goes in place of the `to claude` comment, with no extra empty lines;
+    - several `#check`s go together in place of the comment, with at least 3 empty lines
+      above and below the group (not necessarily between them), so that they stand out.
 
 ## Building
 - Lean toolchain and Mathlib version: see `lean-toolchain` / `lakefile.toml`.
@@ -100,16 +131,7 @@ make (`lean-toolchain`, `lakefile.toml`, `lake-manifest.json`, `CMAbelianVarieti
 - Follow Mathlib style and naming conventions.
 - Keep imports minimal: import the smallest Mathlib/project file that suffices.
 - When searching for Mathlib results, report the exact name and file.
-- Avoid `eqToIso` / `eqToHom` in definitions and statements (e.g. to identify base changes along
-  equal morphisms of schemes); construct the morphisms explicitly instead (e.g. via
-  `pullback.lift`). Reason: `eqToHom h` is the identity transported along `h`, so when a
-  proof unfolds it (e.g. `simp` with only `rfl`-lemmas, whose proof is just `id`), the kernel
-  must check the two sides of `h` definitionally equal, e.g. `Spec.map (ofHom (algebraMap K K))`
-  and `𝟙 (Spec ↧K)`, by unfolding the construction of `Spec`. This runs out of memory or times
-  out. (`basechange_over_Field.refl` was originally defined with `eqToIso`, and `simp [refl]`
-  ran out of memory.)
-  Whenever you notice `eqToIso` or `eqToHom` in code I wrote (or am asking you about), flag
-  it to me, with file and line, and suggest an explicit construction instead.
+- Avoid `eqToIso` / `eqToHom`: see "IMPORTANT: always check for `eqToIso` / `eqToHom`" above.
 
 ## Cleaning up a term
 When I ask you to clean up a term (a `def`, `lemma`, `theorem`, `instance`, etc.), tidy

@@ -33,7 +33,12 @@ variable {A : Over (Spec ↧K)} [IsProper A.hom] [GeometricallyIntegral A.hom] [
 abbrev basechange_over_Field (X : Over (Spec ↧K)) (K₁ : Type u) [Field K₁] [Algebra K K₁] :
     Over (Spec ↧K₁) := ((Over.pullback (map (ofHom (Algebra.algebraMap K K₁)))).obj X)
 
-notation X "_" E:arg => basechange_over_Field X E
+/-- `X _ E` is the base change of `X` along `K → E`. It is scoped (use `open scoped BaseChange`)
+because the token `_` would otherwise be misparsed in every importing file, e.g. in `calc`
+steps `_ = ...` or in arguments `f _ _`. -/
+scoped[BaseChange] notation X "_" E:arg => basechange_over_Field X E
+
+open scoped BaseChange
 
 open Limits in
 lemma basechange_over_Field_left (X : Over (Spec ↧K)) (K₁ : Type u) [Field K₁] [Algebra K K₁] :
@@ -68,17 +73,38 @@ lemma basechange_over_Field.refl_hom_left (X : Over (Spec ↧K)) : (refl X).hom.
     pullback.lift (𝟙 X : X ⟶ X).left X.hom (refl_hom_eqn X) := by
   simp [refl]
 
+-- written by Claude
+lemma basechange_over_Field.trans_map_comp (K₁ K₂ : Type u) [Field K₁] [Field K₂]
+    [Algebra K K₁] [Algebra K K₂] [Algebra K₁ K₂] [IsScalarTower K K₁ K₂] :
+    map (ofHom (algebraMap K₁ K₂)) ≫ map (ofHom (algebraMap K K₁)) =
+      map (ofHom (algebraMap K K₂)) := by
+  rw [← map_comp, ← ofHom_comp, ← IsScalarTower.algebraMap_eq]
+
 /-
 Hey claude, Should I use `IntermediateFiled`? Tell me to give this a good thought
 -/
+-- written by Claude
+open Limits in
+/-- `(X _ K₁) _ K₂` is isomorphic to `X _ K₂`. -/
 def basechange_over_Field.trans (X : Over (Spec ↧K)) (K₁ K₂ : Type u) [Field K₁] [Field K₂]
     [Algebra K K₁] [Algebra K K₂] [Algebra K₁ K₂] [IsScalarTower K K₁ K₂] :
     (X _ K₁) _ K₂ ≅ X _ K₂ :=
-  let φ := (map (ofHom (Algebra.algebraMap K K₁)))
-  let ψ := (map (ofHom (Algebra.algebraMap K₁ K₂)))
-  have h : ψ ≫ φ = map (ofHom (Algebra.algebraMap K K₂)) := by
-    rw [← map_comp, ← ofHom_comp, ← IsScalarTower.algebraMap_eq]
-  ((Over.pullbackComp ψ φ).app X).symm ≪≫ eqToIso (by simp only [h])
+  Over.isoMk
+    { hom := pullback.lift (pullback.fst _ _ ≫ pullback.fst _ _) (pullback.snd _ _) (by
+        rw [Category.assoc, pullback.condition, ← Category.assoc, ← basechange_over_Field_hom,
+          pullback.condition, Category.assoc, trans_map_comp])
+      inv := pullback.lift (pullback.lift (pullback.fst _ _)
+          (pullback.snd _ _ ≫ map (ofHom (algebraMap K₁ K₂))) (by
+            rw [pullback.condition, Category.assoc, trans_map_comp]))
+        (pullback.snd _ _) (by simp)
+      hom_inv_id := by
+        apply pullback.hom_ext
+        · apply pullback.hom_ext
+          · simp
+          · simp [pullback.condition]
+        · simp
+      inv_hom_id := by apply pullback.hom_ext <;> simp }
+    (by simp)
 
 instance {X : Over (Spec ↧K)} [IsProper X.hom] {K₁ : Type u} [Field K₁] [Algebra K K₁] :
     IsProper (X _ K₁).hom :=
@@ -137,34 +163,43 @@ lemma basechange_over_Field.refl_addGroup_hom (G : Over (Spec ↧K)) [AddGrpObj 
           erw [Over.μ_pullback_left_snd, pullback.lift_snd_assoc]
           simp [pullback.condition]
 
-open Obj in
-lemma basechange_over_Field.trans_addGroup_hom_aux {S S₁ S₂ : Scheme.{u}} (f : S₂ ⟶ S₁)
-    (g : S₁ ⟶ S) (G : Over S) [AddGrpObj G] :
-    IsAddMonHom (M' := (Over.pullback f).obj ((Over.pullback g).obj G))
-      ((Over.pullbackComp f g).app G).symm.hom := by
-  have h₁ := (((Functor.mapAddMonCompIso (F := Over.pullback g) (G := Over.pullback f)).inv.app
-    (AddMon.mk G)) ≫ ((Functor.mapAddMonNatTrans (Over.pullbackComp f g).inv).app
-      (AddMon.mk G))).isAddMonHom_hom
-  simp only [AddMon.comp_hom', Functor.mapAddMonCompIso_inv_app_hom,
-    Functor.mapAddMonNatTrans_app_hom] at h₁
-  erw [Category.id_comp] at h₁
-  rwa [Iso.symm_hom, Iso.app_inv]
-
-open Obj in
+-- written by Claude
+open Limits in
 lemma basechange_over_Field.trans_addGroup_hom (G : Over (Spec ↧K)) [AddGrpObj G] (K₁ K₂ : Type u)
     [Field K₁] [Field K₂] [Algebra K K₁] [Algebra K K₂] [Algebra K₁ K₂] [IsScalarTower K K₁ K₂] :
-    IsAddMonHom (basechange_over_Field.trans G K₁ K₂).hom := by
-  have h₂ : ∀ (k l : Spec ↧K₂ ⟶ Spec ↧K)
-      (e : (Over.pullback k).obj G = (Over.pullback l).obj G), k = l → IsAddMonHom (eqToHom e) := by
-    rintro k l e rfl
-    exact inferInstanceAs (IsAddMonHom (𝟙 ((Over.pullback k).obj G)))
-  have h : map (ofHom (algebraMap K₁ K₂)) ≫ map (ofHom (algebraMap K K₁)) =
-      map (ofHom (algebraMap K K₂)) := by
-    rw [← map_comp, ← ofHom_comp, ← IsScalarTower.algebraMap_eq]
-  rw [basechange_over_Field.trans, Iso.trans_hom, eqToIso.hom]
-  exact @instIsAddMonHomComp _ _ _ _ _ _ _ _ _ _ _
-    (trans_addGroup_hom_aux (map (ofHom (algebraMap K₁ K₂))) (map (ofHom (algebraMap K K₁))) G)
-    (h₂ _ _ (by rw [h]) h)
+    IsAddMonHom (basechange_over_Field.trans G K₁ K₂).hom where
+  zero_hom := by
+    ext
+    apply pullback.hom_ext <;> simp [trans, reassoc_of% trans_map_comp]
+  add_hom := by
+    ext
+    apply pullback.hom_ext
+    · simp only [Over.tensorObj_left, trans, Over.pullback_obj_left, Over.comp_left,
+        Over.isoMk_hom_left, Category.assoc, limit.lift_π, PullbackCone.mk_pt,
+        PullbackCone.mk_π_app, Functor.obj.σ_def, Over.pullback_obj_hom, Over.tensorHom_left,
+        Over.tensorObj_hom, Over.pullback_map_left, pullback.lift_fst_assoc]
+      simp only [← Category.assoc]
+      congr 1
+      apply pullback.hom_ext
+      · have hφ := Over.μ_pullback_left_fst_fst (f := map (ofHom (algebraMap K K₁))) G G
+        have hk := Over.μ_pullback_left_fst_fst (f := map (ofHom (algebraMap K K₂))) G G
+        have hψ := Over.μ_pullback_left_fst_fst (f := map (ofHom (algebraMap K₁ K₂)))
+          (G _ K₁) (G _ K₁)
+        simp only [Over.tensorObj_left, Over.pullback_obj_left, Over.tensorObj_hom,
+          Over.pullback_obj_hom] at hφ hk hψ
+        simp [hφ, hk, reassoc_of% hψ]
+      · have hφ := Over.μ_pullback_left_fst_snd (f := map (ofHom (algebraMap K K₁))) G G
+        have hk := Over.μ_pullback_left_fst_snd (f := map (ofHom (algebraMap K K₂))) G G
+        have hψ := Over.μ_pullback_left_fst_snd (f := map (ofHom (algebraMap K₁ K₂)))
+          (G _ K₁) (G _ K₁)
+        simp only [Over.tensorObj_left, Over.pullback_obj_left, Over.tensorObj_hom,
+          Over.pullback_obj_hom] at hφ hk hψ
+        simp [hφ, hk, reassoc_of% hψ]
+    · have hk := Over.μ_pullback_left_snd (f := map (ofHom (algebraMap K K₂))) G G
+      have hψ := Over.μ_pullback_left_snd (f := map (ofHom (algebraMap K₁ K₂))) (G _ K₁) (G _ K₁)
+      simp only [Over.tensorObj_left, Over.pullback_obj_left, Over.tensorObj_hom,
+        Over.pullback_obj_hom] at hk hψ
+      simp [trans, hk, hψ]
 
 /-
 Hey claude, Should I use `IntermediateFiled`? Tell me to give this a good thought
@@ -182,6 +217,7 @@ end BaseChange
 section Covers
 
 open AlgebraicGeometry CategoryTheory
+open scoped BaseChange
 
 universe u
 

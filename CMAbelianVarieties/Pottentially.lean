@@ -18,6 +18,7 @@ Abelian variety is CM after a finite extension.
 @[expose] public noncomputable section
 
 open CategoryTheory AlgebraicGeometry NumberField RationalEnd
+open scoped BaseChange
 
 universe u
 
@@ -39,4 +40,39 @@ lemma potentiallyCMStructure.exists_cmStructure_basechange_iso {F : Type*} [Fiel
     (ι_E : CMStructure (A _ E) F),
     Nonempty (((ι_E.basechange (AlgebraicClosure K)).ofIso
     (basechange_over_Field.trans_addGrpObj A E (AlgebraicClosure K))).Iso ι.toCMStructure) := by
-  sorry
+  rcases RationalEnd.exists_finiteDimensional_model A with ⟨E, _, hf⟩
+  let f := rational_end_morphism (A _ E) (AlgebraicClosure K)
+  let φ := (conjAlgEquiv (basechange_over_Field.trans_addGrpObj A E
+    (AlgebraicClosure K))).symm.toRingEquiv.trans (RingEquiv.ofBijective f hf).symm
+  let ψ : (A _ E) _ (AlgebraicClosure K) ≅ A _ (AlgebraicClosure K) :=
+    basechange_over_Field.trans A (↥E) (AlgebraicClosure K)
+  have : topologicalKrullDim ((A _ E) _ (AlgebraicClosure K)).left =
+      topologicalKrullDim (A _ (AlgebraicClosure K)).left := by
+    exact IsHomeomorph.topologicalKrullDim_eq _
+      (Scheme.homeoOfIso ((Over.forget _).mapIso ψ)).isHomeomorph
+  let ι_E : CMStructure (A _ E) F := {
+    incl := by
+      exact φ.toRingHom.comp ι.toCMStructure.incl
+    finrank_of_CM_field := by
+      rw [dimension_isStableUnderBasechange (A _ E) (AlgebraicClosure K), this]
+      exact ι.toCMStructure.finrank_of_CM_field
+  }
+  use E, inferInstance, ι_E
+  let π := (basechange_over_Field.trans_addGrpObj A E (AlgebraicClosure K))
+  let σ : ((ι_E.basechange (AlgebraicClosure K)).ofIso π).Iso ι.toCMStructure := {
+    val := by apply Iso.refl
+    property := by
+      have h : ((ι_E.basechange (AlgebraicClosure K)).ofIso π).incl =
+        (conjAlgEquiv π).toRingHom.comp
+        ((rational_end_morphism (A _ E) (AlgebraicClosure K)).comp (φ.toRingHom.comp
+        ι.toCMStructure.incl)) := rfl
+      simp only [conjAlgEquiv.refl, RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_toRingHom,
+        AlgEquiv.refl_toRingHom, h, RingHomCompTriple.comp_eq]
+      have hr (y : End⁰ ((A _ E) _ (AlgebraicClosure K))) :
+          rational_end_morphism (A _ E) (AlgebraicClosure K)
+            ((RingEquiv.ofBijective f hf).symm y) = y :=
+        (RingEquiv.ofBijective f hf).apply_symm_apply y
+      ext x
+      simp [φ, π, hr]
+  }
+  exact ⟨σ⟩

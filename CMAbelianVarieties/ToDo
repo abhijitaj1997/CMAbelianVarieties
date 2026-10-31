@@ -56,7 +56,7 @@ End (mk G) on Lie G. No sorries left in this file.
       I₁, I₂.
 
 
-AlgebraicGeometry/AbelianVarieties/Homomorphisms/IntHom.lean
+AlgebraicGeometry/AbelianVarieties/Homomorphism/IntHom.lean
 ------------------------------------------------------------
 Line numbers as of 2026-10-10 (commit a93522c).
 
@@ -68,7 +68,7 @@ AlgebraicGeometry/AbelianVarieties/Commutativity.lean
 -----------------------------------------------------
 New file (a0ee502), no sorries. Holds the instance IsCommAddMonObj A
 (abelian varieties are commutative), moved here from
-Homomorphisms/IntHom.lean so that other files can import it alone.
+Homomorphism/IntHom.lean so that other files can import it alone.
 Additive copy of Mathlib's isCommMonObj_of_isProper_of_geometricallyIntegral
 made with to_additive (Scheme, Scheme.instCategory marked
 to_additive_do_translate).
@@ -150,14 +150,14 @@ K̄ = `AlgebraicClosure K`), instead of K-points from `specᵤ K`.
       unnecessary.
 
 
-AlgebraicGeometry/AbelianVarieties/Homomorphisms/FiniteGen.lean
+AlgebraicGeometry/AbelianVarieties/Homomorphism/FiniteGen.lean
 ---------------------------------------------------------------
 [ ] fin_gen_hom                                                      (l.23)
       Hom(A, B) is a finitely generated abelian group.
       Leftover `#check @Module.Finite.iff_addGroup_fg` to remove.
 
 
-AlgebraicGeometry/AbelianVarieties/Homomorphisms/EndomorphismRing.lean
+AlgebraicGeometry/AbelianVarieties/Homomorphism/EndomorphismRing.lean
 ----------------------------------------------------------------------
 New file (7305ad4): defines RationalEnd A = ℚ ⊗[ℤ] End (mk A),
 notation `End⁰ A` (scoped in RationalEnd).

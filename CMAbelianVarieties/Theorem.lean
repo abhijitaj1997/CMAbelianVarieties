@@ -24,6 +24,7 @@ states the following:
 @[expose] public section
 
 open CategoryTheory AlgebraicGeometry NumberField RationalEnd
+open scoped BaseChange
 
 /-
 I removed the universe because I need to move through `AlgebraicClosure ℚ`, which is of `Type 0`.

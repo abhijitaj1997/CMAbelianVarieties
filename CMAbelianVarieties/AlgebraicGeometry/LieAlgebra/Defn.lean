@@ -72,6 +72,10 @@ instance (f : End (mk G)) : IsLocalHom (stalkEnd f).hom := by
   simp only [stalkEnd]
   infer_instance
 
+/- Note: the proof below unfolds `Scheme.residueFieldCongr`, which Mathlib defines with
+`eqToIso`, so `eqToIso` / `eqToHom` appear in it. This is accepted for now, as long as it does not
+cause any problems. If it ever slows anything down (or causes a kernel timeout or runs out of
+memory), it must be flagged immediately. -/
 /-- If `φ : X ⟶ X` fixes a morphism `f : S ⟶ X` then it induces the identity on the residue
 fields of the points in the image of `f`. -/
 lemma Scheme.residueFieldCongr_residueFieldMap_of_comp_eq {S X : Scheme} (f : S ⟶ X)

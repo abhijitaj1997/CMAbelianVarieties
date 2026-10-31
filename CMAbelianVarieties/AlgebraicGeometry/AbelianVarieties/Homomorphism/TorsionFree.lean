@@ -6,7 +6,7 @@ Authors: Abhijit A J
 module
 
 public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.GlobalSections
-public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Homomorphisms.IntHom
+public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Homomorphism.IntHom
 
 /-!
 ## Main goal
@@ -116,8 +116,20 @@ theorem tor_free_hom : HasUniqueDiv (mk A ⟶ mk B) where
     rw [nat_action (f₁ - f₂) n] at this
     exact comp_nat_eq_zero hn this
 
+open AddGrp End in
+theorem tor_free_end : HasUniqueDiv (End (mk A)) where
+  nsmul_right_injective n hn f₁ f₂ := by
+    intro h
+    ext1
+    exact tor_free_hom.nsmul_right_injective hn (congrArg End.asHom h)
+
 theorem module_tor_free_hom : Module.IsTorsionFree ℤ (mk A ⟶ mk B) := by
   rw [Module.isTorsionFree_int_iff_hasUniqueDiv]
   exact tor_free_hom
+
+open AddGrp End in
+theorem module_tor_free_end : Module.IsTorsionFree ℤ (End (mk A)) := by
+  rw [Module.isTorsionFree_int_iff_hasUniqueDiv]
+  exact tor_free_end
 
 end Freeness

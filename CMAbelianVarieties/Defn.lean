@@ -5,7 +5,7 @@ Authors: Abhijit A J
 -/
 module
 
-public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Homomorphisms.EndomorphismRing
+public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Homomorphism.EndomorphismRing
 public import CMAbelianVarieties.AbstractNonsense.EndBaseChange
 public import CMAbelianVarieties.preCMType.Defn
 public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Complex
@@ -21,6 +21,7 @@ In this section, we will define CM Abelian varieties
 @[expose] public noncomputable section
 
 open CategoryTheory AlgebraicGeometry AddGrp NumberField RationalEnd
+open scoped BaseChange
 open scoped TensorProduct End
 
 section CMStructure
@@ -111,19 +112,41 @@ open CommRingCat Spec
 
 variable {F : Type*} [Field F] [NumberField F] [IsCMField F]
 
-def End.algHom_ofBaseChange (A : Over (Spec ↧K)) [AddGrpObj A] [IsCommAddMonObj A] (K₁ : Type u)
-    [Field K₁] [Algebra K K₁] : End (AddGrp.mk A) →ₐ[ℤ] End (AddGrp.mk (A _ K₁)) :=
-  AddGrp.End.algHom_ofBaseChange (Over.pullback (map (ofHom (Algebra.algebraMap K K₁))))
-
-def rational_end_morphism (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyIntegral A.hom]
-    [AddGrpObj A] (K₁ : Type u) [Field K₁] [Algebra K K₁] : End⁰ A →+* End⁰ ((A _ K₁)) :=
-  (Algebra.TensorProduct.map (AlgHom.id ℤ ℚ) (End.algHom_ofBaseChange A K₁)).toRingHom
-
 def basechange (ι : CMStructure A F) (K₁ : Type u) [Field K₁] [Algebra K K₁] :
     CMStructure (A _ K₁) F where
       incl := (rational_end_morphism A K₁).comp ι
       finrank_of_CM_field := by
         rw [ι.finrank_of_CM_field, dimension_isStableUnderBasechange A K₁]
+
+def basechange.ofIso {B : Over (Spec ↧K)} [IsProper B.hom] [GeometricallyIntegral B.hom]
+    [AddGrpObj B] {ι : CMStructure A F} {ι' : CMStructure B F} (φ : ι.Iso ι') (K₁ : Type u)
+    [Field K₁] [Algebra K K₁] : (ι.basechange K₁).Iso (ι'.basechange K₁) := by
+  let φ_K₁ := ((Over.pullback (map (ofHom (algebraMap K K₁)))).mapAddGrp.mapIso φ.1 :
+        AddGrp.mk (A _ K₁) ≅ AddGrp.mk (B _ K₁))
+  exact {
+    val := φ_K₁
+    -- written by Claude
+    property := by
+      have h : (conjAlgEquiv φ_K₁).toRingHom.comp (rational_end_morphism A K₁) =
+          (rational_end_morphism B K₁).comp (conjAlgEquiv φ.1).toRingHom := by
+        simp only [rational_end_morphism, AlgHom.toRingHom_eq_coe, conjAlgEquiv]
+        ext
+        · simp
+        · simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
+            Function.comp_apply, Algebra.TensorProduct.includeRight_apply,
+            Algebra.TensorProduct.map_tmul, eq_ratCast, Rat.cast_one,
+            Algebra.TensorProduct.congr_apply, AlgEquiv.refl_toAlgHom, AlgEquiv.coe_toAlgHom,
+            RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_toRingHom]
+          congr 1
+          ext : 3
+          simp only [Iso.conjAlgEquiv, Iso.conjRingEquiv, MulEquiv.toEquiv_eq_coe,
+            RingEquiv.coe_toIntAlgEquiv, RingEquiv.coe_mk, EquivLike.coe_coe]
+          erw [Iso.conj_apply_asHom, AddGrp.comp_hom_hom, AddGrp.comp_hom_hom]
+          simp [φ_K₁, RationalEnd.End.algHom_ofBaseChange, AddGrp.End.algHom_ofBaseChange,
+            Iso.conj_apply_asHom]
+      simp only [basechange]
+      rw [← φ.2, ← RingHom.comp_assoc, h, RingHom.comp_assoc]
+  }
 
 -- aided by claude
 def basechange.refl (ι : CMStructure A F) : (ι.basechange K).Iso ι :=
@@ -142,7 +165,7 @@ def basechange.refl (ι : CMStructure A F) : (ι.basechange K).Iso ι :=
           congr 1
           ext : 4
           apply Limits.pullback.hom_ext <;>
-            simp [End.algHom_ofBaseChange, AddGrp.End.algHom_ofBaseChange, φ,
+            simp [RationalEnd.End.algHom_ofBaseChange, AddGrp.End.algHom_ofBaseChange, φ,
               basechange_over_Field.refl, Iso.conjAlgEquiv, Iso.conjRingEquiv,
               Limits.pullback.condition]
       simp only [RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_toRingHom, basechange, h,
@@ -153,14 +176,35 @@ def basechange.refl (ι : CMStructure A F) : (ι.basechange K).Iso ι :=
         conjAlgEquiv.trans, Iso.self_symm_id, conjAlgEquiv.refl]
       rfl }
 
+-- aided by claude
 def basechange.trans (ι : CMStructure A F) (K₁ K₂ : Type u) [Field K₁] [Field K₂] [Algebra K K₁]
     [Algebra K K₂] [Algebra K₁ K₂] [IsScalarTower K K₁ K₂] :
-    ((ι.basechange K₁).basechange K₂).Iso (ι.basechange K₂) := by
-  let φ : AddGrp.mk ((A _ K₁) _ K₂) ≅ AddGrp.mk (A _ K₂) := by
-    sorry
+    ((ι.basechange K₁).basechange K₂).Iso (ι.basechange K₂) :=
+  let φ : AddGrp.mk ((A _ K₁) _ K₂) ≅ AddGrp.mk (A _ K₂) :=
+    (basechange_over_Field.trans_addGrpObj A K₁ K₂)
   have : (conjAlgEquiv φ).toRingHom.comp ((ι.basechange K₁).basechange K₂).incl
-      = (ι.basechange K₂) := sorry
-  exact ⟨φ, this⟩
+      = (ι.basechange K₂) := by
+    have : ((conjAlgEquiv φ).toRingHom.comp (rational_end_morphism (A _ K₁) K₂)).comp
+        (rational_end_morphism A K₁) = rational_end_morphism A K₂ := by
+      simp only [rational_end_morphism, AlgHom.toRingHom_eq_coe, conjAlgEquiv]
+      ext
+      · simp
+      · simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
+          Function.comp_apply, Algebra.TensorProduct.includeRight_apply,
+          Algebra.TensorProduct.map_tmul, eq_ratCast, Rat.cast_one,
+          Algebra.TensorProduct.congr_apply, AlgEquiv.refl_toAlgHom, AlgEquiv.coe_toAlgHom,
+          RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_toRingHom]
+        congr 1
+        ext : 3
+        simp only [Iso.conjAlgEquiv, Iso.conjRingEquiv, MulEquiv.toEquiv_eq_coe,
+          RingEquiv.coe_toIntAlgEquiv, RingEquiv.coe_mk, EquivLike.coe_coe, Iso.conj_apply_asHom]
+        erw [AddGrp.comp_hom_hom, AddGrp.comp_hom_hom]
+        simp only [Over.comp_left]
+        apply Limits.pullback.hom_ext <;>
+          simp [RationalEnd.End.algHom_ofBaseChange, AddGrp.End.algHom_ofBaseChange, φ,
+            basechange_over_Field.trans_addGrpObj, basechange_over_Field.trans]
+    simp [basechange, ← RingHom.comp_assoc, ← this]
+  ⟨φ, this⟩
 
 /-- Transitivity of models along a tower of fields `K → K₁ → K₂`: if `ι₁` on `B / K₁` is
 isomorphic to the base change of `ι` from `K` to `K₁`, and `ι₂` on `C / K₂` is isomorphic to the
@@ -171,8 +215,8 @@ def Iso.basechangeTrans {K₁ K₂ : Type u} [Field K₁] [Field K₂] [Algebra 
     {B : Over (Spec ↧K₁)} [IsProper B.hom] [GeometricallyIntegral B.hom] [AddGrpObj B]
     {ι₁ : CMStructure B F} {C : Over (Spec ↧K₂)} [IsProper C.hom] [GeometricallyIntegral C.hom]
     [AddGrpObj C] {ι₂ : CMStructure C F} (φ : (ι.basechange K₁).Iso ι₁)
-    (ψ : (ι₁.basechange K₂).Iso ι₂) : (ι.basechange K₂).Iso ι₂ := by
-  sorry
+    (ψ : (ι₁.basechange K₂).Iso ι₂) : (ι.basechange K₂).Iso ι₂ :=
+  trans (basechange.trans ι K₁ K₂).symm (trans (basechange.ofIso φ K₂) ψ)
 
 end BaseChange
 
