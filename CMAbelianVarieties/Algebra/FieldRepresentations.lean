@@ -64,5 +64,3 @@ lemma decomposition (φ : F →+* (V →ₗ[ℂ] V)) : IsInternal (fun σ : Sigm
 def factor_dim (φ : F →+* (V →ₗ[ℂ] V)) (σ : Sigma F) := Module.finrank ℂ (factor φ σ)
 
 end FieldRepresentations
-
-#min_imports

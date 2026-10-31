@@ -52,8 +52,9 @@ graph TD
       Complex["<b>Complex</b><br/><i>complex abelian varieties: exp, lattice, ℝ ⊗ lattice ≅ Lie A, free of rank 2g</i>"]
       subgraph HOM["Homomorphism/"]
         direction TB
-        EndomorphismRing["<b>EndomorphismRing</b><br/><i>End A, End A ⊗ ℚ, conjugation by isomorphisms</i>"]
-        FiniteGen["<b>FiniteGen</b><br/><i>Hom(A, B) finitely generated</i>"]
+        EndomorphismRing["<b>EndomorphismRing</b><br/><i>End A, End⁰ A = ℚ ⊗ End A (finite over ℚ), conjugation by isomorphisms, base change End⁰ A → End⁰ (A _ K₁)</i>"]
+        EndLimit["<b>EndLimit</b><br/><i>End⁰ (A _ L) as a functor of L : IntermediateField K₀ K; End⁰ (A _ K) as its colimit</i>"]
+        FiniteGen["<b>FiniteGen</b><br/><i>Hom(A, B), End A finitely generated</i>"]
         TorsionFree["<b>TorsionFree</b><br/><i>Hom(A, B) torsion free</i>"]
         IntHomAV["<b>IntHom</b><br/><i>[n], A[n] finite & discrete</i>"]
         Integral["<b>Integral</b><br/><i>End⁰ A as fractions of End A; integral elements</i>"]
@@ -95,7 +96,6 @@ graph TD
   Defn --> CMDefn
   Defn --> AGDimension
   AGDimension --> AGBasic
-  Defn --> EndBaseChange
   Defn --> Complex
   AGBasic --> FunctorCommAddObj
   AVRationalModel --> RMGroupStructure
@@ -108,8 +108,13 @@ graph TD
   EndBaseChange --> FunctorCommAddObj
   EndomorphismRing --> Commutativity
   EndomorphismRing --> EndRingIso
+  EndomorphismRing --> EndBaseChange
+  EndomorphismRing --> AGBasic
+  EndomorphismRing --> FiniteGen
+  EndLimit --> EndomorphismRing
   EndRingIso --> Endomorphism
   FiniteGen --> Commutativity
+  FiniteGen --> Endomorphism
   Integral --> EndomorphismRing
   Complex --> Dimension
   Complex --> Commutativity
@@ -135,7 +140,7 @@ graph TD
 
   class Theorem goal
   class Commutativity hub
-  class EndomorphismRing,FiniteGen,IntHomAV,Complex,TorsionFree,TateModule,GlobalSections,IntHomAN,PullbackAddGrp,Finite,Endomorphism,LieAlgebra,CMDefn,Test,AGBasic,AVRationalModel,RMAffine,RMSeparated,RMMorphism,RMGroupStructure,EndBaseChange,FunctorCommAddObj,Defn,Pottentially,EndRingIso,Dimension,Integral,AGDimension,CMField,FieldRepresentations connected
+  class EndomorphismRing,FiniteGen,IntHomAV,Complex,TorsionFree,TateModule,GlobalSections,IntHomAN,PullbackAddGrp,Finite,Endomorphism,LieAlgebra,CMDefn,Test,AGBasic,AVRationalModel,RMAffine,RMSeparated,RMMorphism,RMGroupStructure,EndBaseChange,FunctorCommAddObj,Defn,Pottentially,EndRingIso,Dimension,Integral,AGDimension,CMField,FieldRepresentations,EndLimit connected
   class AVCatalogue,InvertibleSheaf,TheCube,AGCatalogue,CMAlgebra,Test1 unused
 ```
 

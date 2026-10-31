@@ -6,7 +6,6 @@ Authors: Abhijit A J
 module
 
 public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Homomorphism.IntHom
-public import Mathlib.Algebra.Ring.IsFormallyReal
 public import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
 
 /-!
