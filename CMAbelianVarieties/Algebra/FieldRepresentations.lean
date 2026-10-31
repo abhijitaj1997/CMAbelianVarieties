@@ -6,7 +6,10 @@ Authors: Abhijit A J
 module
 
 public import CMAbelianVarieties.Algebra.CMField
-public import Mathlib.RingTheory.SimpleRing.Principal
+
+import Aesop.BuiltinRules
+import Mathlib.Tactic.Lemma
+import Mathlib.Tactic.TypeStar
 
 /-!
 ## Goal

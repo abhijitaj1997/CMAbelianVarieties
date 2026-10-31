@@ -125,9 +125,33 @@ def basechange (ι : CMStructure A F) (K₁ : Type u) [Field K₁] [Algebra K K�
       finrank_of_CM_field := by
         rw [ι.finrank_of_CM_field, dimension_isStableUnderBasechange A K₁]
 
-def basechange.refl (ι : CMStructure A F) : (ι.basechange K).Iso ι where
-  val := by sorry
-  property := sorry
+-- aided by claude
+def basechange.refl (ι : CMStructure A F) : (ι.basechange K).Iso ι :=
+  have := basechange_over_Field.refl_addGroup_hom A
+  let φ := AddGrp.mkIso' (basechange_over_Field.refl A)
+  { val := φ.symm
+    property := by
+      have h : rational_end_morphism A K = conjAlgEquiv φ := by
+        simp only [rational_end_morphism, AlgHom.toRingHom_eq_coe, conjAlgEquiv]
+        ext
+        · simp
+        · simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
+            Function.comp_apply, Algebra.TensorProduct.includeRight_apply,
+            Algebra.TensorProduct.map_tmul, eq_ratCast, Rat.cast_one,
+            Algebra.TensorProduct.congr_apply, AlgEquiv.refl_toAlgHom, AlgEquiv.coe_toAlgHom]
+          congr 1
+          ext : 4
+          apply Limits.pullback.hom_ext <;>
+            simp [End.algHom_ofBaseChange, AddGrp.End.algHom_ofBaseChange, φ,
+              basechange_over_Field.refl, Iso.conjAlgEquiv, Iso.conjRingEquiv,
+              Limits.pullback.condition]
+      simp only [RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_toRingHom, basechange, h,
+        ← RingHom.comp_assoc]
+      rw [Algebra.TensorProduct.ringHom_ext
+        (f := (conjAlgEquiv φ.symm : End⁰ (A _ K) →+* End⁰ A).comp (conjAlgEquiv φ))
+        (g := ((conjAlgEquiv φ).trans (conjAlgEquiv φ.symm) : End⁰ A →+* End⁰ A)) rfl rfl,
+        conjAlgEquiv.trans, Iso.self_symm_id, conjAlgEquiv.refl]
+      rfl }
 
 def basechange.trans (ι : CMStructure A F) (K₁ K₂ : Type u) [Field K₁] [Field K₂] [Algebra K K₁]
     [Algebra K K₂] [Algebra K₁ K₂] [IsScalarTower K K₁ K₂] :

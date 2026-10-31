@@ -100,6 +100,16 @@ make (`lean-toolchain`, `lakefile.toml`, `lake-manifest.json`, `CMAbelianVarieti
 - Follow Mathlib style and naming conventions.
 - Keep imports minimal: import the smallest Mathlib/project file that suffices.
 - When searching for Mathlib results, report the exact name and file.
+- Avoid `eqToIso` / `eqToHom` in definitions and statements (e.g. to identify base changes along
+  equal morphisms of schemes); construct the morphisms explicitly instead (e.g. via
+  `pullback.lift`). Reason: `eqToHom h` is the identity transported along `h`, so when a
+  proof unfolds it (e.g. `simp` with only `rfl`-lemmas, whose proof is just `id`), the kernel
+  must check the two sides of `h` definitionally equal, e.g. `Spec.map (ofHom (algebraMap K K))`
+  and `𝟙 (Spec ↧K)`, by unfolding the construction of `Spec`. This runs out of memory or times
+  out. (`basechange_over_Field.refl` was originally defined with `eqToIso`, and `simp [refl]`
+  ran out of memory.)
+  Whenever you notice `eqToIso` or `eqToHom` in code I wrote (or am asking you about), flag
+  it to me, with file and line, and suggest an explicit construction instead.
 
 ## Cleaning up a term
 When I ask you to clean up a term (a `def`, `lemma`, `theorem`, `instance`, etc.), tidy

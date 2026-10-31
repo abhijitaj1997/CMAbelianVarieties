@@ -19,6 +19,8 @@ project.
 
 @[expose] public noncomputable section
 
+-- most results were found by claude
+
 section BaseChange
 
 open AlgebraicGeometry CategoryTheory CommRingCat Spec
@@ -41,8 +43,30 @@ open Limits in
 lemma basechange_over_Field_hom (X : Over (Spec ↧K)) (K₁ : Type u) [Field K₁] [Algebra K K₁] :
     (X _ K₁).hom = pullback.snd (X.hom) (map (ofHom (Algebra.algebraMap K K₁))) := rfl
 
+lemma basechange_over_Field.map_algebraMap_self :
+    map (ofHom (algebraMap K K)) = 𝟙 (Spec ↧K) := by
+  simp
+
+lemma basechange_over_Field.refl_hom_eqn (X : Over (Spec ↧K)) : (𝟙 X : X ⟶ X).left ≫ X.hom =
+    X.hom ≫ (map (ofHom (Algebra.algebraMap K K))) := by simp
+
+open Limits in
+/-- `X` is isomorphic to its base change along the identity `K → K`. -/
 def basechange_over_Field.refl (X : Over (Spec ↧K)) : X ≅ X _ K :=
-  (eqToIso (by congr 1; simp [Algebra.algebraMap_self]) ≪≫ Over.pullbackId).symm.app X
+  Over.isoMk
+    { hom := pullback.lift (𝟙 _) X.hom (refl_hom_eqn X)
+      inv := pullback.fst _ _
+      inv_hom_id := by
+        apply pullback.hom_ext
+        · simp
+        · simpa [map_algebraMap_self] using
+            pullback.condition (f := X.hom) (g := map (ofHom (algebraMap K K))) }
+    (by simp)
+
+open Limits in
+lemma basechange_over_Field.refl_hom_left (X : Over (Spec ↧K)) : (refl X).hom.left =
+    pullback.lift (𝟙 X : X ⟶ X).left X.hom (refl_hom_eqn X) := by
+  simp [refl]
 
 /-
 Hey claude, Should I use `IntermediateFiled`? Tell me to give this a good thought
@@ -60,17 +84,14 @@ instance {X : Over (Spec ↧K)} [IsProper X.hom] {K₁ : Type u} [Field K₁] [A
     IsProper (X _ K₁).hom :=
   IsProper.isStableUnderBaseChange.of_isPullback (IsPullback.of_hasPullback _ _) ‹IsProper X.hom›
 
--- Claude found this
 instance {X : Over (Spec ↧K)} [GeometricallyIntegral X.hom] {K₁ : Type u} [Field K₁]
     [Algebra K K₁] : GeometricallyIntegral (X _ K₁).hom :=
   inferInstanceAs (GeometricallyIntegral (Limits.pullback.snd X.hom _))
 
--- Claude found this
 instance {G : Over (Spec ↧K)} [AddGrpObj G] {K₁ : Type u} [Field K₁] [Algebra K K₁] :
     AddGrpObj (G _ K₁) :=
   Functor.addGrpObjObj (F := Over.pullback (map (ofHom (Algebra.algebraMap K K₁))))
 
--- Claude found this
 instance {G : Over (Spec ↧K)} [AddGrpObj G] [IsCommAddMonObj G] {K₁ : Type u} [Field K₁]
     [Algebra K K₁] : IsCommAddMonObj (G _ K₁) :=
   Functor.isCommAddMonObj_obj (Over.pullback (map (ofHom (Algebra.algebraMap K K₁))))
@@ -81,23 +102,69 @@ lemma basechange_over_Field_addGrpObj_zero_eqn (G : Over (Spec ↧K)) [AddGrpObj
       ζ[tensorUnit (Over (Spec ↧K₁))].left ≫ (map (ofHom (Algebra.algebraMap K K₁))) := by simp
 
 open AddMonObj Limits MonoidalCategoryStruct in
-lemma basechange_over_Field_addGrpObj_zero (G : Over (Spec ↧K)) [AddGrpObj G] (K₁ : Type u)
+lemma basechange_over_Field_addGrpObj_zero_left (G : Over (Spec ↧K)) [AddGrpObj G] (K₁ : Type u)
     [Field K₁] [Algebra K K₁] : ζ[G _ K₁].left = pullback.lift ((map (ofHom (Algebra.algebraMap K
     K₁))) ≫ ζ[G].left) ζ[tensorUnit (Over (Spec ↧K₁))].left
     (basechange_over_Field_addGrpObj_zero_eqn G K₁) := by
   apply pullback.hom_ext <;> simp
 
--- _Claude struggled to solve this_
+open Limits in
 lemma basechange_over_Field.refl_addGroup_hom (G : Over (Spec ↧K)) [AddGrpObj G] :
     IsAddMonHom (basechange_over_Field.refl G).hom where
-      zero_hom := sorry
-      add_hom := sorry
+      zero_hom := by
+        ext
+        apply pullback.hom_ext <;> simp [refl]
+      add_hom := by
+        ext
+        apply pullback.hom_ext
+        · simp only [Over.tensorObj_left, refl, Over.pullback_obj_left, Over.comp_left,
+            Over.isoMk_hom_left, Category.assoc, limit.lift_π, PullbackCone.mk_pt,
+            PullbackCone.mk_π_app, Category.comp_id, Functor.obj.σ_def, Over.pullback_obj_hom,
+            Over.tensorHom_left, Over.tensorObj_hom, Over.pullback_map_left]
+          rw [← Category.assoc, ← Category.assoc]
+          convert (Category.id_comp _).symm using 2
+          apply pullback.hom_ext
+          · simp only [Category.assoc]
+            erw [Over.μ_pullback_left_fst_fst, pullback.lift_fst_assoc]
+            simp
+          · simp only [Category.assoc]
+            erw [Over.μ_pullback_left_fst_snd, pullback.lift_snd_assoc]
+            simp
+        · simp only [Over.tensorObj_left, refl, Over.pullback_obj_left, Over.comp_left,
+            Over.isoMk_hom_left, Category.assoc, limit.lift_π, PullbackCone.mk_pt,
+            PullbackCone.mk_π_app, Over.w, Over.tensorObj_hom, Functor.obj.σ_def,
+            Over.pullback_obj_hom, Over.tensorHom_left, Over.pullback_map_left]
+          erw [Over.μ_pullback_left_snd, pullback.lift_snd_assoc]
+          simp [pullback.condition]
 
--- _Claude struggled to solve this_
+open Obj in
+lemma basechange_over_Field.trans_addGroup_hom_aux {S S₁ S₂ : Scheme.{u}} (f : S₂ ⟶ S₁)
+    (g : S₁ ⟶ S) (G : Over S) [AddGrpObj G] :
+    IsAddMonHom (M' := (Over.pullback f).obj ((Over.pullback g).obj G))
+      ((Over.pullbackComp f g).app G).symm.hom := by
+  have h₁ := (((Functor.mapAddMonCompIso (F := Over.pullback g) (G := Over.pullback f)).inv.app
+    (AddMon.mk G)) ≫ ((Functor.mapAddMonNatTrans (Over.pullbackComp f g).inv).app
+      (AddMon.mk G))).isAddMonHom_hom
+  simp only [AddMon.comp_hom', Functor.mapAddMonCompIso_inv_app_hom,
+    Functor.mapAddMonNatTrans_app_hom] at h₁
+  erw [Category.id_comp] at h₁
+  rwa [Iso.symm_hom, Iso.app_inv]
+
+open Obj in
 lemma basechange_over_Field.trans_addGroup_hom (G : Over (Spec ↧K)) [AddGrpObj G] (K₁ K₂ : Type u)
     [Field K₁] [Field K₂] [Algebra K K₁] [Algebra K K₂] [Algebra K₁ K₂] [IsScalarTower K K₁ K₂] :
     IsAddMonHom (basechange_over_Field.trans G K₁ K₂).hom := by
-  sorry
+  have h₂ : ∀ (k l : Spec ↧K₂ ⟶ Spec ↧K)
+      (e : (Over.pullback k).obj G = (Over.pullback l).obj G), k = l → IsAddMonHom (eqToHom e) := by
+    rintro k l e rfl
+    exact inferInstanceAs (IsAddMonHom (𝟙 ((Over.pullback k).obj G)))
+  have h : map (ofHom (algebraMap K₁ K₂)) ≫ map (ofHom (algebraMap K K₁)) =
+      map (ofHom (algebraMap K K₂)) := by
+    rw [← map_comp, ← ofHom_comp, ← IsScalarTower.algebraMap_eq]
+  rw [basechange_over_Field.trans, Iso.trans_hom, eqToIso.hom]
+  exact @instIsAddMonHomComp _ _ _ _ _ _ _ _ _ _ _
+    (trans_addGroup_hom_aux (map (ofHom (algebraMap K₁ K₂))) (map (ofHom (algebraMap K K₁))) G)
+    (h₂ _ _ (by rw [h]) h)
 
 /-
 Hey claude, Should I use `IntermediateFiled`? Tell me to give this a good thought
@@ -120,13 +187,11 @@ universe u
 
 variable {K : Type u} [Field K]
 
--- written by Claude
 /-- The base change to `X _ K₁` of an open cover `𝒰` of `X`. -/
 def basechangeOpenCover (X : Over (Spec ↧K)) (K₁ : Type u) [Field K₁] [Algebra K K₁]
     (𝒰 : X.left.OpenCover) : (X _ K₁).left.OpenCover :=
   𝒰.pullback₁ (Limits.pullback.fst _ _)
 
--- written by Claude
 /-- The `i`-th open of `basechangeOpenCover X K₁ 𝒰` is the base change `(U i) _ K₁` of the
 `i`-th open `U i` of `𝒰`, viewed as a scheme over `K`. -/
 def basechangeOpenCoverXIso {X : Over (Spec ↧K)} (𝒰 : X.left.OpenCover) (K₁ : Type u) [Field K₁]
@@ -142,7 +207,6 @@ open AlgebraicGeometry CategoryTheory
 
 variable {K : Type*} [Field K]
 
--- written by Claude
 /-- A proper scheme over a field is quasi-compact. -/
 instance {X : Over (Spec ↧K)} [IsProper X.hom] : CompactSpace X.left :=
   QuasiCompact.compactSpace_of_compactSpace X.hom
