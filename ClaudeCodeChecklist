@@ -60,11 +60,31 @@ skipping steps that changed nothing.
    (Test files live in the top-level Test/ folder, outside the library, so
    mk_all does not import them.)
 
-6. Check whether the mind map (MindMap.md) is still up to
-   date: compare it with the project's own imports (ignore Mathlib), e.g.:
-       grep -rnE "^(public )?import (all )?CMAbelianVarieties" CMAbelianVarieties
-   If files were added, removed or renamed, imports changed, or a file's
-   purpose changed, update the mind map to match.
+6. Check whether every mind map is still up to date, and update it if not.
+   Find them all with
+       find . -name 'MindMap*.md' -not -path './.lake/*'
+   Each mind map's header states what it shows and its conventions (arrows,
+   colours, grouping); keep to them. Currently there are:
+   a. MindMap.md (imports between files): compare it with the project's own
+      imports (ignore Mathlib), e.g.:
+          grep -rnE "^(public )?import (all )?CMAbelianVarieties" CMAbelianVarieties
+      If files were added, removed or renamed, imports changed, or a file's
+      purpose changed, update the mind map to match.
+   b. CMAbelianVarieties/MindMapStep2.md (the project definitions, lemmas,
+      theorems and instances that `CMStructure.exists_finiteDimensional_model`
+      depends on): recompute it from the compiled project, not by reading the
+      source. Write a Lean script in your scratchpad directory that imports
+      `CMAbelianVarieties` and, starting from
+      `CMStructure.exists_finiteDimensional_model`, follows the constants used
+      in the types and values of declarations (including auxiliary ones such
+      as `_proof_n`, `match_n`, `eq_n`, which count towards their parent)
+      and keeps only the declarations from CMAbelianVarieties modules. Record
+      for each declaration whether its own value uses `sorryAx`. Then regenerate
+      the diagram: add terms that are new, remove terms that are no longer
+      used, update the arrows, and recolour boxes (red = contains a `sorry`,
+      green = no `sorry`, golden = the main result). Keep the
+      `%%{init: ...}%%` line at the top of the diagram (it keeps the font
+      readable).
 
 7. Build the whole project and check for errors:
        lake build

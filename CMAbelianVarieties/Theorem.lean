@@ -37,6 +37,7 @@ variable {F : Type*} [Field F] [NumberField F] [IsCMField F]
 
 namespace CMStructure
 
+/-*Step 1*-/
 theorem exists_algClosureRat_model (ι : CMStructure A F) :
     ∃ (_ : Algebra (AlgebraicClosure ℚ) K) (A₀ : Over (Spec ↧((AlgebraicClosure ℚ))))
     (_ : IsProper A₀.hom) (_ : GeometricallyIntegral A₀.hom) (_ : AddGrpObj A₀)
@@ -44,6 +45,7 @@ theorem exists_algClosureRat_model (ι : CMStructure A F) :
   sorry
 
 -- partly solved and cleaned up by claude
+/-*Step 2*-/
 theorem exists_finiteDimensional_model {L : Type*} [Field L]
     {A : Over (Spec ↧(AlgebraicClosure L))} [IsProper A.hom] [GeometricallyIntegral A.hom]
     [AddGrpObj A] (ι : CMStructure A F) : ∃ (E : IntermediateField L (AlgebraicClosure L))
@@ -110,6 +112,7 @@ theorem exists_finiteDimensional_model {L : Type*} [Field L]
   exact ⟨(CMStructure.Iso.basechangeTrans (K₁ := AlgebraicClosure E₁) P₂
     (CMStructure.Iso.refl _)).trans (P₁.symm.trans ((basechange.refl ι').trans hι))⟩
 
+/-*Step 3*-/
 theorem exists_numberField_model (ι : CMStructure A F) :
     ∃ (E : Type) (_ : Field E) (_ : NumberField E) (_ : Algebra E K)
     (A₀ : Over (Spec ↧E)) (_ : IsProper A₀.hom) (_ : GeometricallyIntegral A₀.hom)

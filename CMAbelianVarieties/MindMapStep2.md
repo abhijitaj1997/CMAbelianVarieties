@@ -18,6 +18,7 @@ structure itself.
 > **`Ctrl + Shift + V`** to see the rendered diagram.
 
 ```mermaid
+%%{init: {"flowchart": {"useMaxWidth": false}, "themeVariables": {"fontSize": "28px"}}}%%
 graph TD
   subgraph n_m_CMAbelianVarieties_AbstractNonsense_EndBaseChange["AbstractNonsense/EndBaseChange.lean"]
     direction TB
