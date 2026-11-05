@@ -48,6 +48,16 @@ open Limits in
 lemma basechange_over_Field_hom (X : Over (Spec ↧K)) (K₁ : Type u) [Field K₁] [Algebra K K₁] :
     (X _ K₁).hom = pullback.snd (X.hom) (map (ofHom (Algebra.algebraMap K K₁))) := rfl
 
+-- written by Claude
+open Limits in
+/-- The projection `X_{K₂} → X_{K₁}` for a tower `K → K₁ → K₂`. -/
+def basechange_over_Field.proj (X : Over (Spec ↧K)) (K₁ K₂ : Type u) [Field K₁] [Algebra K K₁]
+    [Field K₂] [Algebra K K₂] [Algebra K₁ K₂] [IsScalarTower K K₁ K₂] :
+    (X _ K₂).left ⟶ (X _ K₁).left :=
+  pullback.lift (pullback.fst _ _) (pullback.snd _ _ ≫ map (ofHom (algebraMap K₁ K₂))) (by
+    rw [pullback.condition, Category.assoc, ← map_comp, ← ofHom_comp,
+      ← IsScalarTower.algebraMap_eq])
+
 lemma basechange_over_Field.map_algebraMap_self :
     map (ofHom (algebraMap K K)) = 𝟙 (Spec ↧K) := by
   simp
@@ -93,17 +103,14 @@ def basechange_over_Field.trans (X : Over (Spec ↧K)) (K₁ K₂ : Type u) [Fie
     { hom := pullback.lift (pullback.fst _ _ ≫ pullback.fst _ _) (pullback.snd _ _) (by
         rw [Category.assoc, pullback.condition, ← Category.assoc, ← basechange_over_Field_hom,
           pullback.condition, Category.assoc, trans_map_comp])
-      inv := pullback.lift (pullback.lift (pullback.fst _ _)
-          (pullback.snd _ _ ≫ map (ofHom (algebraMap K₁ K₂))) (by
-            rw [pullback.condition, Category.assoc, trans_map_comp]))
-        (pullback.snd _ _) (by simp)
+      inv := pullback.lift (proj X K₁ K₂) (pullback.snd _ _) (by simp [proj])
       hom_inv_id := by
         apply pullback.hom_ext
         · apply pullback.hom_ext
-          · simp
-          · simp [pullback.condition]
+          · simp [proj]
+          · simp [proj, pullback.condition]
         · simp
-      inv_hom_id := by apply pullback.hom_ext <;> simp }
+      inv_hom_id := by apply pullback.hom_ext <;> simp [proj] }
     (by simp)
 
 instance {X : Over (Spec ↧K)} [IsProper X.hom] {K₁ : Type u} [Field K₁] [Algebra K K₁] :

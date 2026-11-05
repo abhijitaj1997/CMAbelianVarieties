@@ -63,9 +63,8 @@ lemma potentiallyCMStructure.exists_cmStructure_basechange_iso {F : Type*} [Fiel
     val := by apply Iso.refl
     property := by
       have h : ((ι_E.basechange (AlgebraicClosure K)).ofIso π).incl =
-        (conjAlgEquiv π).toRingHom.comp
-        ((rational_end_morphism (A _ E) (AlgebraicClosure K)).comp (φ.toRingHom.comp
-        ι.toCMStructure.incl)) := rfl
+        (RationalEnd.baseChangeHom A E (AlgebraicClosure K)).comp
+        (φ.toRingHom.comp ι.toCMStructure.incl) := rfl
       simp only [conjAlgEquiv.refl, RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_toRingHom,
         AlgEquiv.refl_toRingHom, h, RingHomCompTriple.comp_eq]
       have hr (y : End⁰ ((A _ E) _ (AlgebraicClosure K))) :
@@ -73,6 +72,6 @@ lemma potentiallyCMStructure.exists_cmStructure_basechange_iso {F : Type*} [Fiel
             ((RingEquiv.ofBijective f hf).symm y) = y :=
         (RingEquiv.ofBijective f hf).apply_symm_apply y
       ext x
-      simp [φ, π, hr]
+      simp [RationalEnd.baseChangeHom, φ, hr]
   }
   exact ⟨σ⟩

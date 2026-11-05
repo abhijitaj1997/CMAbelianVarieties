@@ -141,7 +141,7 @@ def basechange.ofIso {B : Over (Spec ↧K)} [IsProper B.hom] [GeometricallyInteg
           simp only [Iso.conjAlgEquiv, Iso.conjRingEquiv, MulEquiv.toEquiv_eq_coe,
             RingEquiv.coe_toIntAlgEquiv, RingEquiv.coe_mk, EquivLike.coe_coe]
           erw [Iso.conj_apply_asHom, AddGrp.comp_hom_hom, AddGrp.comp_hom_hom]
-          simp [φ_K₁, RationalEnd.End.algHom_ofBaseChange, AddGrp.End.algHom_ofBaseChange,
+          simp [φ_K₁, End.algHom_ofBaseChange, AddGrp.End.algHom_ofBaseChange,
             Iso.conj_apply_asHom]
       simp only [basechange]
       rw [← φ.2, ← RingHom.comp_assoc, h, RingHom.comp_assoc]
@@ -164,7 +164,7 @@ def basechange.refl (ι : CMStructure A F) : (ι.basechange K).Iso ι :=
           congr 1
           ext : 4
           apply Limits.pullback.hom_ext <;>
-            simp [RationalEnd.End.algHom_ofBaseChange, AddGrp.End.algHom_ofBaseChange, φ,
+            simp [End.algHom_ofBaseChange, AddGrp.End.algHom_ofBaseChange, φ,
               basechange_over_Field.refl, Iso.conjAlgEquiv, Iso.conjRingEquiv,
               Limits.pullback.condition]
       simp only [RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_toRingHom, basechange, h,
@@ -183,9 +183,10 @@ def basechange.trans (ι : CMStructure A F) (K₁ K₂ : Type u) [Field K₁] [F
     (basechange_over_Field.trans_addGrpObj A K₁ K₂)
   have : (conjAlgEquiv φ).toRingHom.comp ((ι.basechange K₁).basechange K₂).incl
       = (ι.basechange K₂) := by
-    have : ((conjAlgEquiv φ).toRingHom.comp (rational_end_morphism (A _ K₁) K₂)).comp
-        (rational_end_morphism A K₁) = rational_end_morphism A K₂ := by
-      simp only [rational_end_morphism, AlgHom.toRingHom_eq_coe, conjAlgEquiv]
+    have : (RationalEnd.baseChangeHom A K₁ K₂).comp (rational_end_morphism A K₁) =
+        rational_end_morphism A K₂ := by
+      simp only [RationalEnd.baseChangeHom, rational_end_morphism, AlgHom.toRingHom_eq_coe,
+        conjAlgEquiv]
       ext
       · simp
       · simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
@@ -200,9 +201,10 @@ def basechange.trans (ι : CMStructure A F) (K₁ K₂ : Type u) [Field K₁] [F
         erw [AddGrp.comp_hom_hom, AddGrp.comp_hom_hom]
         simp only [Over.comp_left]
         apply Limits.pullback.hom_ext <;>
-          simp [RationalEnd.End.algHom_ofBaseChange, AddGrp.End.algHom_ofBaseChange, φ,
-            basechange_over_Field.trans_addGrpObj, basechange_over_Field.trans]
-    simp [basechange, ← RingHom.comp_assoc, ← this]
+          simp [End.algHom_ofBaseChange, AddGrp.End.algHom_ofBaseChange,
+            basechange_over_Field.trans_addGrpObj, basechange_over_Field.trans,
+            basechange_over_Field.proj]
+    simp [basechange, RationalEnd.baseChangeHom, φ, ← RingHom.comp_assoc, ← this]
   ⟨φ, this⟩
 
 /-- Transitivity of models along a tower of fields `K → K₁ → K₂`: if `ι₁` on `B / K₁` is

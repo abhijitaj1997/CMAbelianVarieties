@@ -6,6 +6,10 @@ Authors: Abhijit A J
 module
 
 public import CMAbelianVarieties.AlgebraicGeometry.Basic
+public import Mathlib.RingTheory.Ideal.HasGoingUp
+public import Mathlib.RingTheory.KrullDimension.Field
+public import Mathlib.RingTheory.KrullDimension.Polynomial
+public import Mathlib.RingTheory.NoetherNormalization
 
 /-!
 ## Dimension
@@ -47,31 +51,41 @@ lemma topologicalKrullDim_eq_iSup_openCover {X : Scheme} (𝒰 : X.OpenCover) :
   obtain ⟨i, y, rfl⟩ := 𝒰.exists_eq x
   exact le_iSup₂_of_le i y le_rfl
 
-/-
-(Written by AI.) Affine case: `dim (L ⊗[K] A) = dim A` for a field extension `L/K`.
-Not in Mathlib. Needs `A` of finite type over `K` (false in general: `dim K(t) = 0` but
-`dim (K(t) ⊗[K] K(s)) = 1`); here that comes from `LocallyOfFiniteType`.
-Route via Noether normalization:
-1. `exists_finite_inj_algHom_of_fg` / `exists_integral_inj_algHom_of_fg` (Stacks 00OW,
-   Mathlib/RingTheory/NoetherNormalization.lean): an injective finite
-   `g : MvPolynomial (Fin s) K →ₐ[K] A`.
-2. Base change `L ⊗[K] -`: stays finite, and injective since `L` is flat over `K`. So
-   `L ⊗[K] A` is finite over `MvPolynomial (Fin s) L` and contains it.
-3. `MvPolynomial.ringKrullDim_of_isNoetherianRing_of_finite`
-   (Mathlib/RingTheory/KrullDimension/Polynomial.lean): `dim K[x₁..xₛ] = s`, same over `L`.
-4. Missing: for an injective integral map `R → S`, `dim S = dim R`. Ingredients (going up,
-   lying over, incomparability) are in Mathlib/RingTheory/Ideal/GoingUp.lean, but the
-   dimension statement isn't (possible `ForMathlib` candidate).
-Alternative, only for algebraic `L/K` (so not enough here, `K₁` is arbitrary): `A → L ⊗[K] A`
-is flat, so `Algebra.HasGoingDown.of_flat` (Mathlib/RingTheory/Ideal/GoingDown.lean), and
-`Ideal.height_eq_height_add_of_liesOver_of_hasGoingDown` (Stacks 00ON,
-Mathlib/RingTheory/Ideal/KrullsHeightTheorem.lean) gives `ht P = ht p + ht (P in the fibre)`.
-The fibre `κ(p) ⊗[K] L` has dimension 0 only when `L/K` is algebraic.
--/
+-- written by Claude
+/-- An injective integral ring map preserves the Krull dimension. -/
+lemma ringKrullDim_eq_of_isIntegral_of_injective {R S : Type*} [CommRing R] [CommRing S]
+    (f : R →+* S) (hf : f.IsIntegral) (hinj : Function.Injective f) :
+    ringKrullDim R = ringKrullDim S := by
+  algebraize [f]
+  refine le_antisymm (iSup_le fun l ↦ ?_) (Order.krullDim_le_of_strictMono
+    (PrimeSpectrum.comap (algebraMap R S)) fun P Q h ↦ Ideal.IsIntegral.under_lt_under (R := R) h)
+  obtain ⟨P, -, hP, hPl⟩ := Ideal.exists_ideal_over_prime_of_isIntegral l.head.asIdeal
+    (⊥ : Ideal S) ((Ideal.comap_bot_of_injective f hinj).trans_le bot_le)
+  have : P.LiesOver l.head.asIdeal := ⟨hPl.symm⟩
+  obtain ⟨L, hL, -, -⟩ := Ideal.exists_ltSeries_of_hasGoingUp l P
+  exact le_iSup_of_le L (by rw [hL])
+
+-- written by Claude
 open TensorProduct Algebra in
 lemma ringKrullDim_basechange (A K K₁ : Type*) [CommRing A] [Field K] [Field K₁] [Algebra K A]
     [FiniteType K A] [Algebra K K₁] : ringKrullDim A = ringKrullDim (K₁ ⊗[K] A) := by
-  sorry
+  nontriviality A using ringKrullDim_eq_bot_of_subsingleton
+  obtain ⟨s, g, hinj, hint⟩ := exists_integral_inj_algHom_of_fg K A
+  let g' := Algebra.TensorProduct.map (AlgHom.id K₁ K₁) g
+  have hint' : g'.IsIntegral := fun x ↦ x.inductionOn (fun a b ↦ by
+      have h : (Algebra.TensorProduct.includeRight (R := K) (A := K₁)).toRingHom.comp
+          g.toRingHom = g'.toRingHom.comp Algebra.TensorProduct.includeRight.toRingHom := by
+        ext <;> simp [g', Algebra.algebraMap_eq_smul_one]
+      have hb := (hint b).map (Algebra.TensorProduct.includeRight (R := K) (A := K₁)).toRingHom
+      rw [h] at hb
+      have : a ⊗ₜ[K] b = g' (a ⊗ₜ 1) * (1 ⊗ₜ b) := by simp [g']
+      exact this ▸ .mul _ (RingHom.isIntegralElem_map _) hb.of_comp)
+    (fun _ _ ↦ .add _)
+  rw [← ringKrullDim_eq_of_isIntegral_of_injective _ hint hinj,
+    ← ringKrullDim_eq_of_isIntegral_of_injective _ hint'
+      (Module.Flat.lTensor_preserves_injective_linearMap g.toLinearMap hinj),
+    ringKrullDim_eq_of_ringEquiv (MvPolynomial.algebraTensorAlgEquiv K K₁).toRingEquiv]
+  simp [ringKrullDim_eq_zero_of_field]
 
 -- aided and cleaned by claude
 open TensorProduct Scheme Algebra in

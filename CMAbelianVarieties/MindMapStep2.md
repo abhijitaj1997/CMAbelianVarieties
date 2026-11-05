@@ -142,8 +142,8 @@ graph LR
   end
   subgraph m_CMAbelianVarieties_AlgebraicGeometry_AbelianVarieties_Homomorphism_EndomorphismRing["EndomorphismRing.lean"]
     direction TB
+    n_End_algHom_ofBaseChange["<b>End.algHom_<br/>ofBaseChange</b>"]
     n_RationalEnd["<b>RationalEnd</b>"]
-    n_RationalEnd_End_algHom_ofBaseChange["<b>RationalEnd.End.<br/>algHom_ofBaseChange</b>"]
     n_RationalEnd_conjAlgEquiv["<b>RationalEnd.<br/>conjAlgEquiv</b>"]
     n_RationalEnd_conjAlgEquiv_refl["<b>RationalEnd.<br/>conjAlgEquiv.refl</b>"]
     n_RationalEnd_conjAlgEquiv_symm["<b>RationalEnd.<br/>conjAlgEquiv.symm</b>"]
@@ -178,15 +178,15 @@ graph LR
   n_CategoryTheory_Iso_conjRingEquiv --> n_AddGrp_End_instAddEndAddGrpOfIsCommAddMonObjX_cMAbelianVarieties
   n_RationalEnd --> n_AddGrp_End_instRingEndAddGrpOfIsCommAddMonObjX_cMAbelianVarieties
   n_RationalEnd --> n_instIsCommAddMonObjOverSchemeSpecOf_cMAbelianVarieties
-  n_RationalEnd_End_algHom_ofBaseChange --> n_AddGrp_End_algHom_ofBaseChange
-  n_RationalEnd_End_algHom_ofBaseChange --> x_CMAbelianVarieties_AlgebraicGeometry_Basic
+  n_End_algHom_ofBaseChange --> n_AddGrp_End_algHom_ofBaseChange
+  n_End_algHom_ofBaseChange --> x_CMAbelianVarieties_AlgebraicGeometry_Basic
   n_RationalEnd_conjAlgEquiv --> n_CategoryTheory_Iso_conjAlgEquiv
   n_RationalEnd_conjAlgEquiv --> n_RationalEnd
   n_RationalEnd_conjAlgEquiv_refl --> n_RationalEnd_conjAlgEquiv
   n_RationalEnd_conjAlgEquiv_symm --> n_RationalEnd_conjAlgEquiv
   n_RationalEnd_conjAlgEquiv_trans --> n_RationalEnd_conjAlgEquiv
   n_RationalEnd_exists_finiteDimensional_model --> n_RationalEnd_rational_end_morphism
-  n_RationalEnd_rational_end_morphism --> n_RationalEnd_End_algHom_ofBaseChange
+  n_RationalEnd_rational_end_morphism --> n_End_algHom_ofBaseChange
   n_RationalEnd_rational_end_morphism --> n_RationalEnd_conjAlgEquiv
   n_instIsCommAddMonObjOverSchemeSpecOf_cMAbelianVarieties --> n_AlgebraicGeometry_isCommAddMonObj_of_isProper_of_geometricallyIntegral
 
@@ -194,7 +194,7 @@ graph LR
   classDef bad fill:#ffcdd2,stroke:#c62828,color:#000
   classDef main fill:#ffd54f,stroke:#b8860b,stroke-width:3px,color:#000
   classDef ext fill:#eeeeee,stroke:#9e9e9e,stroke-dasharray:5 5,color:#555
-  class n_AddGrp_End_algHom_ofBaseChange,n_AddGrp_End_instAddCommGroupEndAddGrpOfIsCommAddMonObjX_cMAbelianVarieties,n_AddGrp_End_instAddEndAddGrpOfIsCommAddMonObjX_cMAbelianVarieties,n_AddGrp_End_instRingEndAddGrpOfIsCommAddMonObjX_cMAbelianVarieties,n_AddGrp_End_instZeroEndAddGrp_cMAbelianVarieties,n_AddMon_End_instAddCommMonoidEndAddMonOfIsCommAddMonObjX_cMAbelianVarieties,n_AlgebraicGeometry_isClosedImmersion_zero_left,n_AlgebraicGeometry_isCommAddMonObj_of_isProper_of_geometricallyIntegral,n_AlgebraicGeometry_isCommAddMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed,n_CategoryTheory_Iso_conjAlgEquiv,n_CategoryTheory_Iso_conjRingEquiv,n_Functor_isCommAddMonObj_obj,n_RationalEnd,n_RationalEnd_End_algHom_ofBaseChange,n_RationalEnd_conjAlgEquiv,n_RationalEnd_conjAlgEquiv_refl,n_RationalEnd_conjAlgEquiv_symm,n_RationalEnd_conjAlgEquiv_trans,n_RationalEnd_rational_end_morphism,n_instIsCommAddMonObjOverSchemeSpecOf_cMAbelianVarieties ok
+  class n_AddGrp_End_algHom_ofBaseChange,n_AddGrp_End_instAddCommGroupEndAddGrpOfIsCommAddMonObjX_cMAbelianVarieties,n_AddGrp_End_instAddEndAddGrpOfIsCommAddMonObjX_cMAbelianVarieties,n_AddGrp_End_instRingEndAddGrpOfIsCommAddMonObjX_cMAbelianVarieties,n_AddGrp_End_instZeroEndAddGrp_cMAbelianVarieties,n_AddMon_End_instAddCommMonoidEndAddMonOfIsCommAddMonObjX_cMAbelianVarieties,n_AlgebraicGeometry_isClosedImmersion_zero_left,n_AlgebraicGeometry_isCommAddMonObj_of_isProper_of_geometricallyIntegral,n_AlgebraicGeometry_isCommAddMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed,n_CategoryTheory_Iso_conjAlgEquiv,n_CategoryTheory_Iso_conjRingEquiv,n_End_algHom_ofBaseChange,n_Functor_isCommAddMonObj_obj,n_RationalEnd,n_RationalEnd_conjAlgEquiv,n_RationalEnd_conjAlgEquiv_refl,n_RationalEnd_conjAlgEquiv_symm,n_RationalEnd_conjAlgEquiv_trans,n_RationalEnd_rational_end_morphism,n_instIsCommAddMonObjOverSchemeSpecOf_cMAbelianVarieties ok
   class n_RationalEnd_exists_finiteDimensional_model bad
   class x_CMAbelianVarieties_AlgebraicGeometry_Basic ext
 ```
@@ -228,6 +228,7 @@ graph LR
     direction TB
     n_dimension_isStableUnderBasechange["<b>dimension_<br/>isStableUnderBasechange</b>"]
     n_ringKrullDim_basechange["<b>ringKrullDim_<br/>basechange</b>"]
+    n_ringKrullDim_eq_of_isIntegral_of_injective["<b>ringKrullDim_eq_of_<br/>isIntegral_of_<br/>injective</b>"]
     n_topologicalKrullDim_basechange_affine["<b>topologicalKrullDim_<br/>basechange_affine</b>"]
     n_topologicalKrullDim_eq_iSup_openCover["<b>topologicalKrullDim_<br/>eq_iSup_openCover</b>"]
     n_topologicalKrullDim_eq_iSup_ringKrullDim_stalk["<b>topologicalKrullDim_<br/>eq_iSup_<br/>ringKrullDim_stalk</b>"]
@@ -250,6 +251,7 @@ graph LR
   n_dimension_isStableUnderBasechange --> n_topologicalKrullDim_basechange_affine
   n_dimension_isStableUnderBasechange --> n_topologicalKrullDim_eq_iSup_openCover
   n_instAddGrpObjOverSchemeSpecOfBasechange_over_Field --> n_basechange_over_Field
+  n_ringKrullDim_basechange --> n_ringKrullDim_eq_of_isIntegral_of_injective
   n_instGeometricallyIntegralHomSchemeBasechange_over_Field --> n_basechange_over_Field
   n_instIsCommAddMonObjOverSchemeSpecOfBasechange_over_Field --> x_CMAbelianVarieties_ForMathlib_FunctorCommAddObj
   n_instIsCommAddMonObjOverSchemeSpecOfBasechange_over_Field --> n_instAddGrpObjOverSchemeSpecOfBasechange_over_Field
@@ -262,8 +264,7 @@ graph LR
   classDef bad fill:#ffcdd2,stroke:#c62828,color:#000
   classDef main fill:#ffd54f,stroke:#b8860b,stroke-width:3px,color:#000
   classDef ext fill:#eeeeee,stroke:#9e9e9e,stroke-dasharray:5 5,color:#555
-  class n_basechangeOpenCover,n_basechangeOpenCoverXIso,n_basechange_over_Field,n_basechange_over_Field_refl,n_basechange_over_Field_refl_addGroup_hom,n_basechange_over_Field_refl_hom_eqn,n_basechange_over_Field_trans,n_basechange_over_Field_trans_addGroup_hom,n_basechange_over_Field_trans_addGrpObj,n_basechange_over_Field_trans_map_comp,n_basechange_over_Field_hom,n_dimension_isStableUnderBasechange,n_instAddGrpObjOverSchemeSpecOfBasechange_over_Field,n_instCompactSpaceCarrierCarrierCommRingCatLeftSchemeOfIsProperHom_cMAbelianVarieties,n_instGeometricallyIntegralHomSchemeBasechange_over_Field,n_instIsCommAddMonObjOverSchemeSpecOfBasechange_over_Field,n_instIsProperHomSchemeBasechange_over_Field,n_topologicalKrullDim_basechange_affine,n_topologicalKrullDim_eq_iSup_openCover,n_topologicalKrullDim_eq_iSup_ringKrullDim_stalk ok
-  class n_ringKrullDim_basechange bad
+  class n_basechangeOpenCover,n_basechangeOpenCoverXIso,n_basechange_over_Field,n_basechange_over_Field_refl,n_basechange_over_Field_refl_addGroup_hom,n_basechange_over_Field_refl_hom_eqn,n_basechange_over_Field_trans,n_basechange_over_Field_trans_addGroup_hom,n_basechange_over_Field_trans_addGrpObj,n_basechange_over_Field_trans_map_comp,n_basechange_over_Field_hom,n_dimension_isStableUnderBasechange,n_instAddGrpObjOverSchemeSpecOfBasechange_over_Field,n_instCompactSpaceCarrierCarrierCommRingCatLeftSchemeOfIsProperHom_cMAbelianVarieties,n_instGeometricallyIntegralHomSchemeBasechange_over_Field,n_instIsCommAddMonObjOverSchemeSpecOfBasechange_over_Field,n_instIsProperHomSchemeBasechange_over_Field,n_ringKrullDim_basechange,n_ringKrullDim_eq_of_isIntegral_of_injective,n_topologicalKrullDim_basechange_affine,n_topologicalKrullDim_eq_iSup_openCover,n_topologicalKrullDim_eq_iSup_ringKrullDim_stalk ok
   class x_CMAbelianVarieties_ForMathlib_FunctorCommAddObj ext
 ```
 

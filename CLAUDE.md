@@ -13,6 +13,10 @@ lives in `CMAbelianVarieties/Theorem.lean` (not yet proven).
 - Do not commit or push unless I ask (or the checklist tells you to).
 - If you write a proof or definition, mark it with a comment directly above it
   saying it was written by AI (see "AI usage" in README.md).
+- If you notice a pattern in my commands (e.g. I keep asking for the same kind of task, or
+  keep giving the same correction), you may suggest an instruction to add to this file.
+  Only suggest it, with the proposed wording; never add it yourself. I decide whether it
+  is worth adding.
 
 ## IMPORTANT: always check for `eqToIso` / `eqToHom`
 This is extremely important. Check it EVERY time, for every Lean task (a `to claude` command,
@@ -49,8 +53,20 @@ was originally defined with `eqToIso`, and `simp [refl]` ran out of memory; `eqT
       grep -rni "to claude" --exclude-dir=.lake --exclude-dir=.git .
   - If there is more than one, do NOT execute any of them. Inform me, listing
     each one with its file and line.
-  - If there is exactly one, follow it. Executing it counts as permission to make
+  - If there is exactly one, first check that the file containing it has no unsaved
+    changes in VS Code (otherwise I cannot see your edits). VS Code keeps a backup of each
+    unsaved file in `~/.config/Code/Backups/`, whose first line is the file's URI:
+        grep -rlF "file://$(realpath <FILE>) " ~/.config/Code/Backups 2>/dev/null
+    If this prints anything, do not execute the command: tell me the file is unsaved and
+    ask me to save it first.
+    The same applies to every other file you edit while executing the command (which
+    needs my permission, see below): run the check on it before editing it, and if it
+    has unsaved changes, stop and ask me to save it first.
+  - Otherwise, follow it. Executing it counts as permission to make
     the edits that instruction asks for (and only those).
+  - Keep all new code (including helper lemmas) in the file containing the command, unless
+    the command says otherwise. If you strongly feel that something belongs elsewhere
+    (e.g. `ForMathlib/`), ask me before putting it there.
   - Once it has been executed, delete the `to claude` comment itself.
   - If the instruction asks for a term (e.g. "is there something that gives ...?") and you
     find one, but I did not explicitly say how to edit the file, you may answer it in the
@@ -58,6 +74,17 @@ was originally defined with `eqToIso`, and `simp [refl]` ran out of memory; `eqT
     - a single `#check` goes in place of the `to claude` comment, with no extra empty lines;
     - several `#check`s go together in place of the comment, with at least 3 empty lines
       above and below the group (not necessarily between them), so that they stand out.
+
+## `Pick up from here` comments
+- I sometimes leave a note for where to resume work, as a comment of the form
+  `-- Pick up from here : ...` (spacing and capitalisation may vary). Like a `to claude`
+  command, it always *begins* with `Pick up from here` (right after the comment marker).
+- At the start of every session, before doing anything else (even before the task in my
+  first message), search the project for them, case-insensitively:
+      grep -rni "pick up from here" --exclude-dir=.lake --exclude-dir=.git .
+  (ignore the hits in this file), and tell me about every one you find, with its file, line
+  and text. Then continue with my first message.
+- Only notify me: do not act on it, edit it or delete it unless I tell you to.
 
 ## Building
 - Lean toolchain and Mathlib version: see `lean-toolchain` / `lakefile.toml`.
