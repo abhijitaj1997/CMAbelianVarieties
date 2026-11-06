@@ -6,6 +6,7 @@ Authors: Abhijit A J
 module
 
 public import CMAbelianVarieties.Defn
+public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Homomorphism.RationalModel
 
 /-!
 ## Goal
@@ -40,10 +41,10 @@ lemma potentiallyCMStructure.exists_cmStructure_basechange_iso {F : Type*} [Fiel
     (ι_E : CMStructure (A _ E) F),
     Nonempty (((ι_E.basechange (AlgebraicClosure K)).ofIso
     (basechange_over_Field.trans_addGrpObj A E (AlgebraicClosure K))).Iso ι.toCMStructure) := by
-  rcases RationalEnd.exists_finiteDimensional_model A with ⟨E, _, hf⟩
-  let f := rational_end_morphism (A _ E) (AlgebraicClosure K)
-  let φ := (conjAlgEquiv (basechange_over_Field.trans_addGrpObj A E
-    (AlgebraicClosure K))).symm.toRingEquiv.trans (RingEquiv.ofBijective f hf).symm
+  rcases exists_finiteDimensional_bijective_baseChangeHom (A := A) (K := AlgebraicClosure K)
+    with ⟨E, _, hf⟩
+  let f := baseChangeHom A E (AlgebraicClosure K)
+  let φ := (RingEquiv.ofBijective f hf).symm
   let ψ : (A _ E) _ (AlgebraicClosure K) ≅ A _ (AlgebraicClosure K) :=
     basechange_over_Field.trans A (↥E) (AlgebraicClosure K)
   have : topologicalKrullDim ((A _ E) _ (AlgebraicClosure K)).left =
@@ -67,11 +68,10 @@ lemma potentiallyCMStructure.exists_cmStructure_basechange_iso {F : Type*} [Fiel
         (φ.toRingHom.comp ι.toCMStructure.incl) := rfl
       simp only [conjAlgEquiv.refl, RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_toRingHom,
         AlgEquiv.refl_toRingHom, h, RingHomCompTriple.comp_eq]
-      have hr (y : End⁰ ((A _ E) _ (AlgebraicClosure K))) :
-          rational_end_morphism (A _ E) (AlgebraicClosure K)
-            ((RingEquiv.ofBijective f hf).symm y) = y :=
+      have hr (y : End⁰ (A _ (AlgebraicClosure K))) :
+          RationalEnd.baseChangeHom A E (AlgebraicClosure K) (φ y) = y :=
         (RingEquiv.ofBijective f hf).apply_symm_apply y
       ext x
-      simp [RationalEnd.baseChangeHom, φ, hr]
+      simp [hr]
   }
   exact ⟨σ⟩
