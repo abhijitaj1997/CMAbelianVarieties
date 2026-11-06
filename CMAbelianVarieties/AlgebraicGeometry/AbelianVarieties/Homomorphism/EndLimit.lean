@@ -6,7 +6,6 @@ Authors: Abhijit A J
 module
 
 public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Homomorphism.EndomorphismRing
-public import Mathlib.Algebra.Colimit.DirectLimit
 
 /-!
 ## Goal

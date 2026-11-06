@@ -157,7 +157,8 @@ Line numbers as of 2026-10-31.
       Hom(A, B) is a finitely generated abelian group.
 [ ] fin_gen_end                                                      (l.36)
       End(A) is a finitely generated abelian group (should follow from
-      fin_gen_hom). Used for Module.Finite ℚ (End⁰ A) (EndomorphismRing.lean).
+      fin_gen_hom). Used for Module.Finite ℚ (End⁰ A) (EndomorphismRing.lean),
+      hence for the basis ℬ in Homomorphism/RationalModel.lean.
 [ ] Leftover `#check @Module.Finite.iff_addGroup_fg` (l.38) to remove.
 
 
@@ -165,18 +166,20 @@ AlgebraicGeometry/AbelianVarieties/Homomorphism/EndomorphismRing.lean
 ----------------------------------------------------------------------
 New file (7305ad4): defines RationalEnd A = ℚ ⊗[ℤ] End (mk A),
 notation `End⁰ A` (scoped in RationalEnd). Line numbers as of 2026-11-06
-(commit 0ace471).
+(commit dd42364). No sorries left.
 Module.Finite ℚ (End⁰ A) is done (from fin_gen_end, still `sorry`).
 End.baseChangeHom / RationalEnd.baseChangeHom with baseChangeHom_self,
-baseChangeHom_comp and rational_end_morphism_eq_baseChangeHom_comp are done.
-[ ] RationalEnd.exists_finiteDimensional_model                       (l.220)
-      `sorry`: End⁰ (A _ E) → End⁰ (A _ K̄) is bijective for some finite E.
-      EndLimit.lean (End⁰ as a colimit over intermediate fields) is meant
-      to help here.
-[ ] baseChangeHom_eq_map (l.214) is no longer used; delete it.
-[ ] `include A in` is unnecessary on baseChangeHom_self (l.156),
-      baseChangeHom_comp (l.170) and
-      rational_end_morphism_eq_baseChangeHom_comp (l.193).
+baseChangeHom_comp, rational_end_morphism_eq_baseChangeHom_comp,
+baseChangeHom_eq_map and the injectivity lemmas End.baseChangeHom_inj
+(proj is an epimorphism: flat and surjective) and
+RationalEnd.baseChangeHom_inj (ℚ is flat over ℤ) are done.
+[ ] `include A in` is unnecessary on baseChangeHom_self (l.199),
+      baseChangeHom_comp (l.213),
+      rational_end_morphism_eq_baseChangeHom_comp (l.236) and probably on
+      End.baseChangeHom_inj (l.98) and RationalEnd.baseChangeHom_inj
+      (l.265); the `open basechange_over_Field` on the latter is unused.
+[ ] End.baseChangeHom_inj: the `let p := fun f ↦ f ≫ proj …` is only used
+      to state h_diag / h_zero; they could be stated with `≫ proj` directly.
 [ ] Collect the remaining instances from the Hom files for End A.
 [ ] Naming: conjAlgEquiv.refl / .symm / .trans would be conjAlgEquiv_refl
       / _symm / _trans in Mathlib style.
@@ -185,16 +188,53 @@ baseChangeHom_comp and rational_end_morphism_eq_baseChangeHom_comp are done.
 AlgebraicGeometry/AbelianVarieties/Homomorphism/EndLimit.lean
 --------------------------------------------------------------
 New file (2026-10-31). Goal: End⁰ (A _ K) is the colimit of End⁰ (A _ L)
-over L : IntermediateField K₀ K. Line numbers as of 2026-11-06 (commit
-0ace471). The functor R₀ and the cocone limitRatEnd are done.
-[ ] limitRatEnd.isColimit : Limits.IsColimit (limitRatEnd A K)       (l.86)
-      `sorry`.
-[ ] Remaining refactor, listed in the comment at the end of the file
-      (l.100): proj_self / proj_comp / proj_fst and simp lemmas for
-      trans.hom/inv ≫ pullback.fst/snd, refl_addGrpObj (Basic.lean); Iso
-      constructions for CMStructure.basechange' (Defn.lean); use them in
-      Theorem.lean (ι'', ι₀, P₁, P₂) and Pottentially.lean.
-[ ] Naming: R₀ is a placeholder name.
+over the intermediate fields L of K/K₀ that are finite over K₀. Line
+numbers as of 2026-11-06 (commit dd42364). The functor RatEnd (over all
+intermediate fields) and its cocone limitRatEnd are done; RatEndFin /
+limitRatEndFin restrict them to {L // FiniteDimensional K₀ L} (via
+Monotone.functor and Cocone.whisker).
+[ ] limitRatEnd.isColimit : Limits.IsColimit (limitRatEndFin A K)    (l.100)
+      `sorry`. Needs "spreading out" of endomorphisms (every endomorphism
+      of A _ K is defined over a finite L). There is no assumption on
+      K/K₀ at the moment (IsGalois was removed; it is not needed). Without
+      `Algebra.IsAlgebraic K₀ K` the statement is still true, but only via
+      Chow's rigidity theorem (not in Mathlib); with it, spreading out
+      suffices. See the note in the file above the def.
+      Useful: Types.FilteredColimit.isColimit_eq_iff',
+      isColimitOfPreserves (forget RingCat) (injectivity of the cocone maps).
+[ ] Remaining refactor: proj_self / proj_comp / proj_fst and simp lemmas
+      for trans.hom/inv ≫ pullback.fst/snd, refl_addGrpObj (Basic.lean);
+      Iso constructions for CMStructure.basechange' (Defn.lean); use them
+      in Theorem.lean (ι'', ι₀, P₁, P₂) and Pottentially.lean. (The list
+      used to be in a comment at the end of the file; that comment is gone.)
+[ ] Module docstring still says "colimit over L : IntermediateField K₀ K";
+      it is now over the finite ones.
+
+
+AlgebraicGeometry/AbelianVarieties/Homomorphism/RationalModel.lean
+------------------------------------------------------------------
+New file (2026-11-06), replaces RationalEnd.exists_finiteDimensional_model
+(over AlgebraicClosure K) by the general version. Line numbers as of
+commit dd42364.
+exists_finiteDimensional_bijective_baseChangeHom (l.52): there is a finite
+E/K₀ inside K with baseChangeHom A E K bijective. No `sorry` of its own;
+depends on limitRatEnd.isColimit (EndLimit.lean) and fin_gen_end
+(FiniteGen.lean). Used in Pottentially.lean with K := AlgebraicClosure K.
+[ ] Slow: the file takes about 40 s to build, all in the proof of
+      exists_finiteDimensional_bijective_baseChangeHom (probably the
+      `simp [← hφ i, ← baseChangeHom_comp …]` step or the `rw`s around
+      `φ` / `hφ`). Find the slow step.
+[ ] `φ` is defined through `rw` (a cast), to avoid a whnf timeout when
+      the type of `….choose_spec.choose_spec.choose` is compared with
+      End⁰ (A _ (E' i)). Cleaner: `choose E' hE' φ hφ using
+      exists_baseChangeHom_eq_ℬ` inside the proof.
+[ ] Naming: a global def `ℬ` (and `I`) is not Mathlib style; e.g.
+      RationalEnd.finBasis, with ℬ as local notation. Making `I` an
+      `abbrev` would remove the `inferInstanceAs (Finite (Fin _))`.
+[ ] The theorem is in the root namespace (the old one was in RationalEnd).
+[ ] Two files are now called RationalModel.lean
+      (AbelianVarieties/RationalModel.lean and Homomorphism/RationalModel.lean);
+      consider renaming this one (e.g. Homomorphism/EndModel.lean).
 
 
 AlgebraicGeometry/InvertibleSheaf.lean
@@ -318,8 +358,9 @@ AlgebraicGeometry/RationalModel/Separated.lean
 ----------------------------------------------
 New file (2026-10-30, renamed from IntegralModel/Model.lean). Line
 numbers as of 2026-10-30 (commit 238316e).
-[ ] nameless (l.31): intersections of affine opens of a separated X are
-      affine. Needs a name; `sorry` (not found by instance search).
+[ ] isAffine_opensRange_inf_opensRange (l.30, named as of commit dd42364):
+      intersections of affine opens of a separated X are affine. `sorry`
+      (not found by instance search).
 [ ] exists_model_of_isSeparated_of_locallyOfFiniteType               (l.41)
       Statement: the conclusion says IsAffine X₀.left; should be
       IsSeparated X₀.hom (a non-affine X has no affine model).
@@ -368,7 +409,8 @@ Pottentially.lean
 -----------------
 potentiallyCMStructure A F: a CM structure on A _ (AlgebraicClosure K).
 of_CMStructure and exists_cmStructure_basechange_iso are done (the latter
-depends on RationalEnd.exists_finiteDimensional_model, EndomorphismRing.lean).
+depends on exists_finiteDimensional_bijective_baseChangeHom,
+Homomorphism/RationalModel.lean).
 [ ] Typo in the file name and docstring: "Pottentially".
 
 
@@ -376,8 +418,8 @@ Theorem.lean
 ------------
 Line numbers as of 2026-10-31.
 CMStructure.exists_finiteDimensional_model (l.50) has no `sorry` of its
-own; it depends on RationalEnd.exists_finiteDimensional_model
-(EndomorphismRing.lean), the RationalModel/ sorries and
+own; it depends on exists_finiteDimensional_bijective_baseChangeHom
+(Homomorphism/RationalModel.lean), the RationalModel/ sorries and
 dimension_isStableUnderBasechange.
 [ ] CMStructure.exists_algClosureRat_model                           (l.42)
 [ ] exists_numberField_model: the `have : IsScalarTower E …` (l.124) is

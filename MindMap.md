@@ -53,7 +53,8 @@ graph TD
       subgraph HOM["Homomorphism/"]
         direction TB
         EndomorphismRing["<b>EndomorphismRing</b><br/><i>End A, End⁰ A = ℚ ⊗ End A (finite over ℚ), conjugation by isomorphisms, base change End⁰ A → End⁰ (A _ K₁)</i>"]
-        EndLimit["<b>EndLimit</b><br/><i>End⁰ (A _ L) as a functor of L : IntermediateField K₀ K; End⁰ (A _ K) as its colimit</i>"]
+        EndLimit["<b>EndLimit</b><br/><i>End⁰ (A _ L) as a functor of L : IntermediateField K₀ K; End⁰ (A _ K) as its colimit over the L finite over K₀</i>"]
+        HomRationalModel["<b>RationalModel</b><br/><i>End⁰ (A _ E) ≅ End⁰ (A _ K) for some finite E/K₀</i>"]
         FiniteGen["<b>FiniteGen</b><br/><i>Hom(A, B), End A finitely generated</i>"]
         TorsionFree["<b>TorsionFree</b><br/><i>Hom(A, B) torsion free</i>"]
         IntHomAV["<b>IntHom</b><br/><i>[n], A[n] finite & discrete</i>"]
@@ -111,6 +112,8 @@ graph TD
   EndomorphismRing --> AGBasic
   EndomorphismRing --> FiniteGen
   EndLimit --> EndomorphismRing
+  HomRationalModel --> EndLimit
+  Pottentially --> HomRationalModel
   EndRingIso --> Endomorphism
   FiniteGen --> Commutativity
   FiniteGen --> Endomorphism
@@ -139,7 +142,7 @@ graph TD
 
   class Theorem goal
   class Commutativity hub
-  class EndomorphismRing,FiniteGen,IntHomAV,Complex,TorsionFree,TateModule,GlobalSections,IntHomAN,PullbackAddGrp,Finite,Endomorphism,LieAlgebra,CMDefn,Test,AGBasic,AVRationalModel,RMAffine,RMSeparated,RMMorphism,RMGroupStructure,EndBaseChange,FunctorCommAddObj,Defn,Pottentially,EndRingIso,Dimension,Integral,AGDimension,CMField,FieldRepresentations,EndLimit connected
+  class EndomorphismRing,FiniteGen,IntHomAV,Complex,TorsionFree,TateModule,GlobalSections,IntHomAN,PullbackAddGrp,Finite,Endomorphism,LieAlgebra,CMDefn,Test,AGBasic,AVRationalModel,RMAffine,RMSeparated,RMMorphism,RMGroupStructure,EndBaseChange,FunctorCommAddObj,Defn,Pottentially,EndRingIso,Dimension,Integral,AGDimension,CMField,FieldRepresentations,EndLimit,HomRationalModel connected
   class AVCatalogue,InvertibleSheaf,TheCube,AGCatalogue,CMAlgebra,Test1 unused
 ```
 
