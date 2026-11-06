@@ -106,7 +106,6 @@ graph TD
   RMGroupStructure --> AGBasic
   EndBaseChange --> Endomorphism
   EndBaseChange --> FunctorCommAddObj
-  EndomorphismRing --> Commutativity
   EndomorphismRing --> EndRingIso
   EndomorphismRing --> EndBaseChange
   EndomorphismRing --> AGBasic
@@ -149,6 +148,6 @@ graph TD
 | Colour | Meaning |
 |---|---|
 | Red, thick border | the main goal (`Theorem`) |
-| Yellow, thick border ★ | the hub (`Commutativity`, imported by 4 files) |
+| Yellow, thick border ★ | the hub (`Commutativity`, imported by 3 files) |
 | Blue | part of the dependency chain |
 | Grey, dashed | not connected to the rest yet |

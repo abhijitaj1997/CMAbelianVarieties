@@ -49,10 +49,18 @@ skipping steps that changed nothing.
        file would suffice);
      - redundant imports (one import is already implied by another in the
        same file), or an otherwise inefficient list of imports.
-   If any file has such a problem, STOP: do not continue with the
-   checklist, and inform the user, listing each file with the problematic
-   imports and the suggested replacement. From there on, follow the
-   user's instructions.
+   Once you have found the minimal set of imports for a file, change its
+   imports to that set without asking the user, and check that the file
+   still builds. Only the import lines may be changed in this step: do
+   NOT change or delete anything else (e.g. a `#check`, `#synth`, or
+   anything else you consider useless), unless the user specifically
+   says so. In particular, an import needed only by such a `#check` /
+   `#synth` / example stays.
+   If a file's imports cannot be made minimal by changing only its
+   import lines, STOP: do not continue with the checklist, and inform the
+   user, listing each such file with the problematic imports and the
+   suggested replacement. From there on, follow the user's instructions.
+   Otherwise, list the import changes you made in the final summary.
 
 5. Run mk_all to regenerate CMAbelianVarieties.lean so that it imports every
    file in the project:

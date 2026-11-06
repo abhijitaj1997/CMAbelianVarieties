@@ -164,12 +164,19 @@ Line numbers as of 2026-10-31.
 AlgebraicGeometry/AbelianVarieties/Homomorphism/EndomorphismRing.lean
 ----------------------------------------------------------------------
 New file (7305ad4): defines RationalEnd A = ℚ ⊗[ℤ] End (mk A),
-notation `End⁰ A` (scoped in RationalEnd). Line numbers as of 2026-10-31.
+notation `End⁰ A` (scoped in RationalEnd). Line numbers as of 2026-11-06
+(commit 0ace471).
 Module.Finite ℚ (End⁰ A) is done (from fin_gen_end, still `sorry`).
-[ ] RationalEnd.exists_finiteDimensional_model                       (l.92)
+End.baseChangeHom / RationalEnd.baseChangeHom with baseChangeHom_self,
+baseChangeHom_comp and rational_end_morphism_eq_baseChangeHom_comp are done.
+[ ] RationalEnd.exists_finiteDimensional_model                       (l.220)
       `sorry`: End⁰ (A _ E) → End⁰ (A _ K̄) is bijective for some finite E.
       EndLimit.lean (End⁰ as a colimit over intermediate fields) is meant
       to help here.
+[ ] baseChangeHom_eq_map (l.214) is no longer used; delete it.
+[ ] `include A in` is unnecessary on baseChangeHom_self (l.156),
+      baseChangeHom_comp (l.170) and
+      rational_end_morphism_eq_baseChangeHom_comp (l.193).
 [ ] Collect the remaining instances from the Hom files for End A.
 [ ] Naming: conjAlgEquiv.refl / .symm / .trans would be conjAlgEquiv_refl
       / _symm / _trans in Mathlib style.
@@ -178,20 +185,16 @@ Module.Finite ℚ (End⁰ A) is done (from fin_gen_end, still `sorry`).
 AlgebraicGeometry/AbelianVarieties/Homomorphism/EndLimit.lean
 --------------------------------------------------------------
 New file (2026-10-31). Goal: End⁰ (A _ K) is the colimit of End⁰ (A _ L)
-over L : IntermediateField K₀ K. Line numbers as of 2026-10-31.
-The functor R₀ : IntermediateField K₀ K ⥤ RingCat is done (map_id,
-map_comp).
-[ ] R : Limits.Cocone (R₀ K A), naturality                           (l.138)
+over L : IntermediateField K₀ K. Line numbers as of 2026-11-06 (commit
+0ace471). The functor R₀ and the cocone limitRatEnd are done.
+[ ] limitRatEnd.isColimit : Limits.IsColimit (limitRatEnd A K)       (l.86)
       `sorry`.
-[ ] The colimit statement itself (IsColimit R, or via DirectLimit;
-      #checks at the end of the file list both options).
-[ ] Refactor suggested in the comment at the end of the file:
-      baseChangeHom A K₁ K₂, basechange_over_Field.proj with proj_self /
-      proj_comp, simp lemmas for trans.hom/inv ≫ pullback.fst/snd, and
-      baseChangeHom_self / baseChangeHom_comp. Would shorten R₀.map_id /
-      map_comp, R.ι.naturality, basechange.refl / .trans (Defn.lean) and
-      the base-change chains in Theorem.lean.
-[ ] Naming: R₀ / R are placeholder names.
+[ ] Remaining refactor, listed in the comment at the end of the file
+      (l.100): proj_self / proj_comp / proj_fst and simp lemmas for
+      trans.hom/inv ≫ pullback.fst/snd, refl_addGrpObj (Basic.lean); Iso
+      constructions for CMStructure.basechange' (Defn.lean); use them in
+      Theorem.lean (ι'', ι₀, P₁, P₂) and Pottentially.lean.
+[ ] Naming: R₀ is a placeholder name.
 
 
 AlgebraicGeometry/InvertibleSheaf.lean

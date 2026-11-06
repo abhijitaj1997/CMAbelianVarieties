@@ -5,7 +5,6 @@ Authors: Abhijit A J
 -/
 module
 
-public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Commutativity
 public import CMAbelianVarieties.AbstractNonsense.EndRingIso
 public import CMAbelianVarieties.AbstractNonsense.EndBaseChange
 public import CMAbelianVarieties.AlgebraicGeometry.Basic
