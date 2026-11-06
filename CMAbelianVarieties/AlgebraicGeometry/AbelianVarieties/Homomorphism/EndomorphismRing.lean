@@ -151,11 +151,62 @@ def baseChangeHom (K₁ K₂ : Type u) [Field K₁] [Field K₂] [Algebra K K₁
   (conjAlgEquiv (basechange_over_Field.trans_addGrpObj A K₁ K₂)).toRingHom.comp
   (rational_end_morphism (A _ K₁) K₂)
 
+-- proof written by Claude
 variable (A) in
 include A in
-lemma baseChangeHom_self (K₁ K₂ : Type u) [Field K₁] [Algebra K K₁] :
+lemma baseChangeHom_self (K₁ : Type u) [Field K₁] [Algebra K K₁] :
     baseChangeHom A K₁ K₁ = RingHom.id (End⁰ (A _ K₁)) := by
-  sorry
+  have hproj : basechange_over_Field.proj A K₁ K₁ = 𝟙 _ := by
+    apply Limits.pullback.hom_ext <;> simp [basechange_over_Field.proj]
+  have h (f : End (mk (A _ K₁))) : End.baseChangeHom A K₁ K₁ f = f :=
+    ((End.eq_baseChangeHom_iff A f f).mpr (by simp [hproj])).symm
+  ext f
+  · simp [baseChangeHom, rational_end_morphism, conjAlgEquiv]
+  · simpa [baseChangeHom, rational_end_morphism, conjAlgEquiv, End.baseChangeHom] using
+      congrArg ((1 : ℚ) ⊗ₜ[ℤ] ·) (h f)
+
+-- proof written by Claude
+variable (A) in
+include A in
+open basechange_over_Field in
+lemma baseChangeHom_comp (K₁ K₂ K₃ : Type u) [Field K₁] [Field K₂] [Field K₃] [Algebra K K₁]
+    [Algebra K K₂] [Algebra K K₃] [Algebra K₁ K₂] [Algebra K₁ K₃] [Algebra K₂ K₃]
+    [IsScalarTower K K₁ K₂] [IsScalarTower K K₁ K₃] [IsScalarTower K K₂ K₃]
+    [IsScalarTower K₁ K₂ K₃] :
+    (baseChangeHom A K₂ K₃).comp (baseChangeHom A K₁ K₂) = (baseChangeHom A K₁ K₃) := by
+  have hproj : proj A K₂ K₃ ≫ proj A K₁ K₂ = proj A K₁ K₃ := by
+    apply Limits.pullback.hom_ext
+    · simp [proj]
+    · simp [proj, ← Spec.map_comp, ← CommRingCat.ofHom_comp, ← IsScalarTower.algebraMap_eq]
+  have h (f : End (mk (A _ K₁))) :
+      End.baseChangeHom A K₂ K₃ (End.baseChangeHom A K₁ K₂ f) = End.baseChangeHom A K₁ K₃ f := by
+    rw [End.eq_baseChangeHom_iff, ← hproj,
+      reassoc_of% End.baseChangeHom_left_comp_proj A K₂ K₃,
+      End.baseChangeHom_left_comp_proj A K₁ K₂, Category.assoc]
+  ext f
+  · simp [baseChangeHom, rational_end_morphism, conjAlgEquiv]
+  · simpa [baseChangeHom, rational_end_morphism, conjAlgEquiv, End.baseChangeHom] using
+      congrArg ((1 : ℚ) ⊗ₜ[ℤ] ·) (h f)
+
+-- proof written by Claude
+variable (A) in
+include A in
+lemma rational_end_morphism_eq_baseChangeHom_comp (K₁ : Type u) [Field K₁] [Algebra K K₁] :
+    have := basechange_over_Field.refl_addGroup_hom A
+    let φ := AddGrp.mkIso' (basechange_over_Field.refl A)
+    rational_end_morphism A K₁ = (baseChangeHom A K K₁).comp (conjAlgEquiv φ).toRingHom:= by
+  intro _ φ
+  have h (f : End (mk A)) :
+      End.algHom_ofBaseChange A K₁ f = End.baseChangeHom A K K₁ (Iso.conj φ f) := by
+    rw [End.eq_baseChangeHom_iff]
+    apply Limits.pullback.hom_ext <;>
+      simp [φ, End.algHom_ofBaseChange, AddGrp.End.algHom_ofBaseChange,
+        basechange_over_Field.proj, basechange_over_Field.refl, Iso.conj_apply_asHom,
+        Limits.pullback.condition]
+  ext f
+  · simp [baseChangeHom, rational_end_morphism, conjAlgEquiv]
+  · simpa [baseChangeHom, rational_end_morphism, conjAlgEquiv, End.baseChangeHom,
+      Iso.conjAlgEquiv, Iso.conjRingEquiv] using congrArg ((1 : ℚ) ⊗ₜ[ℤ] ·) (h f)
 
 -- written by Claude
 variable (A) in

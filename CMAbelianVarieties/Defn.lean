@@ -117,6 +117,21 @@ def basechange (ι : CMStructure A F) (K₁ : Type u) [Field K₁] [Algebra K K�
       finrank_of_CM_field := by
         rw [ι.finrank_of_CM_field, dimension_isStableUnderBasechange A K₁]
 
+-- written by Claude
+/-- For a tower `K → K₁ → K₂`, the base change to `K₂` of a CM structure `ι` on `A _ K₁`,
+transported to `A _ K₂` along `(A _ K₁) _ K₂ ≅ A _ K₂`. Its inclusion is
+`(baseChangeHom A K₁ K₂).comp ι` (see `basechange'_incl`). -/
+def basechange' {K₁ : Type u} [Field K₁] [Algebra K K₁] (ι : CMStructure (A _ K₁) F)
+    (K₂ : Type u) [Field K₂] [Algebra K K₂] [Algebra K₁ K₂] [IsScalarTower K K₁ K₂] :
+    CMStructure (A _ K₂) F :=
+  (ι.basechange K₂).ofIso (basechange_over_Field.trans_addGrpObj A K₁ K₂)
+
+-- written by Claude
+lemma basechange'_incl {K₁ : Type u} [Field K₁] [Algebra K K₁] (ι : CMStructure (A _ K₁) F)
+    (K₂ : Type u) [Field K₂] [Algebra K K₂] [Algebra K₁ K₂] [IsScalarTower K K₁ K₂] :
+    (ι.basechange' K₂).incl = (baseChangeHom A K₁ K₂).comp ι.incl :=
+  rfl
+
 def basechange.ofIso {B : Over (Spec ↧K)} [IsProper B.hom] [GeometricallyIntegral B.hom]
     [AddGrpObj B] {ι : CMStructure A F} {ι' : CMStructure B F} (φ : ι.Iso ι') (K₁ : Type u)
     [Field K₁] [Algebra K K₁] : (ι.basechange K₁).Iso (ι'.basechange K₁) := by
@@ -154,19 +169,10 @@ def basechange.refl (ι : CMStructure A F) : (ι.basechange K).Iso ι :=
   { val := φ.symm
     property := by
       have h : rational_end_morphism A K = conjAlgEquiv φ := by
-        simp only [rational_end_morphism, AlgHom.toRingHom_eq_coe, conjAlgEquiv]
-        ext
-        · simp
-        · simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
-            Function.comp_apply, Algebra.TensorProduct.includeRight_apply,
-            Algebra.TensorProduct.map_tmul, eq_ratCast, Rat.cast_one,
-            Algebra.TensorProduct.congr_apply, AlgEquiv.refl_toAlgHom, AlgEquiv.coe_toAlgHom]
-          congr 1
-          ext : 4
-          apply Limits.pullback.hom_ext <;>
-            simp [End.algHom_ofBaseChange, AddGrp.End.algHom_ofBaseChange, φ,
-              basechange_over_Field.refl, Iso.conjAlgEquiv, Iso.conjRingEquiv,
-              Limits.pullback.condition]
+        have := rational_end_morphism_eq_baseChangeHom_comp A K
+        dsimp only at this
+        rw [this, baseChangeHom_self, RingHom.id_comp]
+        rfl
       simp only [RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_toRingHom, basechange, h,
         ← RingHom.comp_assoc]
       rw [Algebra.TensorProduct.ringHom_ext
@@ -185,25 +191,10 @@ def basechange.trans (ι : CMStructure A F) (K₁ K₂ : Type u) [Field K₁] [F
       = (ι.basechange K₂) := by
     have : (RationalEnd.baseChangeHom A K₁ K₂).comp (rational_end_morphism A K₁) =
         rational_end_morphism A K₂ := by
-      simp only [RationalEnd.baseChangeHom, rational_end_morphism, AlgHom.toRingHom_eq_coe,
-        conjAlgEquiv]
-      ext
-      · simp
-      · simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
-          Function.comp_apply, Algebra.TensorProduct.includeRight_apply,
-          Algebra.TensorProduct.map_tmul, eq_ratCast, Rat.cast_one,
-          Algebra.TensorProduct.congr_apply, AlgEquiv.refl_toAlgHom, AlgEquiv.coe_toAlgHom,
-          RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_toRingHom]
-        congr 1
-        ext : 3
-        simp only [Iso.conjAlgEquiv, Iso.conjRingEquiv, MulEquiv.toEquiv_eq_coe,
-          RingEquiv.coe_toIntAlgEquiv, RingEquiv.coe_mk, EquivLike.coe_coe, Iso.conj_apply_asHom]
-        erw [AddGrp.comp_hom_hom, AddGrp.comp_hom_hom]
-        simp only [Over.comp_left]
-        apply Limits.pullback.hom_ext <;>
-          simp [End.algHom_ofBaseChange, AddGrp.End.algHom_ofBaseChange,
-            basechange_over_Field.trans_addGrpObj, basechange_over_Field.trans,
-            basechange_over_Field.proj]
+      have h₁ := rational_end_morphism_eq_baseChangeHom_comp A K₁
+      have h₂ := rational_end_morphism_eq_baseChangeHom_comp A K₂
+      dsimp only at h₁ h₂
+      rw [h₁, h₂, ← RingHom.comp_assoc, baseChangeHom_comp]
     simp [basechange, RationalEnd.baseChangeHom, φ, ← RingHom.comp_assoc, ← this]
   ⟨φ, this⟩
 
