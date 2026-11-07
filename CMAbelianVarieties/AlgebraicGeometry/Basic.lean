@@ -255,3 +255,18 @@ instance {X : Over (Spec ↧K)} [IsProper X.hom] : CompactSpace X.left :=
   QuasiCompact.compactSpace_of_compactSpace X.hom
 
 end CompactofProper
+
+section SeparateOpen
+
+open AlgebraicGeometry CategoryTheory
+
+variable {A : Type*} [CommRing A]
+variable {X : Over (Spec ↧A)} [IsSeparated X.hom]
+
+-- proof written by claude
+lemma intersectionOpens_ofSeparated (U V : X.left.Opens) [IsAffine U] [IsAffine V] :
+    IsAffine (U ⊓ V : X.left.Opens) := by
+  have : X.left.IsSeparated := ⟨Limits.terminal.comp_from X.hom ▸ inferInstance⟩
+  exact IsAffineOpen.inf ‹_› ‹_›
+
+end SeparateOpen
