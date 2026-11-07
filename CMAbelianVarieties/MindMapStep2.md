@@ -261,6 +261,7 @@ graph LR
     n_instGeometricallyIntegralHomSchemeBasechange_over_Field["<i>instance</i><br/>GeometricallyIntegral<br/>(X _ K₁).hom"]
     n_instIsCommAddMonObjOverSchemeSpecOfBasechange_over_Field["<i>instance</i><br/>IsCommAddMonObj (G _ K₁)"]
     n_instIsProperHomSchemeBasechange_over_Field["<i>instance</i><br/>IsProper (X _ K₁).hom"]
+    n_intersectionOpens_ofSeparated["<b>intersectionOpens_<br/>ofSeparated</b>"]
   end
   subgraph m_CMAbelianVarieties_AlgebraicGeometry_Dimension["Dimension.lean"]
     direction TB
@@ -304,7 +305,7 @@ graph LR
   classDef bad fill:#ffcdd2,stroke:#c62828,color:#000
   classDef main fill:#ffd54f,stroke:#b8860b,stroke-width:3px,color:#000
   classDef ext fill:#eeeeee,stroke:#9e9e9e,stroke-dasharray:5 5,color:#555
-  class n_basechangeOpenCover,n_basechangeOpenCoverXIso,n_basechange_over_Field,n_basechange_over_Field_proj,n_basechange_over_Field_refl,n_basechange_over_Field_refl_addGroup_hom,n_basechange_over_Field_refl_hom_eqn,n_basechange_over_Field_trans,n_basechange_over_Field_trans_addGroup_hom,n_basechange_over_Field_trans_addGrpObj,n_basechange_over_Field_trans_map_comp,n_basechange_over_Field_hom,n_dimension_isStableUnderBasechange,n_instAddGrpObjOverSchemeSpecOfBasechange_over_Field,n_instCompactSpaceCarrierCarrierCommRingCatLeftSchemeOfIsProperHom_cMAbelianVarieties,n_instGeometricallyIntegralHomSchemeBasechange_over_Field,n_instIsCommAddMonObjOverSchemeSpecOfBasechange_over_Field,n_instIsProperHomSchemeBasechange_over_Field,n_ringKrullDim_basechange,n_ringKrullDim_eq_of_isIntegral_of_injective,n_topologicalKrullDim_basechange_affine,n_topologicalKrullDim_eq_iSup_openCover,n_topologicalKrullDim_eq_iSup_ringKrullDim_stalk ok
+  class n_basechangeOpenCover,n_basechangeOpenCoverXIso,n_basechange_over_Field,n_basechange_over_Field_proj,n_basechange_over_Field_refl,n_basechange_over_Field_refl_addGroup_hom,n_basechange_over_Field_refl_hom_eqn,n_basechange_over_Field_trans,n_basechange_over_Field_trans_addGroup_hom,n_basechange_over_Field_trans_addGrpObj,n_basechange_over_Field_trans_map_comp,n_basechange_over_Field_hom,n_dimension_isStableUnderBasechange,n_instAddGrpObjOverSchemeSpecOfBasechange_over_Field,n_instCompactSpaceCarrierCarrierCommRingCatLeftSchemeOfIsProperHom_cMAbelianVarieties,n_instGeometricallyIntegralHomSchemeBasechange_over_Field,n_instIsCommAddMonObjOverSchemeSpecOfBasechange_over_Field,n_instIsProperHomSchemeBasechange_over_Field,n_intersectionOpens_ofSeparated,n_ringKrullDim_basechange,n_ringKrullDim_eq_of_isIntegral_of_injective,n_topologicalKrullDim_basechange_affine,n_topologicalKrullDim_eq_iSup_openCover,n_topologicalKrullDim_eq_iSup_ringKrullDim_stalk ok
   class x_CMAbelianVarieties_ForMathlib_FunctorCommAddObj ext
 ```
 
@@ -337,7 +338,9 @@ graph LR
   end
   subgraph m_CMAbelianVarieties_AlgebraicGeometry_RationalModel_Separated["Separated.lean"]
     direction TB
+    n_CommRingCat_isPushout_induction["<b>CommRingCat.<br/>isPushout_<br/>induction</b>"]
     n_exists_model_of_isSeparated_of_locallyOfFiniteType["<b>exists_model_of_<br/>isSeparated_of_<br/>locallyOfFiniteType</b>"]
+    n_exists_opens_basechange_of_isCompact["<b>exists_opens_<br/>basechange_of_<br/>isCompact</b>"]
   end
   x_CMAbelianVarieties_AlgebraicGeometry_Basic["Basic.lean<br/><i>see Part 3</i>"]
 
@@ -352,6 +355,9 @@ graph LR
   n_exists_model_of_isAffine_of_locallyOfFiniteType --> n_exists_model_of_finiteType
   n_exists_model_of_isAffine_of_locallyOfFiniteType --> x_CMAbelianVarieties_AlgebraicGeometry_Basic
   n_exists_model_of_isSeparated_of_locallyOfFiniteType --> n_exists_model_of_isAffine_of_locallyOfFiniteType
+  n_exists_model_of_isSeparated_of_locallyOfFiniteType --> n_exists_opens_basechange_of_isCompact
+  n_exists_opens_basechange_of_isCompact --> n_CommRingCat_isPushout_induction
+  n_exists_opens_basechange_of_isCompact --> x_CMAbelianVarieties_AlgebraicGeometry_Basic
   n_geometricallyIntegral_model --> n_exists_model_of_isSeparated_of_locallyOfFiniteType
   n_isProper_model --> n_exists_model_of_isSeparated_of_locallyOfFiniteType
 
@@ -359,7 +365,7 @@ graph LR
   classDef bad fill:#ffcdd2,stroke:#c62828,color:#000
   classDef main fill:#ffd54f,stroke:#b8860b,stroke-width:3px,color:#000
   classDef ext fill:#eeeeee,stroke:#9e9e9e,stroke-dasharray:5 5,color:#555
-  class n_AbelianVarieties_exists_finiteDimensional_model,n_exists_model_of_finiteType,n_exists_model_of_isAffine_of_locallyOfFiniteType ok
+  class n_AbelianVarieties_exists_finiteDimensional_model,n_CommRingCat_isPushout_induction,n_exists_model_of_finiteType,n_exists_model_of_isAffine_of_locallyOfFiniteType,n_exists_opens_basechange_of_isCompact ok
   class n_GroupStructure_AddGroupObj_overFieldOfDefintion,n_GroupStructure_AddGroupObj_overFieldOfDefintion_Iso,n_GroupStructure_FiniteDimensional_ofFieldOfDefintion,n_GroupStructure_fieldOfDefintion,n_exists_model_of_isSeparated_of_locallyOfFiniteType,n_geometricallyIntegral_model,n_isProper_model bad
   class x_CMAbelianVarieties_AlgebraicGeometry_Basic ext
 ```

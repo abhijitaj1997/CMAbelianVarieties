@@ -336,6 +336,8 @@ basechange_over_Field.refl / .trans (as Over.isoMk of pullback.lifts),
 refl_addGroup_hom, trans_addGroup_hom, trans_addGrpObj and
 basechange_over_Field_addGrpObj_zero(_eqn) are done. The notation
 `X _ E` is now scoped (open scoped BaseChange).
+Section SeparateOpen (2026-11-07): intersectionOpens_ofSeparated (affine
+opens of a separated X over Spec A have affine intersection), done.
 [ ] "Hey claude" notes (l.84, l.205): should trans / trans_addGrpObj use
       IntermediateField? To discuss.
 [ ] Cleanup: unused `variable {A …}` (l.31).
@@ -357,20 +359,30 @@ E/K ⊆ K̄).
 AlgebraicGeometry/RationalModel/Separated.lean
 ----------------------------------------------
 New file (2026-10-30, renamed from IntegralModel/Model.lean). Line
-numbers as of 2026-10-30 (commit 238316e).
-[ ] isAffine_opensRange_inf_opensRange (l.30, named as of commit dd42364):
-      intersections of affine opens of a separated X are affine. `sorry`
-      (not found by instance search).
-[ ] exists_model_of_isSeparated_of_locallyOfFiniteType               (l.41)
-      Statement: the conclusion says IsAffine X₀.left; should be
-      IsSeparated X₀.hom (a non-affine X has no affine model).
-      Proof: finite affine cover, models E' i, compositum E (finite).
-      Still `sorry`: Algebra (E' i) E (l.54; should be the inclusion
-      via `letI`, not a `have`), and the gluing. The plan (Scheme.GlueData,
-      descent of opens / transition maps / cocycle, enlarging E) is in
-      the comment in the proof. Base change commutes with gluing is
-      not in Mathlib.
-[ ] Cleanup: module docstring typos ("seperated").
+numbers as of 2026-11-07 (commit 008d975).
+CommRingCat.isPushout_induction (l.43) and
+exists_opens_basechange_of_isCompact (l.68: a quasi-compact open of
+U _ L comes from U _ F' for a finite F' ⊆ L) are done.
+[ ] isAffine_opensRange_inf_opensRange (l.30): intersections of affine
+      opens of a separated X are affine. Still `sorry`, but should now
+      follow from intersectionOpens_ofSeparated (AlgebraicGeometry/Basic.lean)
+      with isAffineOpen_opensRange. Leftover #checks (l.34–35).
+[ ] exists_model_of_isSeparated_of_locallyOfFiniteType               (l.116)
+      Statement now says IsSeparated X₀.hom. Marked "Pick up from here"
+      (l.113: next goal; does not look very clean).
+      Done in the proof: finite affine cover 𝒰, models U' i over the
+      compositum E₀, the intersections W i j (affine), their preimages
+      W' i j in U' i _ K̄ (compact), descended via
+      exists_opens_basechange_of_isCompact to F i j, the compositum E,
+      U i := U' i _ E, opens V i j ⊆ U i and isos eU i.
+      Still `sorry` (l.179): the gluing (transition maps t, t', cocycle,
+      descended to a further finite extension; base change commutes with
+      gluing is not in Mathlib). The plan is in the comment after the proof.
+[ ] "Hey claude" note (l.38): move the results about affine schemes
+      (isPushout_induction, exists_opens_basechange_of_isCompact) to
+      Affine.lean.
+[ ] Cleanup: module docstring typos ("seperated"); seven blank lines
+      after the proof (l.180–186).
 
 
 AlgebraicGeometry/RationalModel/Morphism.lean
@@ -381,8 +393,9 @@ exists_model_of_isSeparated_of_locallyOfFiniteType.
       Descend along Spec K̄ → Spec E (surjective, flat, quasi-compact):
       UniversallyClosed and LocallyOfFiniteType descend in Mathlib
       (FlatDescent.lean, LocalFlatDescent.lean); IsSeparated does not
-      (would need descent of closed immersions) — or get it from the
-      statement once it says IsSeparated X₀.hom.
+      (would need descent of closed immersions) — but the statement of
+      exists_model_of_isSeparated_of_locallyOfFiniteType now gives
+      IsSeparated X₀.hom.
 [ ] geometricallyIntegral_model                                      (l.33)
 [ ] Module docstring is empty.
 
