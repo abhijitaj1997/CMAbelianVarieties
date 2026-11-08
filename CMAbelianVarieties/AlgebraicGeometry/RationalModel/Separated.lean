@@ -35,6 +35,10 @@ lemma isAffine_opensRange_inf_opensRange (𝒰 : X.left.OpenCover)
   #check ((𝒰.f i).opensRange ⊓ (𝒰.f j).opensRange : X.left.Opens)
   sorry
 
+#check intersectionOpens_ofSeparated
+
+lemma intersectionOpens_ofSeparated' : 1 = 1 := sorry
+
 /- Hey claude, the results about affine schemes should be moved to the file `Affine.lean`-/
 
 -- written by AI (Claude)
@@ -110,7 +114,6 @@ lemma exists_opens_basechange_of_isCompact {F L : Type u} [Field F] [Field L] [A
     ⨆ V, (U _ F').left.basicOpen (g' V), ?_⟩
   simp only [Scheme.Hom.preimage_iSup, Scheme.preimage_basicOpen_top, hg', hg, sSup_eq_iSup']
 
-/-pick up from here : This should be the next goal. It also doesn't look very clean.-/
 -- aided by claude
 variable (X) in
 theorem exists_model_of_isSeparated_of_locallyOfFiniteType [LocallyOfFiniteType X.hom]
@@ -181,43 +184,64 @@ theorem exists_model_of_isSeparated_of_locallyOfFiniteType [LocallyOfFiniteType 
 
 
 
+/- (Written by AI.) Steps to finish `exists_model_of_isSeparated_of_locallyOfFiniteType`.
+Notation as in the proof; `K̄ := AlgebraicClosure K`. Done so far: the finite affine cover `𝒰`,
+the models `U i` over `E`, the opens `V i j ⊆ U i` descending `W i j`, and the isos `eU i`.
 
 
+Step 1 (lemma: descending ring maps). For finitely generated `E`-algebras `A`, `B` and a
+`K̄`-algebra map `φ : K̄ ⊗[E] A → K̄ ⊗[E] B`, there is a finite `E ⊆ E' ⊆ K̄` and an
+`E'`-algebra map `E' ⊗[E] A → E' ⊗[E] B` whose base change is `φ`. Proof: adjoin the
+coefficients of the images of the generators of `A` (as for `key` in
+`exists_opens_basechange_of_isCompact`); relations hold over `E'` by Step 2.
 
-/- (Written by AI.) Gluing the `U i`.
 
-Structure: `AlgebraicGeometry.Scheme.GlueData` (Mathlib/AlgebraicGeometry/Gluing.lean).
-To build `D : Scheme.GlueData` we need:
-- `J := 𝒰.I₀` and `U i := (U i).left`.
-- `V (i, j)`: a scheme with an open immersion `f i j : V (i, j) ⟶ U i`. This should be a
-  model over `E` of the intersection `(𝒰.f i).opensRange ⊓ (𝒰.f j).opensRange`, seen inside
-  `U i`. (`X` separated + `𝒰.X i` affine ⇒ these intersections are affine.)
-- `t i j : V (i, j) ⟶ V (j, i)`: the transition isomorphisms. Over `AlgebraicClosure K`
-  these are `pullbackSymmetry`, as in `Scheme.OpenCover.gluedCover`.
-- `t' i j k`: the maps on triple overlaps
-  `pullback (f i j) (f i k) ⟶ pullback (f j k) (f j i)`.
-- Axioms: `f_id : IsIso (f i i)`, `t_id : t i i = 𝟙 _`, `t_fac : t' i j k ≫ pullback.snd _ _ =
-  pullback.fst _ _ ≫ t i j`, `cocycle : t' i j k ≫ t' j k i ≫ t' k i j = 𝟙 _`,
-  and `f_open : IsOpenImmersion (f i j)`.
+Step 2 (lemma: equalities descend for free). For `E' ⊆ K̄`, the map `E' ⊗[E] B → K̄ ⊗[E] B`
+is injective (`K̄` is flat over `E'`). So two morphisms of affine `E'`-schemes that agree
+after base change to `K̄` are equal.
 
-What we get from it:
-- `D.glued : Scheme`, with open immersions `D.ι i : D.U i ⟶ D.glued` and the open cover
-  `D.openCover`.
-- The structure map `D.glued ⟶ Spec ↧E`: glue the `(U i).hom` with
-  `Scheme.Cover.glueMorphisms D.openCover (fun i ↦ (U i).hom) _` (compatibility on the `V`s).
-- Comparison with `X`: Mathlib glues `X`'s own cover via `𝒰.gluedCover` and has
-  `IsIso 𝒰.fromGlued : 𝒰.gluedCover.glued ⟶ X.left`. So one shows `D` base changed to
-  `AlgebraicClosure K` is `𝒰.gluedCover` (base change commutes with gluing along an open
-  cover; this is not in Mathlib) and then composes with `𝒰.fromGlued`.
 
-Warning: `E := ⨆ i, E' i` is not enough. The `V (i, j)`, `t i j`, `t' i j k` exist over
-`AlgebraicClosure K` but must be descended to a finite extension, which may be bigger:
-- Opens: each intersection is a finite union of basic opens `D(g)` with
-  `g ∈ Γ(U i _ (AlgebraicClosure K))`; enlarge `E` by the finitely many coefficients of the `g`s.
-- Morphisms (`t`, `t'`) and the equalities (`t_id`, `t_fac`, `cocycle`) descend to some finite
-  extension: `Scheme.exists_hom_hom_comp_eq_comp_of_locallyOfFiniteType`,
-  `Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation`
-  (Mathlib/AlgebraicGeometry/AffineTransitionLimit.lean), using
-  `Spec ↧(AlgebraicClosure K) = lim Spec ↧E'` over finite `E'`.
-The index is finite, so finitely many enlargements still give a finite extension. So it is
-easier to first collect all the data over `AlgebraicClosure K`, then take one compositum. -/
+Step 3 (affine overlaps). Make `V i j` (and `V i j ⊓ V i k`) affine over a finite extension.
+Over `K̄` they are affine (`X` separated, `intersectionOpens_ofSeparated`). Options: descend
+affineness (`Y → Spec Γ(Y)` is an iso after base change, and isomorphisms descend,
+`FlatDescent.lean`; needs `Γ` commuting with flat base change), or
+`Scheme.exists_isAffine_of_isLimit`.
+
+
+Step 4 (transition maps). Descend `t i j : V i j ≅ V j i`; over `K̄` it is
+`eU i`, then the identity of `W i j`, then `(eU j).symm`. Descend the map and its inverse by
+Step 1; both composites are the identity by Step 2.
+
+
+Step 5 (triple overlaps). Show that `t i j` maps `V i j ⊓ V i k` into `V j k ⊓ V j i` (check
+after base change; the projection to `U i` is surjective), giving `t' i j k`.
+
+
+Step 6 (gluing axioms). `f_id`, `t_id`, `t_fac`, `cocycle`: by Step 2 it suffices to check
+them over `K̄`, where they are the axioms of `𝒰.gluedCover`.
+
+
+Step 7 (one field). Replace `E` by the compositum of the finitely many fields from Steps 3–6
+(finite, as `𝒰.I₀` is finite) and base change all data to it (`basechange_over_Field.trans`).
+
+
+Step 8 (glue). Build `D : Scheme.GlueData` and set `X₀ := Over.mk (D.openCover.glueMorphisms
+(fun i ↦ (U i).hom) _)` (compatible on the `V i j` since the `t i j` are over `E`).
+
+
+Step 9 (`LocallyOfFiniteType X₀.hom`). Local on the source; each `U i` is of finite type.
+
+
+Step 10 (`X₀ _ K̄ ≅ X`; base change commutes with gluing, not in Mathlib). The pullback of
+`D.openCover` covers `X₀ _ K̄` by the `U i _ K̄`. Glue `eU i ≫ 𝒰.f i` to a map
+`X₀ _ K̄ ⟶ X` and the inverses to `X ⟶ X₀ _ K̄` (compatible on overlaps by Step 4); check
+both composites are identities on the covers.
+
+
+Step 11 (`IsSeparated X₀.hom`). Criterion: glued from affines `U i` with `V i j` affine and
+`Γ(U i) ⊗[E] Γ(U j) → Γ(V i j)` surjective ⇒ separated (find in Mathlib or prove, e.g. via
+`isSeparated_iff_isClosedImmersion_prod_lift`). Surjectivity holds after `⊗[E] K̄` (`X`
+separated), hence over `E` (`K̄` faithfully flat over `E`).
+
+
+Step 12 (assemble). `refine ⟨E, _, X₀, _, _, ⟨_⟩⟩` with Steps 7, 11, 9, 10. -/

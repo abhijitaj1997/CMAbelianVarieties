@@ -263,10 +263,105 @@ open AlgebraicGeometry CategoryTheory
 variable {A : Type*} [CommRing A]
 variable {X : Over (Spec ↧A)} [IsSeparated X.hom]
 
+def intersectionOpens_map (U V : X.left.Opens) [IsAffine U] [IsAffine V] :
+    (U ⊓ V).toScheme ⟶ Limits.pullback (U.ι ≫ X.hom) (V.ι ≫ X.hom) :=
+  Limits.pullback.lift (X.left.homOfLE inf_le_left) (X.left.homOfLE inf_le_right)
+    (by simp [Scheme.homOfLE_ι_assoc])
+
+-- aided by claude
+lemma intersectionOpens_map_ofSeparated (U V : X.left.Opens) [IsAffine U] [IsAffine V] :
+    IsClosedImmersion (intersectionOpens_map U V) := by
+  have h : IsPullback (U ⊓ V).ι (intersectionOpens_map U V) (Limits.pullback.diagonal X.hom)
+      (Limits.pullback.map _ _ _ _ U.ι V.ι (𝟙 _) (by simp) (by simp)) := by
+    refine .of_iso_pullback ⟨?_⟩ ((isPullback_opens_inf U V).isoPullback ≪≫
+      (Limits.pullbackDiagonalMapIdIso U.ι V.ι X.hom).symm) ?_ ?_
+    · ext1 <;> simp [intersectionOpens_map, Scheme.homOfLE_ι]
+    · simp [Scheme.homOfLE_ι]
+    · ext1 <;> simp [intersectionOpens_map]
+  exact MorphismProperty.IsStableUnderBaseChange.of_isPullback h inferInstance
+
 -- proof written by claude
 lemma intersectionOpens_ofSeparated (U V : X.left.Opens) [IsAffine U] [IsAffine V] :
     IsAffine (U ⊓ V : X.left.Opens) := by
   have : X.left.IsSeparated := ⟨Limits.terminal.comp_from X.hom ▸ inferInstance⟩
   exact IsAffineOpen.inf ‹_› ‹_›
+
+-- written by AI (Claude): via `A ≅ Γ(Spec A, ⊤) ⟶ Γ(U, ⊤)`, induced by `U ⟶ X ⟶ Spec A`
+instance affineOpen_Algebra {U : X.left.Opens} [IsAffine U] :
+    Algebra A Γ(U.toScheme, ⊤) :=
+  ((Scheme.ΓSpecIso (.of A)).inv ≫ (U.ι ≫ X.hom).appTop).hom.toAlgebra
+
+open TensorProduct in
+def productOpens_globalsections_ofAffine (U V : X.left.Opens) [IsAffine U] [IsAffine V] :
+    Γ(Limits.pullback (U.ι ≫ X.hom) (V.ι ≫ X.hom), ⊤) ≃+*
+    (Γ(U.toScheme, ⊤) ⊗[A] Γ(V.toScheme, ⊤)) :=
+  ((CommRingCat.isPushout_tensorProduct A _ _).isoIsPushout _ _
+  ((isPushout_appTop_of_isPullback (IsPullback.of_hasPullback _ _)).of_iso
+  (Scheme.ΓSpecIso (.of A)) (Iso.refl _) (Iso.refl _) (Iso.refl _)
+  (f' := CommRingCat.ofHom (algebraMap A Γ(U.toScheme, ⊤)))
+  (g' := CommRingCat.ofHom (algebraMap A Γ(V.toScheme, ⊤)))
+  (inl' := (Limits.pullback.fst (U.ι ≫ X.hom) (V.ι ≫ X.hom)).appTop)
+  (inr' := (Limits.pullback.snd (U.ι ≫ X.hom) (V.ι ≫ X.hom)).appTop)
+  (by rw [Iso.refl_hom, Category.comp_id]; exact (Iso.hom_inv_id_assoc _ _).symm)
+  (by rw [Iso.refl_hom, Category.comp_id]; exact (Iso.hom_inv_id_assoc _ _).symm)
+  (by simp) (by simp))).symm.commRingCatIsoToRingEquiv
+
+open TensorProduct in
+def intersectionOpens_ideal (U V : X.left.Opens) [IsAffine U] [IsAffine V] :
+    Ideal (Γ(U.toScheme, ⊤) ⊗[A] Γ(V.toScheme, ⊤)) :=
+  (RingHom.ker (intersectionOpens_map U V).appTop.hom).map
+    (productOpens_globalsections_ofAffine U V)
+
+-- written by AI (Claude)
+/-- The (scheme-theoretic) image of the closed immersion `U ⊓ V ⟶ U ×_A V`, a closed subscheme
+of `U ×_A V`. -/
+def Z (U V : X.left.Opens) [IsAffine U] [IsAffine V] : Scheme :=
+  (intersectionOpens_map U V).image
+
+-- statement and proof written by AI (Claude)
+/-- `intersectionOpens_ideal U V` is the ideal of definition of `Z U V ⊆ U ×_A V`: the kernel of
+`Z U V ⟶ U ×_A V` on global sections, seen in `Γ(U) ⊗[A] Γ(V)`. -/
+lemma intersectionOpens_ideal_eq (U V : X.left.Opens) [IsAffine U] [IsAffine V] :
+    intersectionOpens_ideal U V = ((intersectionOpens_map U V).imageι.ker.ideal
+      ⟨⊤, isAffineOpen_top _⟩).map (productOpens_globalsections_ofAffine U V) := by
+  have := intersectionOpens_map_ofSeparated U V
+  rw [Scheme.IdealSheafData.ker_subschemeι, Scheme.Hom.ker_apply]
+  rfl
+
+-- written by AI (Claude)
+/-- The map `Z U V ⟶ U`: the inclusion into `U ×_A V`, followed by the first projection. -/
+def Z.map_fst (U V : X.left.Opens) [IsAffine U] [IsAffine V] : Z U V ⟶ U.toScheme :=
+  (intersectionOpens_map U V).imageι ≫ Limits.pullback.fst _ _
+
+-- written by AI (Claude)
+/-- The map `Z U V ⟶ V`: the inclusion into `U ×_A V`, followed by the second projection. -/
+def Z.map_snd (U V : X.left.Opens) [IsAffine U] [IsAffine V] : Z U V ⟶ V.toScheme :=
+  (intersectionOpens_map U V).imageι ≫ Limits.pullback.snd _ _
+
+-- proof written by AI (Claude)
+/-- `Z.map_fst U V` is an open immersion: `Z U V ≅ U ⊓ V` (`toImage` of a closed immersion is an
+isomorphism), and under this isomorphism `Z.map_fst U V` is the inclusion `U ⊓ V ⟶ U`. -/
+instance Z.isOpenImmersion_map_fst (U V : X.left.Opens) [IsAffine U] [IsAffine V] :
+    IsOpenImmersion (Z.map_fst U V) := by
+  have := intersectionOpens_map_ofSeparated U V
+  have h : (intersectionOpens_map U V).imageι ≫ Limits.pullback.fst _ _ =
+      inv (intersectionOpens_map U V).toImage ≫ X.left.homOfLE inf_le_left := by
+    rw [IsIso.eq_inv_comp, Scheme.Hom.toImage_imageι_assoc]
+    simp [intersectionOpens_map]
+  exact (h ▸ inferInstance :
+    IsOpenImmersion ((intersectionOpens_map U V).imageι ≫ Limits.pullback.fst _ _))
+
+-- proof written by AI (Claude)
+/-- `Z.map_snd U V` is an open immersion: under `Z U V ≅ U ⊓ V` it is the inclusion
+`U ⊓ V ⟶ V`. -/
+instance Z.isOpenImmersion_map_snd (U V : X.left.Opens) [IsAffine U] [IsAffine V] :
+    IsOpenImmersion (Z.map_snd U V) := by
+  have := intersectionOpens_map_ofSeparated U V
+  have h : (intersectionOpens_map U V).imageι ≫ Limits.pullback.snd _ _ =
+      inv (intersectionOpens_map U V).toImage ≫ X.left.homOfLE inf_le_right := by
+    rw [IsIso.eq_inv_comp, Scheme.Hom.toImage_imageι_assoc]
+    simp [intersectionOpens_map]
+  exact (h ▸ inferInstance :
+    IsOpenImmersion ((intersectionOpens_map U V).imageι ≫ Limits.pullback.snd _ _))
 
 end SeparateOpen

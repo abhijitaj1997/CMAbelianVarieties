@@ -6,6 +6,7 @@ public import CMAbelianVarieties.AbstractNonsense.IntHom
 public import CMAbelianVarieties.AbstractNonsense.PullbackAddGrp
 public import CMAbelianVarieties.Algebra.CMField
 public import CMAbelianVarieties.Algebra.FieldRepresentations
+public import CMAbelianVarieties.Algebra.ForAG
 public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Catalogue
 public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Commutativity
 public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Complex
