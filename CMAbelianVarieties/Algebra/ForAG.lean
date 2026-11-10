@@ -8,7 +8,6 @@ module
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 public import Mathlib.RingTheory.Extension.Presentation.Core
 public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
-public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.CategoryTheory.Category.Preorder
 
 /-!

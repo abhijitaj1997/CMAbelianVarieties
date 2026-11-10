@@ -173,7 +173,10 @@ theorem exists_model_of_isSeparated_of_locallyOfFiniteType [LocallyOfFiniteType 
   have hW_aff (i j : 𝒰.I₀) : IsAffine (Over.mk ((W i j).ι ≫ X.hom)).left :=
     have : IsAffine (𝒰.f i).opensRange := isAffineOpen_opensRange (𝒰.f i)
     have : IsAffine (𝒰.f j).opensRange := isAffineOpen_opensRange (𝒰.f j)
-    intersectionOpens_ofSeparated _ _
+    -- note by AI (Claude): commented out, since `intersectionOpens_ofSeparated` changed its
+    -- statement (it is now about `finiteAffineCover`) and no longer fits here.
+    -- intersectionOpens_ofSeparated _ _
+    sorry
   have (i : 𝒰.I₀) : IsScalarTower (E₀' i) E₀ (AlgebraicClosure K) :=
     .of_algebraMap_eq fun _ ↦ rfl
   have hU'_aff (i : 𝒰.I₀) : IsAffine (U' i).left :=

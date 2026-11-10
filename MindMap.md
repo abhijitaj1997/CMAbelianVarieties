@@ -33,7 +33,7 @@ graph TD
     subgraph RM["RationalModel/"]
       direction TB
       RMAffine["<b>Affine</b><br/><i>affine X of finite type over K̄ has a model over a finite E/K</i>"]
-      RMSeparated["<b>Separated</b><br/><i>same for separated X, by gluing affine models</i>"]
+      RMSeparated["<b>Separated</b><br/><i>same for separated X: affine models of the charts, their intersections via ideals</i>"]
       RMMorphism["<b>Morphism</b><br/><i>the model is proper / geometrically integral</i>"]
       RMGroupStructure["<b>GroupStructure</b><br/><i>group structures descend to a field of definition</i>"]
     end
@@ -81,12 +81,14 @@ graph TD
     direction TB
     CMField["<b>CMField</b><br/><i>ℝ ⊗[ℚ] F for a CM field F, via complex embeddings</i>"]
     FieldRepresentations["<b>FieldRepresentations</b><br/><i>V = ⊕ V_σ for F →+* End_ℂ V</i>"]
+    ForAG["<b>ForAG</b><br/><i>models of finite-type algebras and ideals over finite subextensions, IntermediateField.forget</i>"]
   end
 
   %% ---------- Test ----------
   subgraph T["Test/ (top level, outside the library)"]
     Test["<b>Test</b><br/><i>scratch</i>"]
     Test1["<b>Test1</b><br/><i>scratch, Mathlib only</i>"]
+    RMSeparatedOld["<b>SeparatedOld</b><br/><i>previous version of RationalModel/Separated</i>"]
   end
 
   %% ---------- imports ----------
@@ -104,6 +106,8 @@ graph TD
   RMMorphism --> RMSeparated
   RMSeparated --> RMAffine
   RMAffine --> AGBasic
+  RMAffine --> ForAG
+  RMSeparatedOld --> RMAffine
   RMGroupStructure --> AGBasic
   EndBaseChange --> Endomorphism
   EndBaseChange --> FunctorCommAddObj
@@ -142,7 +146,7 @@ graph TD
 
   class Theorem goal
   class Commutativity hub
-  class EndomorphismRing,FiniteGen,IntHomAV,Complex,TorsionFree,TateModule,GlobalSections,IntHomAN,PullbackAddGrp,Finite,Endomorphism,LieAlgebra,CMDefn,Test,AGBasic,AVRationalModel,RMAffine,RMSeparated,RMMorphism,RMGroupStructure,EndBaseChange,FunctorCommAddObj,Defn,Pottentially,EndRingIso,Dimension,Integral,AGDimension,CMField,FieldRepresentations,EndLimit,HomRationalModel connected
+  class EndomorphismRing,FiniteGen,IntHomAV,Complex,TorsionFree,TateModule,GlobalSections,IntHomAN,PullbackAddGrp,Finite,Endomorphism,LieAlgebra,CMDefn,Test,AGBasic,AVRationalModel,RMAffine,RMSeparated,RMSeparatedOld,ForAG,RMMorphism,RMGroupStructure,EndBaseChange,FunctorCommAddObj,Defn,Pottentially,EndRingIso,Dimension,Integral,AGDimension,CMField,FieldRepresentations,EndLimit,HomRationalModel connected
   class AVCatalogue,InvertibleSheaf,TheCube,AGCatalogue,CMAlgebra,Test1 unused
 ```
 

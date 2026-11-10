@@ -358,31 +358,52 @@ E/K ⊆ K̄).
 
 AlgebraicGeometry/RationalModel/Separated.lean
 ----------------------------------------------
-New file (2026-10-30, renamed from IntegralModel/Model.lean). Line
-numbers as of 2026-11-07 (commit 008d975).
-CommRingCat.isPushout_induction (l.43) and
-exists_opens_basechange_of_isCompact (l.68: a quasi-compact open of
+New approach (2026-11-10), via the ideals of the intersections of the
+charts. Line numbers as of 2026-11-10.
+[ ] exists_ideal_map_Θ_eq_intersectionOpens_ideal                    (l.212)
+      Last step still `sorry` (l.319). Marked "Pick up from here" (l.283):
+      the helper lemmas (ΓBasechange_tensorAlgEquiv replacing
+      ΓBasechange_tensorRingEquiv, Θ_tmul, ideal_map_Θ_eq_of_basechange,
+      ...) are proved, but only in a scratch file outside the project; the
+      note lists them and the remaining lines of the proof.
+      Heartbeats are tight (~123k of 200k before the last step).
+[ ] `have : IsAffine Uij.left := sorry` (l.267) in the same proof.
+[ ] exists_model_of_isSeparated_of_locallyOfFiniteType: `sorry`     (l.322)
+[ ] Cleanup: the "Note by AI (Claude): still needed" comment (l.315) is
+      out of date; the type ascription in `Θ` (l.159) may no longer be
+      needed after the `attribute [-instance]` line (l.25); module
+      docstring typos ("seperated").
+
+
+Test/SeparatedOld.lean
+----------------------
+The previous version of RationalModel/Separated.lean (was
+IntegralModel/Model.lean); moved to Test/ (2026-11-10), outside the library.
+Line numbers as of 2026-11-10.
+CommRingCat.isPushout_induction (l.79) and
+exists_opens_basechange_of_isCompact (l.104: a quasi-compact open of
 U _ L comes from U _ F' for a finite F' ⊆ L) are done.
-[ ] isAffine_opensRange_inf_opensRange (l.30): intersections of affine
+[ ] isAffine_opensRange_inf_opensRange (l.66): intersections of affine
       opens of a separated X are affine. Still `sorry`, but should now
       follow from intersectionOpens_ofSeparated (AlgebraicGeometry/Basic.lean)
-      with isAffineOpen_opensRange. Leftover #checks (l.34–35).
-[ ] exists_model_of_isSeparated_of_locallyOfFiniteType               (l.116)
-      Statement now says IsSeparated X₀.hom. Marked "Pick up from here"
-      (l.113: next goal; does not look very clean).
+      with isAffineOpen_opensRange. Leftover #checks (l.70–71).
+[ ] exists_model_of_isSeparated_of_locallyOfFiniteType               (l.151)
+      Statement now says IsSeparated X₀.hom.
       Done in the proof: finite affine cover 𝒰, models U' i over the
       compositum E₀, the intersections W i j (affine), their preimages
       W' i j in U' i _ K̄ (compact), descended via
       exists_opens_basechange_of_isCompact to F i j, the compositum E,
       U i := U' i _ E, opens V i j ⊆ U i and isos eU i.
-      Still `sorry` (l.179): the gluing (transition maps t, t', cocycle,
-      descended to a further finite extension; base change commutes with
-      gluing is not in Mathlib). The plan is in the comment after the proof.
-[ ] "Hey claude" note (l.38): move the results about affine schemes
+      Still `sorry`: hW_aff (l.179; `intersectionOpens_ofSeparated _ _`
+      no longer fits since that lemma changed, commented out), and the
+      gluing (l.217: transition maps t, t', cocycle, descended to a further
+      finite extension; base change commutes with gluing is not in
+      Mathlib). The plan is in the comment after the proof.
+[ ] "Hey claude" note (l.74): move the results about affine schemes
       (isPushout_induction, exists_opens_basechange_of_isCompact) to
       Affine.lean.
-[ ] Cleanup: module docstring typos ("seperated"); seven blank lines
-      after the proof (l.180–186).
+[ ] Cleanup: module docstring typos ("seperated"); blank lines after the
+      proof (l.218–221).
 
 
 AlgebraicGeometry/RationalModel/Morphism.lean

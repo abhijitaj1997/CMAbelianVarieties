@@ -280,7 +280,6 @@ lemma exists_ideal_map_Θ_eq_intersectionOpens_ideal {i j : (𝒰 X).I₀} :
     exact ΓBasechange_tensorRingEquiv F Uij Uij_global
   let J := I'.map map.symm.toRingHom
   use J
-  -- to claude : finish this
   -- Pick up from here : (note by AI (Claude), 2026-11-10) state of the `to claude : finish this`
   -- command above. Agreed with the user: top-level helper lemmas are OK; restate
   -- `ΓBasechange_tensorRingEquiv` in the forward direction; `have map` becomes `let map`.
