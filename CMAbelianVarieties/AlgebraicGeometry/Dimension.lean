@@ -92,7 +92,6 @@ open TensorProduct Scheme Algebra in
 lemma topologicalKrullDim_basechange_affine (X : Over (Spec ↧K)) [IsAffine X.left]
     [LocallyOfFiniteType X.hom] (K₁ : Type u) [Field K₁] [Algebra K K₁] :
     topologicalKrullDim X.left = topologicalKrullDim (X _ K₁).left := by
-  algebraize [((ΓSpecIso ↧K).inv ≫ X.hom.appTop).hom]
   have : IsAffine (X _ K₁).left := by dsimp; infer_instance
   have : FiniteType K Γ(X.left, ⊤) :=
     (HasRingHomProperty.appTop @LocallyOfFiniteType X.hom ‹_›).comp

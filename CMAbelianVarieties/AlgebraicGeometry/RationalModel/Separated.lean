@@ -17,231 +17,274 @@ type `X₀` over `E`, such that `X₀ _ (AlgebraicClosure ℚ) ≅ X`.
 
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
 open CategoryTheory AlgebraicGeometry
 open scoped BaseChange
 
 universe u
 
+
 variable {K : Type u} [Field K]
-variable {X : Over (Spec ↧(AlgebraicClosure K))} [IsSeparated X.hom]
+variable {X : Over (Spec ↧(AlgebraicClosure K))} [IsSeparated X.hom] [CompactSpace X.left]
+  [LocallyOfFiniteType X.hom]
 
-lemma isAffine_opensRange_inf_opensRange (𝒰 : X.left.OpenCover)
-    [∀ i : 𝒰.I₀, IsAffine (𝒰.X i)]:
-    ∀ i j : 𝒰.I₀, IsAffine ((𝒰.f i).opensRange ⊓ (𝒰.f j).opensRange : X.left.Opens) := by
-  intro i j
-  #check Limits.pullback (𝒰.f i) (𝒰.f j)
-  #check ((𝒰.f i).opensRange ⊓ (𝒰.f j).opensRange : X.left.Opens)
-  sorry
+variable (X) in
+def 𝒰 : X.left.OpenCover := X.left.affineCover.finiteSubcover
 
-#check intersectionOpens_ofSeparated
+instance {i : (𝒰 X).I₀} : Algebra (AlgebraicClosure K) Γ((𝒰 X).X i, ⊤) := by
+  algebraize [((Scheme.ΓSpecIso ↧(AlgebraicClosure K)).symm.hom ≫ ((𝒰 X).f i ≫ X.hom).appTop).hom]
+  infer_instance
 
-lemma intersectionOpens_ofSeparated' : 1 = 1 := sorry
+instance : Fintype (𝒰 X).I₀ :=
+  inferInstanceAs (Fintype X.left.affineCover.finiteSubcover.I₀)
 
-/- Hey claude, the results about affine schemes should be moved to the file `Affine.lean`-/
+omit [IsSeparated X.hom] [LocallyOfFiniteType X.hom] in
+instance h𝒰_aff (i : (𝒰 X).I₀) : IsAffine (Over.mk ((𝒰 X).f i ≫ X.hom)).left :=
+  inferInstanceAs (IsAffine (X.left.affineCover.X _))
 
--- written by AI (Claude)
-/-- Every element of the bottom right corner `P` of a pushout square in `CommRingCat` is a sum
-of products `inl x * inr y` (since `P ≅ B ⊗[A] C`). -/
-lemma CommRingCat.isPushout_induction {A B C P : CommRingCat.{u}} {f : A ⟶ B} {g : A ⟶ C}
-    {inl : B ⟶ P} {inr : C ⟶ P} (h : IsPushout f g inl inr) {Q : P → Prop}
-    (mul : ∀ x y, Q (inl x * inr y)) (add : ∀ p q, Q p → Q q → Q (p + q)) (p : P) : Q p := by
-  let := f.hom.toAlgebra
-  let := g.hom.toAlgebra
-  have ht := CommRingCat.isPushout_tensorProduct A B C
-  obtain ⟨t, rfl⟩ : ∃ t, (ht.isoIsPushout _ _ h).hom t = p :=
-    ⟨(ht.isoIsPushout _ _ h).inv p, by simp⟩
-  induction t using TensorProduct.inductionOn with
-  | tmul x y =>
-    have hl := ConcreteCategory.congr_hom (IsPushout.inl_isoIsPushout_hom (h := ht) (h' := h)) x
-    have hr := ConcreteCategory.congr_hom (IsPushout.inr_isoIsPushout_hom (h := ht) (h' := h)) y
-    rw [← mul_one x, ← one_mul y, ← Algebra.TensorProduct.tmul_mul_tmul, map_mul]
-    convert mul x y
-    · exact hl
-    · exact hr
-  | add s t hs ht => simpa using add _ _ hs ht
+omit [IsSeparated X.hom] in
+instance h𝒰_fty (i : (𝒰 X).I₀) : LocallyOfFiniteType (Over.mk ((𝒰 X).f i ≫ X.hom)).hom :=
+  inferInstanceAs (LocallyOfFiniteType ((𝒰 X).f i ≫ X.hom))
 
--- statement and proof written by AI (Claude)
-open Limits in
-/-- A quasi-compact open of `U _ L` already comes from `U _ F'` for some finite subextension
-`F'` of `L/F`. Idea: write it as a finite union of basic opens `D(g)`, and adjoin to `F`
-the finitely many coefficients of the `g`s in `Γ(U) ⊗[F] L`. Alternatively, it is
-`exists_preimage_eq` (Mathlib/AlgebraicGeometry/AffineTransitionLimit.lean), once `U _ L` is
-the limit of the `U _ F'`. -/
-lemma exists_opens_basechange_of_isCompact {F L : Type u} [Field F] [Field L] [Algebra F L]
-    [Algebra.IsAlgebraic F L] (U : Over (Spec ↧F)) [IsAffine U.left]
-    (W : (U _ L).left.Opens) (hW : IsCompact (W : Set (U _ L).left)) :
-    ∃ F' : IntermediateField F L, FiniteDimensional F F' ∧
-      ∃ W₀ : (U _ F').left.Opens, basechange_over_Field.proj U F' L ⁻¹ᵁ W₀ = W := by
-  classical
-  -- every global section of `U _ L` comes from `U _ F'` once `F'` contains a finite set `s`
-  have key : ∀ g : Γ((U _ L).left, ⊤), ∃ s : Finset L, ∀ F' : IntermediateField F L,
-      (s : Set L) ⊆ F' →
-        ∃ g' : Γ((U _ F').left, ⊤), (basechange_over_Field.proj U F' L).appTop g' = g := by
-    refine CommRingCat.isPushout_induction
-      (isPushout_appTop_of_isPullback (IsPullback.of_hasPullback _ _)) (fun x y ↦ ?_)
-      fun p q ⟨s, hs⟩ ⟨t, ht⟩ ↦ ?_
-    · refine ⟨{(Scheme.ΓSpecIso _).hom y}, fun F' hF' ↦ ⟨Scheme.Hom.appTop
-        (pullback.fst U.hom (Spec.map (CommRingCat.ofHom (algebraMap F F')))) x *
-        Scheme.Hom.appTop (pullback.snd U.hom (Spec.map (CommRingCat.ofHom (algebraMap F F'))))
-          ((Scheme.ΓSpecIso (.of F')).inv
-            ⟨_, hF' (Finset.mem_coe.2 (Finset.mem_singleton_self _))⟩), ?_⟩⟩
-      rw [map_mul, ← CommRingCat.comp_apply, ← CommRingCat.comp_apply, ← Scheme.Hom.comp_appTop,
-        ← Scheme.Hom.comp_appTop]
-      simp only [basechange_over_Field.proj, pullback.lift_fst, pullback.lift_snd,
-        Scheme.Hom.comp_appTop, CommRingCat.comp_apply]
-      congr 2
-      rw [← CommRingCat.comp_apply, ← Scheme.ΓSpecIso_inv_naturality]
-      exact (Scheme.ΓSpecIso _).hom_inv_id_apply y
-    · refine ⟨s ∪ t, fun F' hF' ↦ ?_⟩
-      rw [Finset.coe_union, Set.union_subset_iff] at hF'
-      obtain ⟨p', rfl⟩ := hs F' hF'.1
-      obtain ⟨q', rfl⟩ := ht F' hF'.2
-      exact ⟨p' + q', map_add _ _ _⟩
-  -- write `W` as a finite union of basic opens and descend each of them
-  have : IsAffine (U _ L).left := inferInstanceAs (IsAffine (pullback _ _))
-  obtain ⟨Us, hUs, hUsf, rfl⟩ := (isBasis_basicOpen _).exists_finite_of_isCompact hW
-  have := hUsf.to_subtype
-  choose g hg using fun V : Us ↦ hUs V.2
-  choose s hs using fun V : Us ↦ key (g V)
-  let S : Set L := ⋃ V, (s V : Set L)
-  have : Finite S := Set.finite_iUnion (fun V ↦ (s V).finite_toSet) |>.to_subtype
-  let F' := IntermediateField.adjoin F S
-  choose g' hg' using fun V : Us ↦ hs V F'
-    ((Set.subset_iUnion (fun V ↦ (s V : Set L)) V).trans (IntermediateField.subset_adjoin F S))
-  refine ⟨F', IntermediateField.finiteDimensional_adjoin fun x _ ↦ Algebra.IsIntegral.isIntegral x,
-    ⨆ V, (U _ F').left.basicOpen (g' V), ?_⟩
-  simp only [Scheme.Hom.preimage_iSup, Scheme.preimage_basicOpen_top, hg', hg, sSup_eq_iSup']
+def E'' (i : (𝒰 X).I₀) : IntermediateField K (AlgebraicClosure K) :=
+  (exists_model_of_isAffine_of_locallyOfFiniteType (Over.mk ((𝒰 X).f i ≫ X.hom))).choose
+
+def 𝒰₀'' (i : (𝒰 X).I₀) : Over (Spec ↧(E'' i)) :=
+  (exists_model_of_isAffine_of_locallyOfFiniteType (Over.mk ((𝒰 X).f i ≫
+  X.hom))).choose_spec.2.choose
+
+def φ'' {i : (𝒰 X).I₀} : (𝒰₀'' i) _ (AlgebraicClosure K) ≅ (Over.mk ((𝒰 X).f i ≫ X.hom)) :=
+  (exists_model_of_isAffine_of_locallyOfFiniteType (Over.mk ((𝒰 X).f i ≫
+    X.hom))).choose_spec.2.choose_spec.2.2.some
+
+variable (X) in
+def E' : IntermediateField K (AlgebraicClosure K) :=
+  ⨆ i : (𝒰 X).I₀, E'' i
+
+instance : FiniteDimensional K (E' X) :=
+  have {i : (𝒰 X).I₀} : FiniteDimensional K (E'' i) :=
+    (exists_model_of_isAffine_of_locallyOfFiniteType (Over.mk ((𝒰 X).f i ≫ X.hom))).choose_spec.1
+  IntermediateField.finiteDimensional_iSup_of_finite
+
+instance {i : (𝒰 X).I₀} : Algebra (E'' i) (E' X) :=
+  (IntermediateField.inclusion (le_iSup E'' i)).toRingHom.toAlgebra
+
+instance {i : (𝒰 X).I₀} : IsScalarTower (E'' i) (E' X) (AlgebraicClosure K) :=
+  IsScalarTower.of_algebraMap_eq fun _ ↦ rfl
+
+def 𝒰₀' (i : (𝒰 X).I₀) : Over (Spec ↧(E' X)) := (𝒰₀'' i) _ (E' X)
+
+instance {i : (𝒰 X).I₀} : IsAffine (𝒰₀' i).left :=
+  have {i : (𝒰 X).I₀} : IsAffine (𝒰₀'' i).left :=
+    (exists_model_of_isAffine_of_locallyOfFiniteType (Over.mk ((𝒰 X).f i ≫
+      X.hom))).choose_spec.2.choose_spec.1
+  inferInstanceAs (IsAffine (Limits.pullback _ _))
+
+instance {i : (𝒰 X).I₀} : LocallyOfFiniteType (𝒰₀' i).hom :=
+  have {i : (𝒰 X).I₀} : LocallyOfFiniteType (𝒰₀'' i).hom :=
+  (exists_model_of_isAffine_of_locallyOfFiniteType (Over.mk ((𝒰 X).f i ≫
+    X.hom))).choose_spec.2.choose_spec.2.1
+  inferInstanceAs (LocallyOfFiniteType (Limits.pullback.snd _ _))
+
+-- This definition was written by AI (Claude).
+def φ' (i : (𝒰 X).I₀) : (𝒰₀' i) _ (AlgebraicClosure K) ≅ (Over.mk ((𝒰 X).f i ≫ X.hom)) :=
+  basechange_over_Field.trans (𝒰₀'' i) (E' X) (AlgebraicClosure K) ≪≫ φ''
+
+/-
+Data:
+
+- `K ≤ E ≤ K̄` and `[K : E] < ∞`
+- `𝒰₀ᵢ / Spec E` affine and (locally) of finite type
+- `φ : 𝒰₀ᵢ _ K̄ ≅ 𝒰ᵢ`
+-/
+
+section
+
+variable {F : IntermediateField K (AlgebraicClosure K)} [hF : Fact (E' X ≤ F)]
+
+-- This instance was written by AI (Claude).
+instance : Algebra (E' X) F := (IntermediateField.inclusion hF.out).toRingHom.toAlgebra
+
+-- This instance was written by AI (Claude).
+instance : IsScalarTower (E' X) F (AlgebraicClosure K) :=
+  IsScalarTower.of_algebraMap_eq fun _ ↦ rfl
+
+instance {i : (𝒰 X).I₀} : IsAffine ((𝒰₀' i) _ F).left :=
+  inferInstanceAs (IsAffine (Limits.pullback _ _))
+
+variable (F) in
+/-- `((𝒰₀' i) _ F) _ K̄ ≅ (𝒰₀' i) _ K̄ ≅ 𝒰ᵢ`. -/
+def φF (i : (𝒰 X).I₀) : ((𝒰₀' i) _ F) _ (AlgebraicClosure K) ≅ Over.mk ((𝒰 X).f i ≫ X.hom) :=
+  basechange_over_Field.trans (𝒰₀' i) F (AlgebraicClosure K) ≪≫ φ' i
+
+variable (F) in
+open TensorProduct Limits in
+/-- `K̄ ⊗[F] Γ((𝒰₀' i) _ F) ≃ₐ[K̄] Γ(𝒰ᵢ)`: as `φ'_globalSection`, with `E' X` replaced by `F`. -/
+def φF_globalSection (i : (𝒰 X).I₀) :
+    AlgebraicClosure K ⊗[F] Γ(((𝒰₀' i) _ F).left, ⊤) ≃ₐ[AlgebraicClosure K] Γ((𝒰 X).X i, ⊤) := by
+  have : IsAffine ((𝒰 X).X i) := h𝒰_aff i
+  have hpb : IsPullback ((φF F i).inv.left ≫ pullback.fst _ _) ((𝒰 X).f i ≫ X.hom)
+      ((𝒰₀' i) _ F).hom (Spec.map (CommRingCat.ofHom (algebraMap F (AlgebraicClosure K)))) :=
+    (IsPullback.of_hasPullback _ _).of_iso ((Over.forget _).mapIso (φF F i)) (Iso.refl _)
+      (Iso.refl _) (Iso.refl _) (by simp [← Over.comp_left_assoc])
+      (by simpa using (Over.w (φF F i).hom).symm) (by simp) (by simp)
+  have h := (isPushout_appTop_of_isPullback hpb).of_iso (Scheme.ΓSpecIso _) (Iso.refl _)
+    (Scheme.ΓSpecIso _) (Iso.refl _)
+    (f' := CommRingCat.ofHom (algebraMap F Γ(((𝒰₀' i) _ F).left, ⊤)))
+    (g' := CommRingCat.ofHom (algebraMap F (AlgebraicClosure K)))
+    (inl' := ((φF F i).inv.left ≫ pullback.fst _ _).appTop)
+    (inr' := (Scheme.ΓSpecIso _).inv ≫ ((𝒰 X).f i ≫ X.hom).appTop)
+    (by ext; rw [RingHom.algebraMap_toAlgebra]; simp) (by simp [Scheme.ΓSpecIso_naturality])
+    (by simp) (by simp)
+  let e := (CommRingCat.isPushout_tensorProduct F (AlgebraicClosure K)
+    Γ(((𝒰₀' i) _ F).left, ⊤)).isoIsPushout _ _ h.flip
+  exact AlgEquiv.ofRingEquiv (f := e.commRingCatIsoToRingEquiv) fun x ↦
+    congr($((CommRingCat.isPushout_tensorProduct _ _ _).inl_isoIsPushout_hom _ _ h.flip).hom x)
 
 -- aided by claude
+variable (F) in
+open TensorProduct in
+def Θ (i j : (𝒰 X).I₀) : AlgebraicClosure K ⊗[F] (Γ(((𝒰₀' i) _ F).left, ⊤) ⊗[F]
+    Γ(((𝒰₀' j) _ F).left, ⊤)) ≃ₐ[AlgebraicClosure K]
+    Γ((𝒰 X).X i, ⊤) ⊗[AlgebraicClosure K] Γ((𝒰 X).X j, ⊤) :=
+  -- `K̄ ⊗[F] (A ⊗[F] B) ≃ (K̄ ⊗[F] A) ⊗[F] B ≃ (K̄ ⊗[F] A) ⊗[K̄] (K̄ ⊗[F] B)`, then
+  -- `φF_globalSection` on each factor
+  -- the type ascription lets Lean find the `Semiring` instances (avoids an instance mismatch)
+  let e₁ : (AlgebraicClosure K ⊗[F] Γ(((𝒰₀' i) _ F).left, ⊤)) ⊗[F] Γ(((𝒰₀' j) _ F).left, ⊤)
+      ≃ₐ[AlgebraicClosure K]
+      AlgebraicClosure K ⊗[F] (Γ(((𝒰₀' i) _ F).left, ⊤) ⊗[F] Γ(((𝒰₀' j) _ F).left, ⊤)) :=
+    Algebra.TensorProduct.assoc F F (AlgebraicClosure K) (AlgebraicClosure K)
+      Γ(((𝒰₀' i) _ F).left, ⊤) Γ(((𝒰₀' j) _ F).left, ⊤)
+  let e₂ := Algebra.TensorProduct.cancelBaseChange F (AlgebraicClosure K) (AlgebraicClosure K)
+    (AlgebraicClosure K ⊗[F] Γ(((𝒰₀' i) _ F).left, ⊤)) Γ(((𝒰₀' j) _ F).left, ⊤)
+  e₁.symm.trans (e₂.symm.trans
+    (Algebra.TensorProduct.congr (φF_globalSection F i) (φF_globalSection F j)))
+
+end
+
+-- The statement was written by AI (Claude), from the user's description.
+open TensorProduct Limits in
+lemma nameless {i j : (𝒰 X).I₀} : ∃ (F : IntermediateField K (AlgebraicClosure K))
+    (_ : Fact (E' X ≤ F)) (_ : FiniteDimensional (E' X) F)
+    (I : Ideal (Γ(((𝒰₀' i) _ F).left, ⊤) ⊗[F] Γ(((𝒰₀' j) _ F).left, ⊤))),
+    (I.map (Algebra.TensorProduct.includeRight (R := F) (A := AlgebraicClosure K))).map (Θ F i j) =
+      intersectionOpens_ideal i j := by
+  -- written by AI (Claude). The `let` makes the `Fact`-based algebra structure the one used below,
+  -- instead of `Algebra.id`; otherwise the instances of the `F`-section are not found for `E' X`.
+  have : Fact (E' X ≤ E' X) := ⟨le_rfl⟩
+  let _ : Algebra (E' X) (E' X) := (IntermediateField.inclusion le_rfl).toRingHom.toAlgebra
+  let I : Ideal (AlgebraicClosure K ⊗[E' X]
+      (Γ(((𝒰₀' i) _ (E' X)).left, ⊤) ⊗[E' X] Γ(((𝒰₀' j) _ (E' X)).left, ⊤))) :=
+    (intersectionOpens_ideal i j).map (Θ (E' X) i j).symm.toRingHom
+  have : Algebra.FiniteType (E' X)
+      (Γ(((𝒰₀' i) _ (E' X)).left, ⊤) ⊗[E' X] Γ(((𝒰₀' j) _ (E' X)).left, ⊤)) := by
+    have (k : (𝒰 X).I₀) : Algebra.FiniteType (E' X) Γ(((𝒰₀' k) _ (E' X)).left, ⊤) := by
+      have : LocallyOfFiniteType ((𝒰₀' k) _ (E' X)).hom :=
+        inferInstanceAs (LocallyOfFiniteType (pullback.snd _ _))
+      exact (HasRingHomProperty.appTop @LocallyOfFiniteType _ inferInstance).comp
+        (.of_surjective _ (Scheme.ΓSpecIso _).commRingCatIsoToRingEquiv.symm.surjective)
+    exact .trans (S := Γ(((𝒰₀' i) _ (E' X)).left, ⊤)) inferInstance inferInstance
+  -- written by AI (Claude): split up, since a single `rcases` with the nested pattern is slow
+  -- here (it pushed `nameless` over the heartbeat limit)
+  have hlem := exists_ker_rationalModel_map_lift_eq I
+  obtain ⟨F₀, hF₀⟩ := hlem
+  obtain ⟨_, hF₀⟩ := hF₀
+  obtain ⟨I₀', h, hI₀'⟩ := hF₀
+  let F := (((E' X).forget).obj F₀).val
+  let hEF : (E' X) ≤ F := ((IntermediateField.forget (E' X)).obj F₀).property
+  use F, ⟨hEF⟩
+  refine ⟨‹FiniteDimensional (E' X) F₀›, ?_⟩
+  let Uij := Over.mk (pullback.snd ((𝒰₀' i) _ (E' X)).hom ((𝒰₀' j) _ (E' X)).hom ≫
+    ((𝒰₀' j) _ (E' X)).hom)
+  -- written by AI (Claude): `Γ(Yᵢ) ⊗[E' X] Γ(Yⱼ) ≃ₐ[E' X] Γ(Yᵢ ×_{E' X} Yⱼ)`, `Yₖ = 𝒰₀' k _ (E' X)`
+  let f : Γ(((𝒰₀' i) _ (E' X)).left, ⊤) ⊗[E' X] Γ(((𝒰₀' j) _ (E' X)).left, ⊤) ≃ₐ[E' X]
+      Γ(Uij.left, ⊤) := by
+    have h := (isPushout_appTop_of_isPullback (IsPullback.of_hasPullback _ _)).of_iso
+        (Scheme.ΓSpecIso ↧(E' X)) (Iso.refl _) (Iso.refl _) (Iso.refl _)
+        (f' := CommRingCat.ofHom (algebraMap (E' X) Γ(((𝒰₀' i) _ (E' X)).left, ⊤)))
+        (g' := CommRingCat.ofHom (algebraMap (E' X) Γ(((𝒰₀' j) _ (E' X)).left, ⊤)))
+        (inl' := (pullback.fst ((𝒰₀' i) _ (E' X)).hom ((𝒰₀' j) _ (E' X)).hom).appTop)
+        (inr' := (pullback.snd ((𝒰₀' i) _ (E' X)).hom ((𝒰₀' j) _ (E' X)).hom).appTop)
+        (by ext; rw [RingHom.algebraMap_toAlgebra]; simp)
+        (by ext; rw [RingHom.algebraMap_toAlgebra]; simp) (by simp) (by simp)
+    refine AlgEquiv.ofRingEquiv (f := ((CommRingCat.isPushout_tensorProduct (E' X) _ _).isoIsPushout
+      _ _ h).commRingCatIsoToRingEquiv) fun x ↦ ?_
+    have h₁ := congr($((CommRingCat.isPushout_tensorProduct (E' X) _ _).inl_isoIsPushout_hom _ _
+      h).hom (algebraMap (E' X) Γ(((𝒰₀' i) _ (E' X)).left, ⊤) x))
+    refine h₁.trans ?_
+    simp only [RingHom.algebraMap_toAlgebra]
+    change ((Scheme.ΓSpecIso _).inv ≫ ((𝒰₀' i) _ (E' X)).hom.appTop ≫
+      (pullback.fst ((𝒰₀' i) _ (E' X)).hom ((𝒰₀' j) _ (E' X)).hom).appTop).hom x =
+      ((Scheme.ΓSpecIso _).inv ≫ (pullback.snd ((𝒰₀' i) _ (E' X)).hom ((𝒰₀' j) _ (E' X)).hom ≫
+        ((𝒰₀' j) _ (E' X)).hom).appTop).hom x
+    rw [← Scheme.Hom.comp_appTop, pullback.condition]
+  have : IsAffine Uij.left := sorry
+  let Uij_global : Γ(Uij.left, ⊤) ≃ₐ[E' X]
+      Γ(((𝒰₀' i) _ (E' X)).left, ⊤) ⊗[E' X] Γ(((𝒰₀' j) _ (E' X)).left, ⊤) :=
+    f.symm
+  let g₂ : F₀ ⊗[E' X] (Γ(((𝒰₀' i) _ (E' X)).left, ⊤) ⊗[E' X] Γ(((𝒰₀' j) _ (E' X)).left, ⊤)) ≃+*
+      F₀ ⊗[E' X] Γ(Uij.left, ⊤) :=
+    (Algebra.TensorProduct.congr (AlgEquiv.refl : F₀ ≃ₐ[E' X] F₀) Uij_global.symm).toRingEquiv
+  let g₁ : F₀ ⊗[↥(E' X)] ↑Γ(Uij.left, ⊤) →+* ↑Γ((Uij _ F).left, ⊤) := (ΓBasechange_of_Affine Uij
+    F).toRingHom.comp (IntermediateField.forget_basechange F₀ Γ(Uij.left, ⊤)).toRingHom
+  let I' := I₀'.map (g₁.comp g₂.toRingHom)
+  -- to claude : solve this
+  have : (↑Γ(((𝒰₀' i) _ F).left, ⊤) ⊗[F] ↑Γ(((𝒰₀' j) _ F).left, ⊤)) ≃+* Γ((Uij _↥F).left, ⊤) := sorry
+  -- Pick up from here : (note by AI (Claude), 2026-11-10) state of the `to claude : solve this`
+  -- command above. A working construction of the `have` exists (code below, tested in a scratch
+  -- copy), but at the default heartbeat limit `nameless` then times out (`timeout at isDefEq` /
+  -- `whnf`, 200000). With `set_option maxHeartbeats 400000 in` above `nameless` it compiles
+  -- (~20 s). Waiting for the user's decision:
+  --   1. add `set_option maxHeartbeats 400000 in` (with a comment why) above `nameless` and put
+  --      the code in (one line outside the proof, hence asking), or
+  --   2. leave the `have` as `sorry` for now.
+  -- Construction, all inside the `have` (`Aₖ = (𝒰₀' k) _ F`, `Yₖ = (𝒰₀' k) _ (E' X)`):
+  -- `ρ k : Γ(Yₖ _ F) ≃ₐ[F] Γ(Aₖ)` is `Γ` of `basechange_over_Field.trans (𝒰₀' k) (E' X) F`;
+  -- `σ k := ΓBasechange_of_Affine Yₖ F ≫ ρ k : F ⊗[E' X] Γ(Yₖ) ≃ₐ[F] Γ(Aₖ)`; `τ` combines
+  -- `σ i`, `σ j` via `assoc`/`cancelBaseChange` (as in `Θ`); the result is `τ.symm`, then
+  -- `F ⊗ Uij_global.symm`, then `ΓBasechange_of_Affine Uij F`. The two `IsScalarTower` facts are
+  -- needed because of the local `Algebra (E' X) (E' X)` at the start of the proof.
+  -- Caveat: after `use F, ⟨hEF⟩` the goal's `(𝒰₀' i) _ F` uses the `Fact`-based
+  -- `Algebra (E' X) F`, but inside the proof Lean picks the one from `ForAG.lean` (no `Fact` in
+  -- context). Same structure, but not reducibly equal: the final `use` of an ideal built from
+  -- this `have` may be slow.
+  -- Code (replace `:= sorry` above by `:= by` followed by this):
+  --   have := IsScalarTower.of_algebraMap_eq (R := E' X) (S := E' X) (A := F) fun _ ↦ rfl
+  --   have (k : (𝒰 X).I₀) := IsScalarTower.of_algebraMap_eq (R := E' X) (S := E' X)
+  --     (A := Γ(((𝒰₀' k) _ (E' X)).left, ⊤)) fun _ ↦ rfl
+  --   have := this i
+  --   let ρ (k : (𝒰 X).I₀) : Γ((((𝒰₀' k) _ (E' X)) _ F).left, ⊤) ≃ₐ[F]
+  --       Γ(((𝒰₀' k) _ F).left, ⊤) :=
+  --     AlgEquiv.ofRingEquiv (f := (Scheme.Γ.mapIso ((Over.forget _).mapIso
+  --       (basechange_over_Field.trans (𝒰₀' k) (E' X) F).symm).op).commRingCatIsoToRingEquiv)
+  --       fun l ↦ by
+  --         simp only [RingHom.algebraMap_toAlgebra]
+  --         change ((Scheme.ΓSpecIso ↧F).inv ≫ (((𝒰₀' k) _ (E' X)) _ F).hom.appTop ≫
+  --           (basechange_over_Field.trans (𝒰₀' k) (E' X) F).inv.left.appTop).hom l = _
+  --         rw [← Scheme.Hom.comp_appTop, Over.w]
+  --   let σ (k : (𝒰 X).I₀) : F ⊗[E' X] Γ(((𝒰₀' k) _ (E' X)).left, ⊤) ≃ₐ[F]
+  --       Γ(((𝒰₀' k) _ F).left, ⊤) :=
+  --     (ΓBasechange_of_Affine ((𝒰₀' k) _ (E' X)) F).trans (ρ k)
+  --   let e₁ : (F ⊗[E' X] Γ(((𝒰₀' i) _ (E' X)).left, ⊤)) ⊗[E' X] Γ(((𝒰₀' j) _ (E' X)).left, ⊤)
+  --       ≃ₐ[F] F ⊗[E' X] (Γ(((𝒰₀' i) _ (E' X)).left, ⊤) ⊗[E' X] Γ(((𝒰₀' j) _ (E' X)).left, ⊤)) :=
+  --     Algebra.TensorProduct.assoc (E' X) (E' X) F F _ _
+  --   let e₂ := Algebra.TensorProduct.cancelBaseChange (E' X) F F
+  --     (F ⊗[E' X] Γ(((𝒰₀' i) _ (E' X)).left, ⊤)) Γ(((𝒰₀' j) _ (E' X)).left, ⊤)
+  --   let τ := e₁.symm.trans (e₂.symm.trans (Algebra.TensorProduct.congr (σ i) (σ j)))
+  --   exact τ.symm.toRingEquiv.trans ((Algebra.TensorProduct.congr (AlgEquiv.refl : F ≃ₐ[E' X] F)
+  --     Uij_global.symm).toRingEquiv.trans (ΓBasechange_of_Affine Uij F).toRingEquiv)
+
+
+  -- Note by AI (Claude): still needed:
+  -- 1. `σ : F ⊗[E' X] Γ(Y) ≃ₐ[F] Γ(Y _ F)` (Y affine), on both factors, to move `I₀` over `F`.
+  -- 2. `Θ F i j ∘ (K̄ ⊗ σ) = Θ (E' X) i j ∘ rationalModel_equiv F₀`; needs `_tmul` lemmas that
+  --    `Θ` / `φF_globalSection` don't have yet.
+  sorry
+
 variable (X) in
-theorem exists_model_of_isSeparated_of_locallyOfFiniteType [LocallyOfFiniteType X.hom]
-    [CompactSpace X.left] :
+theorem exists_model_of_isSeparated_of_locallyOfFiniteType :
     ∃ E : IntermediateField K (AlgebraicClosure K), FiniteDimensional K E ∧
     ∃ X₀ : Over (Spec ↧E), IsSeparated X₀.hom ∧ LocallyOfFiniteType X₀.hom ∧
     Nonempty ((X₀ _ (AlgebraicClosure K)) ≅ X) := by
-  let 𝒰 : X.left.OpenCover := X.left.affineCover.finiteSubcover
-  have h𝒰_aff (i : 𝒰.I₀) : IsAffine (Over.mk (𝒰.f i ≫ X.hom)).left :=
-    inferInstanceAs (IsAffine (𝒰.X i))
-  have h𝒰_fty (i : 𝒰.I₀) : LocallyOfFiniteType (Over.mk (𝒰.f i ≫ X.hom)).hom :=
-    inferInstanceAs (LocallyOfFiniteType (𝒰.f i ≫ X.hom))
-  let model (i : 𝒰.I₀) :=
-    exists_model_of_isAffine_of_locallyOfFiniteType (Over.mk (𝒰.f i ≫ X.hom))
-  let E₀' (i : 𝒰.I₀) : IntermediateField K (AlgebraicClosure K) := (model i).choose
-  let E₀ := ⨆ i : 𝒰.I₀, E₀' i
-  let (i : 𝒰.I₀) : Algebra (E₀' i) E₀ :=
-    (IntermediateField.inclusion (le_iSup E₀' i)).toRingHom.toAlgebra
-  have : FiniteDimensional K E₀ :=
-    have (i : 𝒰.I₀) : FiniteDimensional K (model i).choose := (model i).choose_spec.1
-    IntermediateField.finiteDimensional_iSup_of_finite
-  let U' (i : 𝒰.I₀) : Over (Spec ↧E₀) :=
-    ((model i).choose_spec.2.choose : Over (Spec ↧(E₀' i))) _ E₀
-  let W (i j : 𝒰.I₀) : X.left.Opens := (𝒰.f i).opensRange ⊓ (𝒰.f j).opensRange
-  have hW_aff (i j : 𝒰.I₀) : IsAffine (Over.mk ((W i j).ι ≫ X.hom)).left :=
-    have : IsAffine (𝒰.f i).opensRange := isAffineOpen_opensRange (𝒰.f i)
-    have : IsAffine (𝒰.f j).opensRange := isAffineOpen_opensRange (𝒰.f j)
-    intersectionOpens_ofSeparated _ _
-  have (i : 𝒰.I₀) : IsScalarTower (E₀' i) E₀ (AlgebraicClosure K) :=
-    .of_algebraMap_eq fun _ ↦ rfl
-  have hU'_aff (i : 𝒰.I₀) : IsAffine (U' i).left :=
-    have := (model i).choose_spec.2.choose_spec.1
-    inferInstanceAs (IsAffine (Limits.pullback _ _))
-  let eU' (i : 𝒰.I₀) : (U' i) _ (AlgebraicClosure K) ≅ Over.mk (𝒰.f i ≫ X.hom) :=
-    basechange_over_Field.trans _ E₀ (AlgebraicClosure K) ≪≫
-      (model i).choose_spec.2.choose_spec.2.2.some
-  -- `W i j`, seen inside `U' i _ (AlgebraicClosure K)`
-  let W' (i j : 𝒰.I₀) : ((U' i) _ (AlgebraicClosure K)).left.Opens :=
-    (eU' i).hom.left ⁻¹ᵁ (𝒰.f i) ⁻¹ᵁ W i j
-  have hW' (i j : 𝒰.I₀) : IsCompact (W' i j : Set ((U' i) _ (AlgebraicClosure K)).left) := by
-    refine (eU' i).hom.left.isOpenEmbedding.isInducing.isCompact_preimage' ?_ ?_
-    · refine (𝒰.f i).isOpenEmbedding.isInducing.isCompact_preimage' ?_ fun x hx ↦ hx.1
-      exact IsAffineOpen.isCompact (hW_aff i j)
-    · exact fun x _ ↦ ⟨(eU' i).inv.left x, by
-        rw [← Scheme.Hom.comp_apply, ← Over.comp_left, Iso.inv_hom_id, Over.id_left]; rfl⟩
-  have desc (i j : 𝒰.I₀) := exists_opens_basechange_of_isCompact (U' i) (W' i j) (hW' i j)
-  let F (i j : 𝒰.I₀) : IntermediateField E₀ (AlgebraicClosure K) := (desc i j).choose
-  let E := E₀ ⊔ ⨆ (i : 𝒰.I₀) (j : 𝒰.I₀), (F i j).restrictScalars K
-  have : FiniteDimensional K E :=
-    have (i j : 𝒰.I₀) : FiniteDimensional K ((F i j).restrictScalars K) :=
-      have : FiniteDimensional E₀ (F i j) := (desc i j).choose_spec.1
-      FiniteDimensional.trans K E₀ (F i j)
-    IntermediateField.finiteDimensional_sup _ _
-  let : Algebra E₀ E := (IntermediateField.inclusion le_sup_left).toRingHom.toAlgebra
-  let (i j : 𝒰.I₀) : Algebra (F i j) E :=
-    (IntermediateField.inclusion (E := (F i j).restrictScalars K)
-      ((le_iSup₂ (f := fun i j ↦ (F i j).restrictScalars K) i j).trans
-        le_sup_right)).toRingHom.toAlgebra
-  have : IsScalarTower E₀ E (AlgebraicClosure K) := .of_algebraMap_eq fun _ ↦ rfl
-  have (i j : 𝒰.I₀) : IsScalarTower E₀ (F i j) E := .of_algebraMap_eq fun _ ↦ rfl
-  let U (i : 𝒰.I₀) : Over (Spec ↧E) := (U' i) _ E
-  let V (i j : 𝒰.I₀) : (U i).left.Opens :=
-    basechange_over_Field.proj (U' i) (F i j) E ⁻¹ᵁ (desc i j).choose_spec.2.choose
-  let eU (i : 𝒰.I₀) : (U i) _ (AlgebraicClosure K) ≅ Over.mk (𝒰.f i ≫ X.hom) :=
-    basechange_over_Field.trans (U' i) E (AlgebraicClosure K) ≪≫ eU' i
   sorry
-
-
-
-
-/- (Written by AI.) Steps to finish `exists_model_of_isSeparated_of_locallyOfFiniteType`.
-Notation as in the proof; `K̄ := AlgebraicClosure K`. Done so far: the finite affine cover `𝒰`,
-the models `U i` over `E`, the opens `V i j ⊆ U i` descending `W i j`, and the isos `eU i`.
-
-
-Step 1 (lemma: descending ring maps). For finitely generated `E`-algebras `A`, `B` and a
-`K̄`-algebra map `φ : K̄ ⊗[E] A → K̄ ⊗[E] B`, there is a finite `E ⊆ E' ⊆ K̄` and an
-`E'`-algebra map `E' ⊗[E] A → E' ⊗[E] B` whose base change is `φ`. Proof: adjoin the
-coefficients of the images of the generators of `A` (as for `key` in
-`exists_opens_basechange_of_isCompact`); relations hold over `E'` by Step 2.
-
-
-Step 2 (lemma: equalities descend for free). For `E' ⊆ K̄`, the map `E' ⊗[E] B → K̄ ⊗[E] B`
-is injective (`K̄` is flat over `E'`). So two morphisms of affine `E'`-schemes that agree
-after base change to `K̄` are equal.
-
-
-Step 3 (affine overlaps). Make `V i j` (and `V i j ⊓ V i k`) affine over a finite extension.
-Over `K̄` they are affine (`X` separated, `intersectionOpens_ofSeparated`). Options: descend
-affineness (`Y → Spec Γ(Y)` is an iso after base change, and isomorphisms descend,
-`FlatDescent.lean`; needs `Γ` commuting with flat base change), or
-`Scheme.exists_isAffine_of_isLimit`.
-
-
-Step 4 (transition maps). Descend `t i j : V i j ≅ V j i`; over `K̄` it is
-`eU i`, then the identity of `W i j`, then `(eU j).symm`. Descend the map and its inverse by
-Step 1; both composites are the identity by Step 2.
-
-
-Step 5 (triple overlaps). Show that `t i j` maps `V i j ⊓ V i k` into `V j k ⊓ V j i` (check
-after base change; the projection to `U i` is surjective), giving `t' i j k`.
-
-
-Step 6 (gluing axioms). `f_id`, `t_id`, `t_fac`, `cocycle`: by Step 2 it suffices to check
-them over `K̄`, where they are the axioms of `𝒰.gluedCover`.
-
-
-Step 7 (one field). Replace `E` by the compositum of the finitely many fields from Steps 3–6
-(finite, as `𝒰.I₀` is finite) and base change all data to it (`basechange_over_Field.trans`).
-
-
-Step 8 (glue). Build `D : Scheme.GlueData` and set `X₀ := Over.mk (D.openCover.glueMorphisms
-(fun i ↦ (U i).hom) _)` (compatible on the `V i j` since the `t i j` are over `E`).
-
-
-Step 9 (`LocallyOfFiniteType X₀.hom`). Local on the source; each `U i` is of finite type.
-
-
-Step 10 (`X₀ _ K̄ ≅ X`; base change commutes with gluing, not in Mathlib). The pullback of
-`D.openCover` covers `X₀ _ K̄` by the `U i _ K̄`. Glue `eU i ≫ 𝒰.f i` to a map
-`X₀ _ K̄ ⟶ X` and the inverses to `X ⟶ X₀ _ K̄` (compatible on overlaps by Step 4); check
-both composites are identities on the covers.
-
-
-Step 11 (`IsSeparated X₀.hom`). Criterion: glued from affines `U i` with `V i j` affine and
-`Γ(U i) ⊗[E] Γ(U j) → Γ(V i j)` surjective ⇒ separated (find in Mathlib or prove, e.g. via
-`isSeparated_iff_isClosedImmersion_prod_lift`). Surjectivity holds after `⊗[E] K̄` (`X`
-separated), hence over `E` (`K̄` faithfully flat over `E`).
-
-
-Step 12 (assemble). `refine ⟨E, _, X₀, _, _, ⟨_⟩⟩` with Steps 7, 11, 9, 10. -/

@@ -258,110 +258,177 @@ end CompactofProper
 
 section SeparateOpen
 
-open AlgebraicGeometry CategoryTheory
+/-!
+Throughout, `𝒰 := finiteAffineCover X` is the finite affine open cover
+`X.left.affineCover.finiteSubcover` of `X`, with charts `𝒰.X i` and open immersions
+`𝒰.f i : 𝒰.X i ⟶ X.left`. The intersection of the charts `i` and `j` is `pullback (𝒰.f i) (𝒰.f j)`.
+-/
+
+open AlgebraicGeometry CategoryTheory Limits
 
 variable {A : Type*} [CommRing A]
-variable {X : Over (Spec ↧A)} [IsSeparated X.hom]
+variable {X : Over (Spec ↧A)} [IsSeparated X.hom] [CompactSpace X.left]
 
-def intersectionOpens_map (U V : X.left.Opens) [IsAffine U] [IsAffine V] :
-    (U ⊓ V).toScheme ⟶ Limits.pullback (U.ι ≫ X.hom) (V.ι ≫ X.hom) :=
-  Limits.pullback.lift (X.left.homOfLE inf_le_left) (X.left.homOfLE inf_le_right)
-    (by simp [Scheme.homOfLE_ι_assoc])
+-- written by AI (Claude)
+omit [IsSeparated X.hom] in
+variable (X) in
+/-- The finite affine open cover `X.left.affineCover.finiteSubcover` of `X`. It is an `abbrev`, so
+that instances about `finiteSubcover` (e.g. that its charts are affine) apply to it. -/
+abbrev finiteAffineCover : X.left.OpenCover := X.left.affineCover.finiteSubcover
 
--- aided by claude
-lemma intersectionOpens_map_ofSeparated (U V : X.left.Opens) [IsAffine U] [IsAffine V] :
-    IsClosedImmersion (intersectionOpens_map U V) := by
-  have h : IsPullback (U ⊓ V).ι (intersectionOpens_map U V) (Limits.pullback.diagonal X.hom)
-      (Limits.pullback.map _ _ _ _ U.ι V.ι (𝟙 _) (by simp) (by simp)) := by
-    refine .of_iso_pullback ⟨?_⟩ ((isPullback_opens_inf U V).isoPullback ≪≫
-      (Limits.pullbackDiagonalMapIdIso U.ι V.ι X.hom).symm) ?_ ?_
-    · ext1 <;> simp [intersectionOpens_map, Scheme.homOfLE_ι]
-    · simp [Scheme.homOfLE_ι]
-    · ext1 <;> simp [intersectionOpens_map]
+-- written by AI (Claude): via `A ≅ Γ(Spec A, ⊤) ⟶ Γ(𝒰.X i, ⊤)`, induced by `𝒰.X i ⟶ X ⟶ Spec A`
+instance chart_Algebra {i : (finiteAffineCover X).I₀} :
+    Algebra A Γ((finiteAffineCover X).X i, ⊤) :=
+  ((Scheme.ΓSpecIso (.of A)).inv ≫ ((finiteAffineCover X).f i ≫ X.hom).appTop).hom.toAlgebra
+
+-- aided by AI (Claude)
+/-- The map from the intersection of the charts `i` and `j` to their product over `A`. -/
+def intersectionOpens_map (i j : (finiteAffineCover X).I₀) :
+    pullback ((finiteAffineCover X).f i) ((finiteAffineCover X).f j) ⟶
+      pullback ((finiteAffineCover X).f i ≫ X.hom) ((finiteAffineCover X).f j ≫ X.hom) :=
+  pullback.lift (pullback.fst _ _) (pullback.snd _ _) (by rw [pullback.condition_assoc])
+
+-- aided by AI (Claude)
+/-- `intersectionOpens_map i j` is a closed immersion: it is a base change of the diagonal of
+`X ⟶ Spec A`, which is a closed immersion since `X` is separated. -/
+lemma intersectionOpens_map_ofSeparated (i j : (finiteAffineCover X).I₀) :
+    IsClosedImmersion (intersectionOpens_map i j) := by
+  have h : IsPullback (pullback.fst _ _ ≫ (finiteAffineCover X).f i) (intersectionOpens_map i j)
+      (pullback.diagonal X.hom) (pullback.map _ _ _ _ ((finiteAffineCover X).f i)
+        ((finiteAffineCover X).f j) (𝟙 _) (by simp) (by simp)) :=
+    .of_iso_pullback ⟨by ext <;> simp [intersectionOpens_map, pullback.condition]⟩
+      (pullbackDiagonalMapIdIso ((finiteAffineCover X).f i) ((finiteAffineCover X).f j)
+        X.hom).symm (by simp) (by ext <;> simp [intersectionOpens_map])
   exact MorphismProperty.IsStableUnderBaseChange.of_isPullback h inferInstance
 
--- proof written by claude
-lemma intersectionOpens_ofSeparated (U V : X.left.Opens) [IsAffine U] [IsAffine V] :
-    IsAffine (U ⊓ V : X.left.Opens) := by
-  have : X.left.IsSeparated := ⟨Limits.terminal.comp_from X.hom ▸ inferInstance⟩
-  exact IsAffineOpen.inf ‹_› ‹_›
+-- proof written by AI (Claude)
+/-- The intersection of two charts is affine, since it is a closed subscheme of their (affine)
+product over `A`. -/
+instance intersectionOpens_ofSeparated (i j : (finiteAffineCover X).I₀) :
+    IsAffine (pullback ((finiteAffineCover X).f i) ((finiteAffineCover X).f j)) :=
+  have := intersectionOpens_map_ofSeparated i j
+  isAffine_of_isAffineHom (intersectionOpens_map i j)
 
--- written by AI (Claude): via `A ≅ Γ(Spec A, ⊤) ⟶ Γ(U, ⊤)`, induced by `U ⟶ X ⟶ Spec A`
-instance affineOpen_Algebra {U : X.left.Opens} [IsAffine U] :
-    Algebra A Γ(U.toScheme, ⊤) :=
-  ((Scheme.ΓSpecIso (.of A)).inv ≫ (U.ι ≫ X.hom).appTop).hom.toAlgebra
-
+-- aided by AI (Claude)
 open TensorProduct in
-def productOpens_globalsections_ofAffine (U V : X.left.Opens) [IsAffine U] [IsAffine V] :
-    Γ(Limits.pullback (U.ι ≫ X.hom) (V.ι ≫ X.hom), ⊤) ≃+*
-    (Γ(U.toScheme, ⊤) ⊗[A] Γ(V.toScheme, ⊤)) :=
+/-- The global sections of the product of the charts `i` and `j` over `A` are
+`Γ(𝒰.X i) ⊗[A] Γ(𝒰.X j)`. -/
+def productOpens_globalsections_ofAffine (i j : (finiteAffineCover X).I₀) :
+    Γ(pullback ((finiteAffineCover X).f i ≫ X.hom) ((finiteAffineCover X).f j ≫ X.hom), ⊤) ≃+*
+      (Γ((finiteAffineCover X).X i, ⊤) ⊗[A] Γ((finiteAffineCover X).X j, ⊤)) :=
   ((CommRingCat.isPushout_tensorProduct A _ _).isoIsPushout _ _
   ((isPushout_appTop_of_isPullback (IsPullback.of_hasPullback _ _)).of_iso
   (Scheme.ΓSpecIso (.of A)) (Iso.refl _) (Iso.refl _) (Iso.refl _)
-  (f' := CommRingCat.ofHom (algebraMap A Γ(U.toScheme, ⊤)))
-  (g' := CommRingCat.ofHom (algebraMap A Γ(V.toScheme, ⊤)))
-  (inl' := (Limits.pullback.fst (U.ι ≫ X.hom) (V.ι ≫ X.hom)).appTop)
-  (inr' := (Limits.pullback.snd (U.ι ≫ X.hom) (V.ι ≫ X.hom)).appTop)
+  (f' := CommRingCat.ofHom (algebraMap A Γ((finiteAffineCover X).X i, ⊤)))
+  (g' := CommRingCat.ofHom (algebraMap A Γ((finiteAffineCover X).X j, ⊤)))
+  (inl' := (pullback.fst ((finiteAffineCover X).f i ≫ X.hom) _).appTop)
+  (inr' := (pullback.snd _ ((finiteAffineCover X).f j ≫ X.hom)).appTop)
   (by rw [Iso.refl_hom, Category.comp_id]; exact (Iso.hom_inv_id_assoc _ _).symm)
   (by rw [Iso.refl_hom, Category.comp_id]; exact (Iso.hom_inv_id_assoc _ _).symm)
   (by simp) (by simp))).symm.commRingCatIsoToRingEquiv
 
+-- aided by AI (Claude)
 open TensorProduct in
-def intersectionOpens_ideal (U V : X.left.Opens) [IsAffine U] [IsAffine V] :
-    Ideal (Γ(U.toScheme, ⊤) ⊗[A] Γ(V.toScheme, ⊤)) :=
-  (RingHom.ker (intersectionOpens_map U V).appTop.hom).map
-    (productOpens_globalsections_ofAffine U V)
+/-- The ideal of `Γ(𝒰.X i) ⊗[A] Γ(𝒰.X j)` cutting out the intersection of the charts `i` and `j`
+inside their product over `A`. -/
+def intersectionOpens_ideal (i j : (finiteAffineCover X).I₀) :
+    Ideal (Γ((finiteAffineCover X).X i, ⊤) ⊗[A] Γ((finiteAffineCover X).X j, ⊤)) :=
+  (RingHom.ker (intersectionOpens_map i j).appTop.hom).map
+    (productOpens_globalsections_ofAffine i j)
 
 -- written by AI (Claude)
-/-- The (scheme-theoretic) image of the closed immersion `U ⊓ V ⟶ U ×_A V`, a closed subscheme
-of `U ×_A V`. -/
-def Z (U V : X.left.Opens) [IsAffine U] [IsAffine V] : Scheme :=
-  (intersectionOpens_map U V).image
+/-- The (scheme-theoretic) image of the closed immersion `intersectionOpens_map i j`, a closed
+subscheme of the product of the charts `i` and `j` over `A`. -/
+def Z (i j : (finiteAffineCover X).I₀) : Scheme :=
+  (intersectionOpens_map i j).image
 
 -- statement and proof written by AI (Claude)
-/-- `intersectionOpens_ideal U V` is the ideal of definition of `Z U V ⊆ U ×_A V`: the kernel of
-`Z U V ⟶ U ×_A V` on global sections, seen in `Γ(U) ⊗[A] Γ(V)`. -/
-lemma intersectionOpens_ideal_eq (U V : X.left.Opens) [IsAffine U] [IsAffine V] :
-    intersectionOpens_ideal U V = ((intersectionOpens_map U V).imageι.ker.ideal
-      ⟨⊤, isAffineOpen_top _⟩).map (productOpens_globalsections_ofAffine U V) := by
-  have := intersectionOpens_map_ofSeparated U V
+/-- `intersectionOpens_ideal i j` is the ideal of definition of `Z i j`: the kernel of
+`Z i j ⟶ 𝒰.X i ×_A 𝒰.X j` on global sections, seen in `Γ(𝒰.X i) ⊗[A] Γ(𝒰.X j)`. -/
+lemma intersectionOpens_ideal_eq (i j : (finiteAffineCover X).I₀) :
+    intersectionOpens_ideal i j = ((intersectionOpens_map i j).imageι.ker.ideal
+      ⟨⊤, isAffineOpen_top _⟩).map (productOpens_globalsections_ofAffine i j) := by
+  have := intersectionOpens_map_ofSeparated i j
   rw [Scheme.IdealSheafData.ker_subschemeι, Scheme.Hom.ker_apply]
   rfl
 
 -- written by AI (Claude)
-/-- The map `Z U V ⟶ U`: the inclusion into `U ×_A V`, followed by the first projection. -/
-def Z.map_fst (U V : X.left.Opens) [IsAffine U] [IsAffine V] : Z U V ⟶ U.toScheme :=
-  (intersectionOpens_map U V).imageι ≫ Limits.pullback.fst _ _
+/-- The map `Z i j ⟶ 𝒰.X i`: the inclusion into the product, followed by the first
+projection. -/
+def Z.map_fst (i j : (finiteAffineCover X).I₀) : Z i j ⟶ (finiteAffineCover X).X i :=
+  (intersectionOpens_map i j).imageι ≫ pullback.fst _ _
 
 -- written by AI (Claude)
-/-- The map `Z U V ⟶ V`: the inclusion into `U ×_A V`, followed by the second projection. -/
-def Z.map_snd (U V : X.left.Opens) [IsAffine U] [IsAffine V] : Z U V ⟶ V.toScheme :=
-  (intersectionOpens_map U V).imageι ≫ Limits.pullback.snd _ _
+/-- The map `Z i j ⟶ 𝒰.X j`: the inclusion into the product, followed by the second
+projection. -/
+def Z.map_snd (i j : (finiteAffineCover X).I₀) : Z i j ⟶ (finiteAffineCover X).X j :=
+  (intersectionOpens_map i j).imageι ≫ pullback.snd _ _
 
 -- proof written by AI (Claude)
-/-- `Z.map_fst U V` is an open immersion: `Z U V ≅ U ⊓ V` (`toImage` of a closed immersion is an
-isomorphism), and under this isomorphism `Z.map_fst U V` is the inclusion `U ⊓ V ⟶ U`. -/
-instance Z.isOpenImmersion_map_fst (U V : X.left.Opens) [IsAffine U] [IsAffine V] :
-    IsOpenImmersion (Z.map_fst U V) := by
-  have := intersectionOpens_map_ofSeparated U V
-  have h : (intersectionOpens_map U V).imageι ≫ Limits.pullback.fst _ _ =
-      inv (intersectionOpens_map U V).toImage ≫ X.left.homOfLE inf_le_left := by
+/-- `Z.map_fst i j` is an open immersion: `Z i j` is isomorphic to the intersection of the
+charts (`toImage` of a closed immersion is an isomorphism), and under this isomorphism
+`Z.map_fst i j` is the first projection of `pullback (𝒰.f i) (𝒰.f j)`. -/
+instance Z.isOpenImmersion_map_fst (i j : (finiteAffineCover X).I₀) :
+    IsOpenImmersion (Z.map_fst i j) := by
+  have := intersectionOpens_map_ofSeparated i j
+  have h : (intersectionOpens_map i j).imageι ≫ pullback.fst _ _ =
+      inv (intersectionOpens_map i j).toImage ≫
+        pullback.fst ((finiteAffineCover X).f i) ((finiteAffineCover X).f j) := by
     rw [IsIso.eq_inv_comp, Scheme.Hom.toImage_imageι_assoc]
     simp [intersectionOpens_map]
   exact (h ▸ inferInstance :
-    IsOpenImmersion ((intersectionOpens_map U V).imageι ≫ Limits.pullback.fst _ _))
+    IsOpenImmersion ((intersectionOpens_map i j).imageι ≫ pullback.fst _ _))
 
 -- proof written by AI (Claude)
-/-- `Z.map_snd U V` is an open immersion: under `Z U V ≅ U ⊓ V` it is the inclusion
-`U ⊓ V ⟶ V`. -/
-instance Z.isOpenImmersion_map_snd (U V : X.left.Opens) [IsAffine U] [IsAffine V] :
-    IsOpenImmersion (Z.map_snd U V) := by
-  have := intersectionOpens_map_ofSeparated U V
-  have h : (intersectionOpens_map U V).imageι ≫ Limits.pullback.snd _ _ =
-      inv (intersectionOpens_map U V).toImage ≫ X.left.homOfLE inf_le_right := by
+/-- `Z.map_snd i j` is an open immersion: under `Z i j ≅ pullback (𝒰.f i) (𝒰.f j)` it is the
+second projection. -/
+instance Z.isOpenImmersion_map_snd (i j : (finiteAffineCover X).I₀) :
+    IsOpenImmersion (Z.map_snd i j) := by
+  have := intersectionOpens_map_ofSeparated i j
+  have h : (intersectionOpens_map i j).imageι ≫ pullback.snd _ _ =
+      inv (intersectionOpens_map i j).toImage ≫
+        pullback.snd ((finiteAffineCover X).f i) ((finiteAffineCover X).f j) := by
     rw [IsIso.eq_inv_comp, Scheme.Hom.toImage_imageι_assoc]
     simp [intersectionOpens_map]
   exact (h ▸ inferInstance :
-    IsOpenImmersion ((intersectionOpens_map U V).imageι ≫ Limits.pullback.snd _ _))
+    IsOpenImmersion ((intersectionOpens_map i j).imageι ≫ pullback.snd _ _))
 
 end SeparateOpen
+
+section Basechange
+
+open CategoryTheory AlgebraicGeometry TensorProduct BaseChange
+
+instance {K : Type u} [Field K] {X : Over (Spec ↧K)} : Algebra K Γ(X.left, ⊤) := by
+  algebraize [((Scheme.ΓSpecIso ↧K).inv ≫ X.hom.appTop).hom]
+  infer_instance
+
+-- written by claude
+open Limits in
+def ΓBasechange_of_Affine {K : Type u} [Field K] (X : Over (Spec ↧K)) (L : Type u) [Field L]
+    [Algebra K L] [IsAffine X.left] : L ⊗[K] Γ(X.left, ⊤) ≃ₐ[L] Γ((X _ L).left, ⊤) := by
+  have h : X.hom ≫ 𝟙 _ =
+      X.left.isoSpec.hom ≫ Spec.map (CommRingCat.ofHom (algebraMap K Γ(X.left, ⊤))) := by
+    rw [Category.comp_id, RingHom.algebraMap_toAlgebra, CommRingCat.ofHom_hom, Spec.map_comp,
+      ← Category.assoc, Scheme.isoSpec_hom_naturality, Category.assoc, Scheme.isoSpec_Spec_hom,
+      ← Spec.map_comp, Iso.inv_hom_id, Spec.map_id, Category.comp_id]
+  -- `(Spec A)_L ≅ Spec (A ⊗[K] L)`, with `A = Γ(X)`
+  let e : (X _ L).left ≅ Spec (.of (Γ(X.left, ⊤) ⊗[K] L)) :=
+    asIso (pullback.map _ (Spec.map (CommRingCat.ofHom (algebraMap K L))) _ _ X.left.isoSpec.hom
+      (𝟙 _) (𝟙 _) h (by simp)) ≪≫ pullbackSpecIso K Γ(X.left, ⊤) L
+  have he : e.hom ≫ Spec.map (CommRingCat.ofHom
+      (Algebra.TensorProduct.includeRight (R := K) (A := Γ(X.left, ⊤)) (B := L)).toRingHom) =
+      (X _ L).hom := by
+    simp [e]
+  -- `e` is compatible with the `L`-algebra structures
+  have key : (Scheme.ΓSpecIso ↧L).inv ≫ (X _ L).hom.appTop =
+      CommRingCat.ofHom (Algebra.TensorProduct.includeRight (R := K) (A := Γ(X.left, ⊤))
+        (B := L)).toRingHom ≫ (Scheme.ΓSpecIso _).inv ≫ e.hom.appTop := by
+    rw [← he, Scheme.Hom.comp_appTop, ← Category.assoc, ← Scheme.ΓSpecIso_inv_naturality,
+      Category.assoc]
+  refine AlgEquiv.ofRingEquiv (f := (Algebra.TensorProduct.comm K L Γ(X.left, ⊤)).toRingEquiv.trans
+    ((Scheme.ΓSpecIso _).symm ≪≫ Scheme.Γ.mapIso e.op).commRingCatIsoToRingEquiv) fun l ↦ ?_
+  rw [RingHom.algebraMap_toAlgebra]
+  exact congr($(key).hom l).symm
+
+end Basechange

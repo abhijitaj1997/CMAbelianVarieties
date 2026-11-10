@@ -13,6 +13,8 @@ lives in `CMAbelianVarieties/Theorem.lean` (not yet proven).
 - Do not commit or push unless I ask (or the checklist tells you to).
 - If you write a proof or definition, mark it with a comment directly above it
   saying it was written by AI (see "AI usage" in README.md).
+  When you edit inside an existing proof, do not mark each edit separately: one such comment
+  directly above the lemma/theorem/def is enough (add it there if it is not there yet).
 - If you notice a pattern in my commands (e.g. I keep asking for the same kind of task, or
   keep giving the same correction), you may suggest an instruction to add to this file.
   Only suggest it, with the proposed wording; never add it yourself. I decide whether it
@@ -159,6 +161,9 @@ make (`lean-toolchain`, `lakefile.toml`, `lake-manifest.json`, `CMAbelianVarieti
 - Keep imports minimal: import the smallest Mathlib/project file that suffices.
 - When searching for Mathlib results, report the exact name and file.
 - Avoid `eqToIso` / `eqToHom`: see "IMPORTANT: always check for `eqToIso` / `eqToHom`" above.
+- Never make global (section) variables explicit: declare them implicit, `variable {F : ...}`,
+  never `variable (F : ...)` (instance arguments stay `[...]`). If a single declaration needs one
+  of them explicit, use `variable (F) in` directly above that declaration only.
 
 ## Cleaning up a term
 When I ask you to clean up a term (a `def`, `lemma`, `theorem`, `instance`, etc.), tidy

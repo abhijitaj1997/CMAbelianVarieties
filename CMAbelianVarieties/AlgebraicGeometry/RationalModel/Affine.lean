@@ -35,7 +35,6 @@ theorem exists_model_of_isAffine_of_locallyOfFiniteType (X : Over (Spec ↧(Alge
     ∃ E : IntermediateField K (AlgebraicClosure K), FiniteDimensional K E ∧
       ∃ X₀ : Over (Spec ↧E), IsAffine X₀.left ∧ LocallyOfFiniteType X₀.hom ∧
         Nonempty ((X₀ _ (AlgebraicClosure K)) ≅ X) := by
-  algebraize [((Scheme.ΓSpecIso ↧(AlgebraicClosure K)).inv ≫ X.hom.appTop).hom]
   have : Algebra.FiniteType (AlgebraicClosure K) Γ(X.left, ⊤) :=
     (HasRingHomProperty.appTop @LocallyOfFiniteType X.hom ‹_›).comp
       (.of_surjective _ (Scheme.ΓSpecIso _).commRingCatIsoToRingEquiv.symm.surjective)
