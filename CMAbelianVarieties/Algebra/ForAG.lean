@@ -120,9 +120,10 @@ def forget (F : IntermediateField K₀ K) :
     IntermediateField F K ⥤ {L : IntermediateField K₀ K // F ≤ L} :=
   (IntermediateField.extendScalars.orderIso F).symm.monotone.functor
 
-instance forget_algebra {F : IntermediateField K₀ K} {L : IntermediateField F K} {A : Type*}
-    [CommRing A] [Algebra L A] : Algebra (F.forget.obj L).val A :=
-  inferInstanceAs (Algebra L A)
+-- Commented out: unused, and slows instance search (heartbeat timeouts).
+-- instance forget_algebra {F : IntermediateField K₀ K} {L : IntermediateField F K} {A : Type*}
+--     [CommRing A] [Algebra L A] : Algebra (F.forget.obj L).val A :=
+--   inferInstanceAs (Algebra L A)
 
 instance {F : IntermediateField K₀ K} {L : IntermediateField F K} :
     Algebra F (F.forget.obj L).val :=
