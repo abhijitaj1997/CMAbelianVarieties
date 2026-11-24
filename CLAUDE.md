@@ -99,11 +99,20 @@ When I ask you to solve a `sorry` and allow helper lemmas:
 - When I ask you to work on a proof or definition, act as the leader: keep your own context
   clean and spawn up to three subagents to finish it (how many, and which models, depends on
   the difficulty; use stronger models for harder tasks). The agents must keep you updated,
-  especially when they hit a timeout. An agent that has finished its proof may put it into
-  the actual file straight away.
-- Whenever a subagent adds or removes something in a file, show me the change in your reply
-  as a ```diff block (removed lines in red, added lines in green), as if you had made the
-  edit yourself. Show only the agent's changes, not my other uncommitted work.
+  especially when they hit a timeout.
+- Subagents never edit project files. They test their work in copies in your scratchpad
+  directory. When an agent has a finished change, it sends you the exact text and where it
+  goes. Your only job is to paste it in with the Edit tool, unchanged, so that the change
+  shows up in this chat; do not check or build it yourself. Then tell the agent the edit is
+  in, and the agent builds the module and reports whether it compiles (and fixes it the same
+  way if it does not). Agents send only the lines that change (enough surrounding text to
+  locate them uniquely), not the whole proof, especially for fixes.
+- Agents give the line number with each change, and you read only the few lines around it
+  (`Read` with offset/limit) before editing, never the whole file.
+- Agent updates are one or two lines (what is done, what is blocking); no proof states, error
+  logs or sketches unless you ask for them.
+- Brief agents by pointing at file, line and name rather than pasting code, and send
+  follow-ups to the same agent with SendMessage instead of spawning a new one.
 
 ## `Pick up from here` comments
 - I sometimes leave a note for where to resume work, as a comment of the form
