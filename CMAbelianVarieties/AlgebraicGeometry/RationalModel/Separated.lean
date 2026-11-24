@@ -180,12 +180,8 @@ def ΓBasechange_tensorRingEquiv {i j : (𝒰 X).I₀} (F : IntermediateField K 
     (Uij_global : Γ(Uij.left, ⊤) ≃ₐ[E' X]
       Γ(((𝒰₀' i) _ (E' X)).left, ⊤) ⊗[E' X] Γ(((𝒰₀' j) _ (E' X)).left, ⊤)) :
     Γ(((𝒰₀' i) _ F).left, ⊤) ⊗[F] Γ(((𝒰₀' j) _ F).left, ⊤) ≃+* Γ((Uij _ F).left, ⊤) := by
-  have : Fact (E' X ≤ E' X) := ⟨le_rfl⟩
-  let _ : Algebra (E' X) (E' X) := (IntermediateField.inclusion le_rfl).toRingHom.toAlgebra
-  have := IsScalarTower.of_algebraMap_eq (R := E' X) (S := E' X) (A := F) fun _ ↦ rfl
-  have (k : (𝒰 X).I₀) := IsScalarTower.of_algebraMap_eq (R := E' X) (S := E' X)
-    (A := Γ(((𝒰₀' k) _ (E' X)).left, ⊤)) fun _ ↦ rfl
-  have := this i
+  have (k : (𝒰 X).I₀) : IsAffine ((𝒰₀' k) _ (E' X)).left :=
+    inferInstanceAs (IsAffine (pullback _ _))
   let ρ (k : (𝒰 X).I₀) : Γ((((𝒰₀' k) _ (E' X)) _ F).left, ⊤) ≃ₐ[F]
       Γ(((𝒰₀' k) _ F).left, ⊤) :=
     AlgEquiv.ofRingEquiv (f := (Scheme.Γ.mapIso ((Over.forget _).mapIso
@@ -207,7 +203,198 @@ def ΓBasechange_tensorRingEquiv {i j : (𝒰 X).I₀} (F : IntermediateField K 
   exact τ.symm.toRingEquiv.trans ((Algebra.TensorProduct.congr (AlgEquiv.refl : F ≃ₐ[E' X] F)
     Uij_global.symm).toRingEquiv.trans (ΓBasechange_of_Affine Uij F).toRingEquiv)
 
+/-! Helper lemmas for `exists_ideal_map_Θ_eq_intersectionOpens_ideal` (written by AI (Claude),
+2026-11-11; see the `Pick up from here` note in that proof). -/
+
+-- written by AI (Claude)
+open TensorProduct Limits in
+lemma ΓBasechange_of_Affine_one_tmul {K : Type u} [Field K] (X : Over (Spec ↧K)) (L : Type u)
+    [Field L] [Algebra K L] [IsAffine X.left] (a : Γ(X.left, ⊤)) :
+    ΓBasechange_of_Affine X L (1 ⊗ₜ a) = (pullback.fst X.hom _).appTop a := by
+  have h : X.hom ≫ 𝟙 _ =
+      X.left.isoSpec.hom ≫ Spec.map (CommRingCat.ofHom (algebraMap K Γ(X.left, ⊤))) := by
+    rw [Category.comp_id, RingHom.algebraMap_toAlgebra, CommRingCat.ofHom_hom, Spec.map_comp,
+      ← Category.assoc, Scheme.isoSpec_hom_naturality, Category.assoc, Scheme.isoSpec_Spec_hom,
+      ← Spec.map_comp, Iso.inv_hom_id, Spec.map_id, Category.comp_id]
+  have key : CommRingCat.ofHom (Algebra.TensorProduct.includeLeftRingHom (R := K)
+      (A := Γ(X.left, ⊤)) (B := L)) ≫ (Scheme.ΓSpecIso _).inv ≫
+      (pullback.map X.hom (Spec.map (CommRingCat.ofHom (algebraMap K L))) _ _ X.left.isoSpec.hom
+      (𝟙 _) (𝟙 _) h (by simp) ≫ (pullbackSpecIso K Γ(X.left, ⊤) L).hom).appTop =
+      (pullback.fst X.hom _).appTop := by
+    rw [Scheme.ΓSpecIso_inv_naturality_assoc, ← Scheme.Hom.comp_appTop, Category.assoc,
+      pullbackSpecIso_hom_fst, pullback.lift_fst, Scheme.Hom.comp_appTop]
+    simp only [Scheme.isoSpec, asIso_hom]
+    erw [Scheme.toSpecΓ_appTop X.left]
+    exact Iso.inv_hom_id_assoc _ _
+  exact ConcreteCategory.congr_hom key a
+
+section
+
+variable {F : IntermediateField K (AlgebraicClosure K)} [Fact (E' X ≤ F)]
+
+-- written by AI (Claude)
+omit [IsSeparated X.hom] in
+open TensorProduct Limits in
+lemma φF_globalSection_one_tmul (i : (𝒰 X).I₀) (a : Γ(((𝒰₀' i) _ F).left, ⊤)) :
+    φF_globalSection F i (1 ⊗ₜ a) = ((φF F i).inv.left ≫ pullback.fst _ _).appTop a :=
+  congr($((CommRingCat.isPushout_tensorProduct _ _ _).inr_isoIsPushout_hom _ _ _).hom a)
+
+-- written by AI (Claude)
+omit [IsSeparated X.hom] in
+open TensorProduct Limits in
+lemma φF_globalSection_tmul (i : (𝒰 X).I₀) (x : AlgebraicClosure K) (a : Γ(((𝒰₀' i) _ F).left, ⊤)) :
+    φF_globalSection F i (x ⊗ₜ a) = x • ((φF F i).inv.left ≫ pullback.fst _ _).appTop a := by
+  rw [← φF_globalSection_one_tmul, ← map_smul, TensorProduct.smul_tmul', smul_eq_mul, mul_one]
+
+-- written by AI (Claude)
+omit [IsSeparated X.hom] in
+open TensorProduct in
+lemma Θ_tmul (i j : (𝒰 X).I₀) (x : AlgebraicClosure K) (a : Γ(((𝒰₀' i) _ F).left, ⊤))
+    (b : Γ(((𝒰₀' j) _ F).left, ⊤)) :
+    Θ F i j (x ⊗ₜ (a ⊗ₜ b)) = φF_globalSection F i (x ⊗ₜ a) ⊗ₜ φF_globalSection F j (1 ⊗ₜ b) := by
+  simp [Θ]
+
+end
+
+section BasechangeFromE'
+
+variable {F : IntermediateField K (AlgebraicClosure K)} [Fact (E' X ≤ F)]
+
+local instance : Fact (E' X ≤ E' X) := ⟨le_rfl⟩
+
+local instance (priority := high) : Algebra (E' X) (E' X) :=
+  (IntermediateField.inclusion le_rfl).toRingHom.toAlgebra
+
+-- the `SMul`s must be given explicitly, otherwise `Mul.toSMul` is used and the instance is not
+-- found for `basechange_over_Field.trans (𝒰₀' k) (E' X) F`
+local instance : @IsScalarTower (E' X) (E' X) F Algebra.toSMul Algebra.toSMul Algebra.toSMul :=
+  IsScalarTower.of_algebraMap_eq fun _ ↦ rfl
+
+local instance : @IsScalarTower (E' X) (E' X) (AlgebraicClosure K) Algebra.toSMul Algebra.toSMul
+    Algebra.toSMul :=
+  IsScalarTower.of_algebraMap_eq fun _ ↦ rfl
+
+-- written by AI (Claude)
+omit [IsSeparated X.hom] in
+open Limits in
+/-- The projections `(Yₖ _ F) _ K̄ → Yₖ _ F → Yₖ _ (E' X)` compose to the projection
+`Yₖ _ K̄ → Yₖ _ (E' X)` (after `φF`). -/
+lemma φF_inv_fst_trans (k : (𝒰 X).I₀) :
+    (φF F k).inv.left ≫ pullback.fst _ _ ≫
+      (basechange_over_Field.trans (𝒰₀' k) (E' X) F).inv.left ≫ pullback.fst _ _ =
+    (φF (E' X) k).inv.left ≫ pullback.fst _ _ := by
+  simp only [φF, Iso.trans_inv, Over.comp_left, Category.assoc]
+  congr 1
+  apply pullback.hom_ext
+  · simp [basechange_over_Field.trans, basechange_over_Field.proj]
+  · simp [basechange_over_Field.trans, basechange_over_Field.proj,
+      basechange_over_Field.trans_map_comp]
+
+-- written by AI (Claude)
+/-- Mapping an ideal along four maps, the last two given by `RingHomClass`es, is mapping it along
+their composite. -/
+lemma Ideal.map_map_map_map_coe {R S T U V F₃ F₄ : Type*} [Semiring R] [Semiring S] [Semiring T]
+    [Semiring U] [Semiring V] [FunLike F₃ T U] [RingHomClass F₃ T U] [FunLike F₄ U V]
+    [RingHomClass F₄ U V] (I : Ideal R) (f₁ : R →+* S) (f₂ : S →+* T) (f₃ : F₃) (f₄ : F₄) :
+    (((I.map f₁).map f₂).map f₃).map f₄ =
+      I.map ((f₄ : U →+* V).comp ((f₃ : T →+* U).comp (f₂.comp f₁))) := by
+  simp only [← Ideal.map_coe f₃, ← Ideal.map_coe f₄, Ideal.map_map]
+
+-- written by AI (Claude)
+/-- Mapping an ideal along three maps given by `RingHomClass`es is mapping it along their
+composite. -/
+lemma Ideal.map_map_map_coe {R S T U F₁ F₂ F₃ : Type*} [Semiring R] [Semiring S] [Semiring T]
+    [Semiring U] [FunLike F₁ R S] [RingHomClass F₁ R S] [FunLike F₂ S T] [RingHomClass F₂ S T]
+    [FunLike F₃ T U] [RingHomClass F₃ T U] (I : Ideal R) (f₁ : F₁) (f₂ : F₂) (f₃ : F₃) :
+    ((I.map f₁).map f₂).map f₃ =
+      I.map ((f₃ : T →+* U).comp ((f₂ : S →+* T).comp (f₁ : R →+* S))) := by
+  simp only [← Ideal.map_coe f₁, ← Ideal.map_coe f₂, ← Ideal.map_coe f₃, Ideal.map_map]
+
+-- written by AI (Claude)
+omit [IsSeparated X.hom] in
+open TensorProduct Limits in
+/-- If `ψ₂ ∘ ψ₁ : F₀ ⊗[E' X] (Γ(Yᵢ) ⊗[E' X] Γ(Yⱼ)) → Γ(Yᵢ _ F) ⊗[F] Γ(Yⱼ _ F)` is the base change
+map, then `I₀'` mapped along it and then to `K̄ ⊗[F] _` cuts out the intersection of the charts. -/
+lemma ideal_map_Θ_eq_of_basechange {i j : (𝒰 X).I₀}
+    {F₀ : IntermediateField (E' X) (AlgebraicClosure K)}
+    (hF : ∀ c : F₀, (c : AlgebraicClosure K) ∈ F) {S : Type u} [CommRing S]
+    (I₀' : Ideal (F₀ ⊗[E' X] (Γ(((𝒰₀' i) _ (E' X)).left, ⊤) ⊗[E' X] Γ(((𝒰₀' j) _ (E' X)).left, ⊤))))
+    (hI₀' : (I₀'.map (Algebra.TensorProduct.includeRight (R := F₀) (A := AlgebraicClosure K))).map
+      (rationalModel_equiv F₀) = (intersectionOpens_ideal i j).map (Θ (E' X) i j).symm.toRingHom)
+    (ψ₁ : F₀ ⊗[E' X] (Γ(((𝒰₀' i) _ (E' X)).left, ⊤) ⊗[E' X] Γ(((𝒰₀' j) _ (E' X)).left, ⊤)) →+* S)
+    (ψ₂ : S →+* Γ(((𝒰₀' i) _ F).left, ⊤) ⊗[F] Γ(((𝒰₀' j) _ F).left, ⊤))
+    (hψ : ∀ c a b, ψ₂ (ψ₁ (c ⊗ₜ (a ⊗ₜ b))) =
+      (algebraMap F _ ⟨c, hF c⟩ * ((basechange_over_Field.trans (𝒰₀' i) (E' X) F).inv.left ≫
+        pullback.fst _ _).appTop a) ⊗ₜ
+      ((basechange_over_Field.trans (𝒰₀' j) (E' X) F).inv.left ≫ pullback.fst _ _).appTop b) :
+    (((I₀'.map ψ₁).map ψ₂).map
+      (Algebra.TensorProduct.includeRight (R := F) (A := AlgebraicClosure K))).map (Θ F i j) =
+      intersectionOpens_ideal i j := by
+  have hR : ((intersectionOpens_ideal i j).map (Θ (E' X) i j).symm.toRingHom).map (Θ (E' X) i j) =
+      intersectionOpens_ideal i j :=
+    Ideal.map_of_equiv (Θ (E' X) i j).symm.toRingEquiv
+  refine Eq.trans ?_ ((congrArg (Ideal.map (Θ (E' X) i j)) hI₀').trans hR)
+  refine (Ideal.map_map_map_map_coe I₀' ψ₁ ψ₂ _ _).trans ?_
+  refine Eq.trans (congrArg (Ideal.map · I₀') (RingHom.ext fun x ↦ ?_))
+    (Ideal.map_map_map_coe I₀' _ _ _).symm
+  have h1 (c : F) (y : Γ(((𝒰₀' i) _ F).left, ⊤)) :
+      (1 : AlgebraicClosure K) ⊗ₜ[F] (algebraMap F _ c * y) = (c : AlgebraicClosure K) ⊗ₜ y := by
+    rw [← Algebra.smul_def, ← TensorProduct.smul_tmul, Algebra.smul_def, mul_one]
+    rfl
+  have hP (k : (𝒰 X).I₀) (y : Γ(((𝒰₀' k) _ (E' X)).left, ⊤)) :
+      ((φF F k).inv.left ≫ pullback.fst _ _).appTop
+        (((basechange_over_Field.trans (𝒰₀' k) (E' X) F).inv.left ≫ pullback.fst _ _).appTop y) =
+      ((φF (E' X) k).inv.left ≫ pullback.fst _ _).appTop y := by
+    rw [← φF_inv_fst_trans (F := F)]
+    rfl
+  induction x using TensorProduct.inductionOn with
+  | add x y hx hy => simp only [map_add, hx, hy]
+  | tmul c y =>
+    induction y using TensorProduct.inductionOn with
+    | add y z hy hz => simp only [TensorProduct.tmul_add, map_add, hy, hz]
+    | tmul a b =>
+      simp only [RingHom.coe_comp, Function.comp_apply, RingHom.coe_coe, hψ,
+        Algebra.TensorProduct.includeRight_apply, h1, Θ_tmul, rationalModel_equiv,
+        Algebra.TensorProduct.cancelBaseChange_tmul, φF_globalSection_tmul, one_smul, hP]
+      rw [show c • (1 : AlgebraicClosure K) = (c : AlgebraicClosure K) by
+        rw [Algebra.smul_def, mul_one]; rfl]
+
+end BasechangeFromE'
+
+-- written by AI (Claude)
+omit [IsSeparated X.hom] in
+open TensorProduct Limits in
+lemma ΓBasechange_tensorRingEquiv_symm_apply {i j : (𝒰 X).I₀}
+    {F : IntermediateField K (AlgebraicClosure K)} [Fact (E' X ≤ F)]
+    (Uij : Over (Spec ↧(E' X))) [IsAffine Uij.left]
+    (Uij_global : Γ(Uij.left, ⊤) ≃ₐ[E' X]
+      Γ(((𝒰₀' i) _ (E' X)).left, ⊤) ⊗[E' X] Γ(((𝒰₀' j) _ (E' X)).left, ⊤)) (c : F)
+    (a : Γ(((𝒰₀' i) _ (E' X)).left, ⊤)) (b : Γ(((𝒰₀' j) _ (E' X)).left, ⊤)) :
+    (ΓBasechange_tensorRingEquiv F Uij Uij_global).symm
+      (ΓBasechange_of_Affine Uij F (c ⊗ₜ Uij_global.symm (a ⊗ₜ b))) =
+    (algebraMap F _ c * ((basechange_over_Field.trans (𝒰₀' i) (E' X) F).inv.left ≫
+      pullback.fst _ _).appTop a) ⊗ₜ
+    ((basechange_over_Field.trans (𝒰₀' j) (E' X) F).inv.left ≫ pullback.fst _ _).appTop b := by
+  simp only [ΓBasechange_tensorRingEquiv]
+  refine (RingEquiv.symm_apply_eq _).mpr ?_
+  refine congrArg (ΓBasechange_of_Affine Uij F) ?_
+  refine congrArg (Algebra.TensorProduct.congr (AlgEquiv.refl : F ≃ₐ[E' X] F) Uij_global.symm)
+    (a₁ := c ⊗ₜ (a ⊗ₜ b)) ?_
+  refine ((RingEquiv.symm_apply_eq _).mpr ?_).symm
+  have (k : (𝒰 X).I₀) : IsAffine ((𝒰₀' k) _ (E' X)).left :=
+    inferInstanceAs (IsAffine (pullback _ _))
+  have h1 : (c ⊗ₜ[E' X] a : F ⊗[E' X] Γ(((𝒰₀' i) _ (E' X)).left, ⊤)) =
+      c • ((1 : F) ⊗ₜ[E' X] a) := by
+    rw [TensorProduct.smul_tmul', smul_eq_mul, mul_one]
+  simp only [AlgEquiv.coe_toRingEquiv, AlgEquiv.trans_apply, Algebra.TensorProduct.assoc_symm_tmul,
+    Algebra.TensorProduct.cancelBaseChange_symm_tmul, Algebra.TensorProduct.congr_apply,
+    Algebra.TensorProduct.map_tmul, AlgEquiv.coe_toAlgHom, h1, map_smul,
+    ΓBasechange_of_Affine_one_tmul, Scheme.Hom.comp_appTop]
+  rw [Algebra.smul_def]
+  rfl
+
 -- The statement was written by AI (Claude), from the user's description.
+omit [IsSeparated X.hom] in
 open TensorProduct Limits in
 lemma exists_ideal_map_Θ_eq_intersectionOpens_ideal {i j : (𝒰 X).I₀} :
     ∃ (F : IntermediateField K (AlgebraicClosure K)) (_ : Fact (E' X ≤ F))
@@ -264,59 +451,38 @@ lemma exists_ideal_map_Θ_eq_intersectionOpens_ideal {i j : (𝒰 X).I₀} :
       ((Scheme.ΓSpecIso _).inv ≫ (pullback.snd ((𝒰₀' i) _ (E' X)).hom ((𝒰₀' j) _ (E' X)).hom ≫
         ((𝒰₀' j) _ (E' X)).hom).appTop).hom x
     simp only [← Scheme.Hom.comp_appTop, pullback.condition]
-  have : IsAffine Uij.left := sorry
+  have : IsAffine Uij.left := inferInstanceAs (IsAffine (pullback _ _))
   let Uij_global : Γ(Uij.left, ⊤) ≃ₐ[E' X]
       Γ(((𝒰₀' i) _ (E' X)).left, ⊤) ⊗[E' X] Γ(((𝒰₀' j) _ (E' X)).left, ⊤) :=
     f.symm
   let g₂ : F₀ ⊗[E' X] (Γ(((𝒰₀' i) _ (E' X)).left, ⊤) ⊗[E' X] Γ(((𝒰₀' j) _ (E' X)).left, ⊤)) ≃+*
       F₀ ⊗[E' X] Γ(Uij.left, ⊤) :=
     (Algebra.TensorProduct.congr (AlgEquiv.refl : F₀ ≃ₐ[E' X] F₀) Uij_global.symm).toRingEquiv
-  let g₁ : F₀ ⊗[↥(E' X)] ↑Γ(Uij.left, ⊤) →+* ↑Γ((Uij _ F).left, ⊤) := (ΓBasechange_of_Affine Uij
-    F).toRingHom.comp (IntermediateField.forget_basechange F₀ Γ(Uij.left, ⊤)).toRingHom
+  -- written by AI (Claude): from here on, `Algebra (E' X) F` is the `Fact`-based instance (as in
+  -- `Θ F`), not the `forget` one; mixing the two makes the proof time out
+  have : Fact (E' X ≤ F) := ⟨hEF⟩
+  have : @IsScalarTower (E' X) (E' X) F Algebra.toSMul Algebra.toSMul Algebra.toSMul :=
+    IsScalarTower.of_algebraMap_eq fun _ ↦ rfl
+  -- `F₀ → F` (the identity on elements), with the `Fact`-based `Algebra (E' X) F`
+  let ι : F₀ →ₐ[E' X] F :=
+    { toFun c := ⟨c, c.2⟩
+      map_one' := rfl
+      map_mul' _ _ := rfl
+      map_zero' := rfl
+      map_add' _ _ := rfl
+      commutes' _ := rfl }
+  let g₁ : F₀ ⊗[↥(E' X)] ↑Γ(Uij.left, ⊤) →+* ↑Γ((Uij _ F).left, ⊤) :=
+    (ΓBasechange_of_Affine Uij F).toRingHom.comp
+      (Algebra.TensorProduct.map ι (AlgHom.id (E' X) Γ(Uij.left, ⊤))).toRingHom
   let I' := I₀'.map (g₁.comp g₂.toRingHom)
-  have map : (↑Γ(((𝒰₀' i) _ F).left, ⊤) ⊗[F] ↑Γ(((𝒰₀' j) _ F).left, ⊤)) ≃+*
-      Γ((Uij _↥F).left, ⊤) := by
-    have : Fact (E' X ≤ F) := ⟨hEF⟩
-    exact ΓBasechange_tensorRingEquiv F Uij Uij_global
+  let map : (↑Γ(((𝒰₀' i) _ F).left, ⊤) ⊗[F] ↑Γ(((𝒰₀' j) _ F).left, ⊤)) ≃+*
+      Γ((Uij _↥F).left, ⊤) :=
+    ΓBasechange_tensorRingEquiv F Uij Uij_global
   let J := I'.map map.symm.toRingHom
   use J
-  -- Pick up from here : (note by AI (Claude), 2026-11-10) state of the `to claude : finish this`
-  -- command above. Agreed with the user: top-level helper lemmas are OK; restate
-  -- `ΓBasechange_tensorRingEquiv` in the forward direction; `have map` becomes `let map`.
-  -- Done in the project: `attribute [-instance] IntermediateField.instAlgebraSubtypeMem ...` at
-  -- the top of this file (it fixed the instance mismatch that made `Θ` uncomputable).
-  -- Done in a scratch copy only (not in the project; the file may be gone by next session):
-  -- /tmp/claude-1000/-home-abhijit-lean-CMAbelianVarieties/991aab13-e5c3-465c-841e-4b8850d8b209/
-  --   scratchpad/finish/Sep3.lean
-  -- There, all of these are proved and under the heartbeat limit:
-  -- * `φF_globalSection_one_tmul`, `Θ_tmul` (in the `F`-section, before its `end`);
-  -- * `ΓBasechange_of_Affine_one_tmul`: `ΓBasechange_of_Affine X L (1 ⊗ₜ a) = (fst _ _).appTop a`;
-  -- * `ringHom_ext_tmul_tmul`: ring homs out of `A ⊗ (B ⊗ C)` agreeing on `a ⊗ₜ (b ⊗ₜ c)` are
-  --   equal (via Mathlib's `Algebra.TensorProduct.ringHom_ext`, avoids `map_add`);
-  -- * a `section BasechangeFromE'` with `local instance`s `Fact (E' X ≤ E' X)`,
-  --   `(priority := high) Algebra (E' X) (E' X) := inclusion`, and `IsScalarTower (E' X) (E' X) _`
-  --   (stated with explicit `Algebra.toSMul`s), containing: `φF_inv_fst_trans` (the scheme
-  --   identity), `φF_globalSection_one_tmul_trans`, `ΓBasechange_tensorAlgEquiv` (replaces
-  --   `ΓBasechange_tensorRingEquiv`: `Γ(Uij _ F) ≃ₐ[F] Γ(Yᵢ _ F) ⊗[F] Γ(Yⱼ _ F)`),
-  --   `ΓBasechange_tensorAlgEquiv_tmul` (40k), `Θ_one_tmul_ΓBasechange_tensorAlgEquiv` (27k),
-  --   `ideal_map_Θ_eq_of_basechange` (134k; the whole final step, with `g₁` as an argument).
-  -- Next (untested; the compile was stopped): replace the last lines of this proof by
-  --   have : Fact (E' X ≤ F) := ⟨hEF⟩
-  --   let map : ... := (ΓBasechange_tensorAlgEquiv F Uij Uij_global).symm.toRingEquiv
-  --   let J := I'.map map.symm.toRingHom
-  --   use J
-  --   have hio : intersectionOpens_ideal i j = I.map (Θ (E' X) i j) :=
-  --     (Ideal.map_of_equiv (Θ (E' X) i j).symm.toRingEquiv).symm
-  --   rw [hio, ← hI₀']
-  --   exact ideal_map_Θ_eq_of_basechange F₀ (fun c ↦ c.2) Uij Uij_global g₁ (fun _ _ ↦ rfl) I₀'
-  -- and check the heartbeats of this lemma (~123k before these lines).
-  -- Lessons: on these types, `rw` costs 20-70k per step (use one `simp only` instead),
-  -- `map_add` / `RingHomClass` searches can cost millions; avoid both.
-  -- Note by AI (Claude): still needed:
-  -- 1. `σ : F ⊗[E' X] Γ(Y) ≃ₐ[F] Γ(Y _ F)` (Y affine), on both factors, to move `I₀` over `F`.
-  -- 2. `Θ F i j ∘ (K̄ ⊗ σ) = Θ (E' X) i j ∘ rationalModel_equiv F₀`; needs `_tmul` lemmas that
-  --    `Θ` / `φF_globalSection` don't have yet.
-  sorry
+  refine ideal_map_Θ_eq_of_basechange (fun c ↦ c.2) I₀' hI₀' (g₁.comp g₂.toRingHom)
+    map.symm.toRingHom fun c a b ↦ ?_
+  exact ΓBasechange_tensorRingEquiv_symm_apply (F := F) Uij Uij_global ⟨c, c.2⟩ a b
 
 variable (X) in
 theorem exists_model_of_isSeparated_of_locallyOfFiniteType :
@@ -324,3 +490,5 @@ theorem exists_model_of_isSeparated_of_locallyOfFiniteType :
     ∃ X₀ : Over (Spec ↧E), IsSeparated X₀.hom ∧ LocallyOfFiniteType X₀.hom ∧
     Nonempty ((X₀ _ (AlgebraicClosure K)) ≅ X) := by
   sorry
+
+#min_imports

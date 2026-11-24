@@ -10,7 +10,8 @@ lives in `CMAbelianVarieties/Theorem.lean` (not yet proven).
 - **Do NOT edit, create, move or delete any file unless I specifically tell you
   to.** If you think a change would help, describe it and suggest it instead.
   An explicit task (e.g. "run the checklist") permits only the edits that task covers.
-- Do not commit or push unless I ask (or the checklist tells you to).
+- Do not commit or push unless I ask (or the checklist tells you to). Commit directly on
+  `master`; never create a new branch.
 - If you write a proof or definition, mark it with a comment directly above it
   saying it was written by AI (see "AI usage" in README.md).
   When you edit inside an existing proof, do not mark each edit separately: one such comment
@@ -50,6 +51,9 @@ was originally defined with `eqToIso`, and `simp [refl]` ran out of memory; `eqT
   executing that command, and do not count it when checking how many commands there are.
 - Do not act on them by yourself. Only act when I tell you to execute a
   `to claude` command.
+- Comments of the form `Hey claude, ...` are NOT `to claude` commands: they are notes for
+  discussion. Never act on them; at most mention them or remind me of them, and wait for an
+  explicit command before any edit.
 - When I do, first search every file of the project (excluding `.lake/` and
   `.git/`) for all `to claude` comments, case-insensitively:
       grep -rni "to claude" --exclude-dir=.lake --exclude-dir=.git .
@@ -69,13 +73,39 @@ was originally defined with `eqToIso`, and `simp [refl]` ran out of memory; `eqT
   - Keep all new code (including helper lemmas) in the file containing the command, unless
     the command says otherwise. If you strongly feel that something belongs elsewhere
     (e.g. `ForMathlib/`), ask me before putting it there.
+  - If the command asks for a construction inside a proof (e.g. "define `f` to be the
+    isomorphism ..."), build it inside that proof as a `let`/`have`; do not add a new
+    top-level `def`/`lemma`, not even a general one. If a top-level helper really seems better,
+    suggest it and ask first.
   - Once it has been executed, delete the `to claude` comment itself.
   - If the instruction asks for a term (e.g. "is there something that gives ...?") and you
     find one, but I did not explicitly say how to edit the file, you may answer it in the
     file with `#check`s:
     - a single `#check` goes in place of the `to claude` comment, with no extra empty lines;
     - several `#check`s go together in place of the comment, with at least 3 empty lines
-      above and below the group (not necessarily between them), so that they stand out.
+      above and below the group (not necessarily between them), so that they stand out;
+    - write `#check foo`, not `#check @foo` (use `@` only when explicit arguments are needed,
+      e.g. `#check @foo _ ℤ`).
+
+## Solving a `sorry` with helper lemmas
+When I ask you to solve a `sorry` and allow helper lemmas:
+- Put the helper terms in the same file as the result being proved, as far as possible (see
+  "Keep all new code ... in the file containing the command" above).
+- Helper lemmas may be left as `sorry` if you cannot prove them.
+- When done, list every helper term you created, with its file, in the order in which they appear.
+- If your changes cause errors you cannot fix, either delete or comment out everything you added
+  (your choice), and tell me explicitly which you did, so that I can delete anything left as a
+  comment.
+
+## Working with subagents
+- When I ask you to work on a proof or definition, act as the leader: keep your own context
+  clean and spawn up to three subagents to finish it (how many, and which models, depends on
+  the difficulty; use stronger models for harder tasks). The agents must keep you updated,
+  especially when they hit a timeout. An agent that has finished its proof may put it into
+  the actual file straight away.
+- Whenever a subagent adds or removes something in a file, show me the change in your reply
+  as a ```diff block (removed lines in red, added lines in green), as if you had made the
+  edit yourself. Show only the agent's changes, not my other uncommitted work.
 
 ## `Pick up from here` comments
 - I sometimes leave a note for where to resume work, as a comment of the form
