@@ -6,7 +6,6 @@ Authors: Abhijit A J
 module
 
 public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Commutativity
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 public import CMAbelianVarieties.ForMathlib.Endomorphism
 
 /-!

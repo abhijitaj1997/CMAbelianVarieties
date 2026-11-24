@@ -135,14 +135,14 @@ lemma basechange'_incl {K₁ : Type u} [Field K₁] [Algebra K K₁] (ι : CMStr
 def basechange.ofIso {B : Over (Spec ↧K)} [IsProper B.hom] [GeometricallyIntegral B.hom]
     [AddGrpObj B] {ι : CMStructure A F} {ι' : CMStructure B F} (φ : ι.Iso ι') (K₁ : Type u)
     [Field K₁] [Algebra K K₁] : (ι.basechange K₁).Iso (ι'.basechange K₁) := by
-  let φ_K₁ := ((Over.pullback (map (ofHom (algebraMap K K₁)))).mapAddGrp.mapIso φ.1 :
+  let φ_K₁ := ((Over.pullback (map (ofHom (algebraMap K K₁)))).mapAddGrp.mapIso φ.val :
         AddGrp.mk (A _ K₁) ≅ AddGrp.mk (B _ K₁))
   exact {
     val := φ_K₁
     -- written by Claude
     property := by
       have h : (conjAlgEquiv φ_K₁).toRingHom.comp (rational_end_morphism A K₁) =
-          (rational_end_morphism B K₁).comp (conjAlgEquiv φ.1).toRingHom := by
+          (rational_end_morphism B K₁).comp (conjAlgEquiv φ.val).toRingHom := by
         simp only [rational_end_morphism, AlgHom.toRingHom_eq_coe, conjAlgEquiv]
         ext
         · simp
@@ -159,7 +159,7 @@ def basechange.ofIso {B : Over (Spec ↧K)} [IsProper B.hom] [GeometricallyInteg
           simp [φ_K₁, End.algHom_ofBaseChange, AddGrp.End.algHom_ofBaseChange,
             Iso.conj_apply_asHom]
       simp only [basechange]
-      rw [← φ.2, ← RingHom.comp_assoc, h, RingHom.comp_assoc]
+      rw [← φ.property, ← RingHom.comp_assoc, h, RingHom.comp_assoc]
   }
 
 -- aided by claude

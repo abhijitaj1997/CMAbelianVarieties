@@ -88,16 +88,16 @@ def lattice_representation : End (mk A) →+* (lattice A →ₗ[ℤ] lattice A) 
   toFun f := lattice_representation' f
   map_one' := by
     refine LinearMap.ext fun g ↦ Subtype.ext ?_
-    exact congrArg (· g.1) (map_one (lie_algebra_represenation A))
+    exact congrArg (· g.val) (map_one (lie_algebra_represenation A))
   map_mul' f f' := by
     refine LinearMap.ext fun g ↦ Subtype.ext ?_
-    exact congrArg (· g.1) (map_mul (lie_algebra_represenation A) f f')
+    exact congrArg (· g.val) (map_mul (lie_algebra_represenation A) f f')
   map_zero' := by
     refine LinearMap.ext fun g ↦ Subtype.ext ?_
-    exact congrArg (· g.1) (map_zero (lie_algebra_represenation A))
+    exact congrArg (· g.val) (map_zero (lie_algebra_represenation A))
   map_add' f f' := by
     refine LinearMap.ext fun g ↦ Subtype.ext ?_
-    exact congrArg (· g.1) (map_add (lie_algebra_represenation A) f f')
+    exact congrArg (· g.val) (map_add (lie_algebra_represenation A) f f')
 
 /-- The lattice of a complex abelian variety `A` of dimension `g` is a free `ℤ`-module of
 rank `2 * g`. -/

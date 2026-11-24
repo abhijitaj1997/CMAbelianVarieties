@@ -40,12 +40,12 @@ def ℬ : Module.Basis (I A K) ℚ (End⁰ (A _ K)) :=
 lemma exists_baseChangeHom_eq_ℬ (i : I A K) : ∃ (E : IntermediateField K₀ K)
     (_ : FiniteDimensional K₀ E) (φ : End⁰ (A _ E)), baseChangeHom A E K φ = ℬ A K i := by
   have : IsDirectedOrder {L : IntermediateField K₀ K // FiniteDimensional K₀ L} :=
-    ⟨fun L₁ L₂ ↦ ⟨⟨L₁.1 ⊔ L₂.1, have := L₁.2; have := L₂.2; inferInstance⟩,
-      le_sup_left (a := L₁.1), le_sup_right (a := L₁.1)⟩⟩
+    ⟨fun L₁ L₂ ↦ ⟨⟨L₁.val ⊔ L₂.val, have := L₁.property; have := L₂.property; inferInstance⟩,
+      le_sup_left (a := L₁.val), le_sup_right (a := L₁.val)⟩⟩
   have : Nonempty {L : IntermediateField K₀ K // FiniteDimensional K₀ L} :=
     ⟨⟨⊥, inferInstance⟩⟩
   obtain ⟨E, φ, hφ⟩ := Limits.Concrete.isColimit_exists_rep _ (limitRatEnd.isColimit A K) (ℬ A K i)
-  exact ⟨E.1, E.2, φ, hφ⟩
+  exact ⟨E.val, E.property, φ, hφ⟩
 
 -- aided by claude
 open Function in

@@ -11,7 +11,8 @@ lives in `CMAbelianVarieties/Theorem.lean` (not yet proven).
   to.** If you think a change would help, describe it and suggest it instead.
   An explicit task (e.g. "run the checklist") permits only the edits that task covers.
 - Do not commit or push unless I ask (or the checklist tells you to). Commit directly on
-  `master`; never create a new branch.
+  `master`; never create a new branch. When you commit, keep yourself as a co-author (the
+  `Co-Authored-By` line) unless I explicitly say otherwise.
 - Do not add "written by AI" comments to code; I decide where to put them.
 - If you notice a pattern in my commands (e.g. I keep asking for the same kind of task, or
   keep giving the same correction), you may suggest an instruction to add to this file.

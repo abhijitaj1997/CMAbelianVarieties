@@ -182,7 +182,7 @@ lemma IsCentral_basechange (F K R : Type*) [Field K] [Field F] [Algebra K F] [Ri
     clear hx
     induction y using TensorProduct.inductionOn with
     | tmul f r =>
-      obtain ⟨k, hk⟩ := Algebra.mem_bot.mp r.2
+      obtain ⟨k, hk⟩ := Algebra.mem_bot.mp r.property
       refine Algebra.mem_bot.mpr ⟨k • f, ?_⟩
       rw [Algebra.TensorProduct.algebraMap_apply, algebraMap_self, RingHom.id_apply]
       simp [← hk, Algebra.algebraMap_eq_smul_one, TensorProduct.smul_tmul]

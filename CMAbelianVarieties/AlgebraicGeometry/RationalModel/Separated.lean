@@ -457,7 +457,7 @@ lemma exists_ideal_map_Θ_eq_intersectionOpens_ideal {i j : (𝒰 X).I₀} :
     IsScalarTower.of_algebraMap_eq fun _ ↦ rfl
   -- `F₀ → F` (the identity on elements), with the `Fact`-based `Algebra (E' X) F`
   let ι : F₀ →ₐ[E' X] F :=
-    { toFun c := ⟨c, c.2⟩
+    { toFun c := ⟨c, c.property⟩
       map_one' := rfl
       map_mul' _ _ := rfl
       map_zero' := rfl
@@ -472,9 +472,9 @@ lemma exists_ideal_map_Θ_eq_intersectionOpens_ideal {i j : (𝒰 X).I₀} :
     ΓBasechange_tensorRingEquiv F Uij Uij_global
   let J := I'.map map.symm.toRingHom
   use J
-  refine ideal_map_Θ_eq_of_basechange (fun c ↦ c.2) I₀' hI₀' (g₁.comp g₂.toRingHom)
+  refine ideal_map_Θ_eq_of_basechange (fun c ↦ c.property) I₀' hI₀' (g₁.comp g₂.toRingHom)
     map.symm.toRingHom fun c a b ↦ ?_
-  exact ΓBasechange_tensorRingEquiv_symm_apply (F := F) Uij Uij_global ⟨c, c.2⟩ a b
+  exact ΓBasechange_tensorRingEquiv_symm_apply (F := F) Uij Uij_global ⟨c, c.property⟩ a b
 
 variable (X) in
 theorem exists_model_of_isSeparated_of_locallyOfFiniteType :

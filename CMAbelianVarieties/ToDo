@@ -359,20 +359,28 @@ E/K ⊆ K̄).
 AlgebraicGeometry/RationalModel/Separated.lean
 ----------------------------------------------
 New approach (2026-11-10), via the ideals of the intersections of the
-charts. Line numbers as of 2026-11-10.
-[ ] exists_ideal_map_Θ_eq_intersectionOpens_ideal                    (l.212)
-      Last step still `sorry` (l.319). Marked "Pick up from here" (l.283):
-      the helper lemmas (ΓBasechange_tensorAlgEquiv replacing
-      ΓBasechange_tensorRingEquiv, Θ_tmul, ideal_map_Θ_eq_of_basechange,
-      ...) are proved, but only in a scratch file outside the project; the
-      note lists them and the remaining lines of the proof.
-      Heartbeats are tight (~123k of 200k before the last step).
-[ ] `have : IsAffine Uij.left := sorry` (l.267) in the same proof.
-[ ] exists_model_of_isSeparated_of_locallyOfFiniteType: `sorry`     (l.322)
-[ ] Cleanup: the "Note by AI (Claude): still needed" comment (l.315) is
-      out of date; the type ascription in `Θ` (l.159) may no longer be
-      needed after the `attribute [-instance]` line (l.25); module
-      docstring typos ("seperated").
+charts. exists_ideal_map_Θ_eq_intersectionOpens_ideal is proved
+(2026-11-24). Line numbers as of 2026-11-24.
+[ ] exists_model_of_isSeparated_of_locallyOfFiniteType: `sorry`     (l.480)
+      Gaps found (2026-11-24): G1 one common F for all pairs (i, j)
+      (ideal_map_Θ_eq_of_basechange already works for any F ⊇ F₀);
+      G2 Z₀ := Spec((A_i ⊗_F A_j)/I) with projections and
+      Z₀ _ K̄ ≅ pullback (𝒰.f i) (𝒰.f j) (main chunk); G3 Spec K̄ → Spec F
+      surjective/flat/quasi-compact; G4 projections of Z₀ are open
+      immersions (fpqc descent); G5 Z₀ᵢⱼ ≅ Z₀ⱼᵢ (descended ideals are
+      unique: Ideal.comap_map_eq_self_of_faithfullyFlat); G6 GlueData over
+      F, cocycle via faithfulness of Over.pullback; G7 glued _ K̄ ≅ X (no
+      Mathlib lemma for base change of a gluing); G8 LocallyOfFiniteType;
+      G9 IsSeparated (direct, or via descent). Alternative route: descend
+      the transition maps via Scheme.preservesColimit_yoneda
+      (AffineTransitionLimit.lean).
+[ ] Cleanup: the comment above the helper lemmas (l.203-204) still
+      refers to the deleted `Pick up from here` note; the type ascription
+      in `Θ` (l.156) may no longer be needed after the
+      `attribute [-instance]` line (l.22); module docstring typos
+      ("seperated", l.13, l.15).
+[ ] Ideal.map_map_map_map_coe / Ideal.map_map_map_coe are general facts
+      about ideals: candidates for ForMathlib/.
 
 
 Test/SeparatedOld.lean

@@ -7,7 +7,6 @@ module
 
 public import CMAbelianVarieties.Algebra.CMField
 
-import Aesop.BuiltinRules
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
 

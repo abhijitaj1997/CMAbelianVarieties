@@ -35,7 +35,7 @@ def real_tensor_CMField [IsCMField F] :
   have hsurj : Function.Surjective ψ := by
     intro y
     obtain ⟨x, rfl⟩ : ∃ x : mixedEmbedding.mixedSpace F,
-        (fun w ↦ x.2 ⟨w, IsTotallyComplex.isComplex w⟩) = y := ⟨(0, fun w ↦ y w.1), rfl⟩
+        (fun w ↦ x.2 ⟨w, IsTotallyComplex.isComplex w⟩) = y := ⟨(0, fun w ↦ y w.val), rfl⟩
     rw [← (mixedEmbedding.latticeBasis F).sum_repr x]
     refine ⟨∑ i, (mixedEmbedding.latticeBasis F).repr x i ⊗ₜ (integralBasis F i : F), ?_⟩
     ext w

@@ -182,7 +182,7 @@ lemma isField_stalk_Spec_field (x : Spec ↧K) : IsField ((Spec ↧K).presheaf.s
 induced by `f`, comes from the lift `𝒪_{G,e} ⟶ 𝒪_{G,e}` which is induced by `f` -/
 lemma cotangentEnd_toCotangent (f : End (mk G)) (r : maximalIdeal (𝒪_ G)) :
     cotangentEnd f (Ideal.toCotangent _ r) =
-      Ideal.toCotangent _ ⟨(stalkEnd f).hom r, map_nonunit (stalkEnd f).hom _ r.2⟩ :=
+      Ideal.toCotangent _ ⟨(stalkEnd f).hom r, map_nonunit (stalkEnd f).hom _ r.property⟩ :=
   rfl
 
 /-- The morphism `(mₑ / mₑ^2) ⟶[κ_{G,e}] (mₑ / mₑ^2)` induced by `id`, is
@@ -231,7 +231,7 @@ lemma cotangentEnd_zero : cotangentEnd (0 : End (mk G)) = 0 := by
   obtain ⟨r, rfl⟩ := Ideal.toCotangent_surjective _ v
   rw [cotangentEnd_toCotangent, LinearMap.zero_apply]
   convert (Ideal.toCotangent (maximalIdeal (𝒪_ G))).map_zero
-  exact stalkEnd_zero_apply _ r.2
+  exact stalkEnd_zero_apply _ r.property
 
 /-- The representation of `End (mk G)` on the Lie algebra of `G`: the dual of `cotangentEnd`. -/
 def lie_algebra_repsentation' (f : End (mk G)) :
@@ -724,9 +724,9 @@ lemma cotangentEnd_add [IsCommAddMonObj G] (f g : End (mk G)) :
     rw [← key, ← comp_add]
     rfl
   subst this
-  have hm (u : End (AddGrp.mk G)) : (stalkEnd u).hom r.1 ∈ maximalIdeal _ :=
-    map_nonunit (stalkEnd u).hom _ r.2
-  have := hsnd r.1
+  have hm (u : End (AddGrp.mk G)) : (stalkEnd u).hom r.val ∈ maximalIdeal _ :=
+    map_nonunit (stalkEnd u).hom _ r.property
+  have := hsnd r.val
   rw [CommRingCat.comp_apply, CommRingCat.comp_apply, CommRingCat.comp_apply, derRingHom_snd,
     derRingHom_snd, derRingHom_snd, der_of_mem φ (hm f), der_of_mem φ (hm g),
     der_of_mem φ (hm (f + g))] at this
