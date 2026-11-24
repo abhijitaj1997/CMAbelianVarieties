@@ -82,7 +82,7 @@ lemma exists_ker_rationalModel_map_lift_eq {L A : Type u} [Field L] [Algebra K L
     | add a b ha hb => simp only [map_add, ha, hb]
   classical
   let x' : Finset (L₁ ⊗[K] A) :=
-    x.attach.image fun y ↦ ((AlgHom.mem_range _).mp (hL₁ y.1 y.2)).choose
+    x.attach.image fun y ↦ ((AlgHom.mem_range _).mp (hL₁ y.val y.property)).choose
   have hx₁ : x'.image (Algebra.TensorProduct.map L₁.val (AlgHom.id K A)) = x := by
     ext y
     simp only [x', Finset.image_image, Finset.mem_image, Finset.mem_attach, true_and,
@@ -97,7 +97,7 @@ lemma exists_ker_rationalModel_map_lift_eq {L A : Type u} [Field L] [Algebra K L
   refine ⟨(rationalModel_equiv L₁).surjective, ?_⟩
   rw [← hx, ← hx₁, Finset.coe_image]
   simp only [I₁, Ideal.map_span, Set.image_image]
-  refine congrArg _ (Set.image_congr' fun z ↦ ?_)
+  refine congrArg _ (Set.image_congr' rfl fun z ↦ ?_)
   induction z using TensorProduct.inductionOn with
   | tmul a b => simp [rationalModel_equiv, Algebra.smul_def]
   | add a b ha hb => simp only [map_add, ha, hb]

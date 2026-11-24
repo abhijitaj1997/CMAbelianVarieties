@@ -76,6 +76,7 @@ theorem exists_finiteDimensional_model {L : Type*} [Field L]
     (Module.Finite.trans E₁ (E'.map σ.symm.toAlgHom) : FiniteDimensional L _)
   algebraize [e.toRingHom]
   algebraize [e.toRingHom.comp (Algebra.algebraMap E₁ E')]
+  have : IsScalarTower E₁ E' E := .of_algebraMap_eq fun x ↦ Subtype.ext (σ.symm.commutes x).symm
   let ι₀ : CMStructure (A₁ _ E) F :=
     (ι₀'.basechange E).ofIso (basechange_over_Field.trans_addGrpObj A₁ E' E)
   refine ⟨E, h_fin, A₁ _ E, inferInstance, inferInstance, inferInstance, ι₀, ?_⟩

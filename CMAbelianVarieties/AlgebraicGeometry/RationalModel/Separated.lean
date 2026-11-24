@@ -19,9 +19,6 @@ type `X₀` over `E`, such that `X₀ _ (AlgebraicClosure ℚ) ≅ X`.
 
 @[expose] public noncomputable section
 
--- written by AI (Claude). `IntermediateField` makes every `K̄`-algebra an `F`-algebra by
--- restricting scalars; for `K̄ ⊗[F] _` this clashes with the tensor-product instances (expensive
--- defeq checks, `simp` lemmas about `Algebra.TensorProduct.assoc` etc. do not fire).
 attribute [-instance] IntermediateField.instAlgebraSubtypeMem
   IntermediateField.instModuleSubtypeMem
 
@@ -402,8 +399,6 @@ lemma exists_ideal_map_Θ_eq_intersectionOpens_ideal {i j : (𝒰 X).I₀} :
     (I : Ideal (Γ(((𝒰₀' i) _ F).left, ⊤) ⊗[F] Γ(((𝒰₀' j) _ F).left, ⊤))),
     (I.map (Algebra.TensorProduct.includeRight (R := F) (A := AlgebraicClosure K))).map (Θ F i j) =
       intersectionOpens_ideal i j := by
-  -- written by AI (Claude). The `let` makes the `Fact`-based algebra structure the one used below,
-  -- instead of `Algebra.id`; otherwise the instances of the `F`-section are not found for `E' X`.
   have : Fact (E' X ≤ E' X) := ⟨le_rfl⟩
   let _ : Algebra (E' X) (E' X) := (IntermediateField.inclusion le_rfl).toRingHom.toAlgebra
   let I : Ideal (AlgebraicClosure K ⊗[E' X]
@@ -417,8 +412,6 @@ lemma exists_ideal_map_Θ_eq_intersectionOpens_ideal {i j : (𝒰 X).I₀} :
       exact (HasRingHomProperty.appTop @LocallyOfFiniteType _ inferInstance).comp
         (.of_surjective _ (Scheme.ΓSpecIso _).commRingCatIsoToRingEquiv.symm.surjective)
     exact .trans (S := Γ(((𝒰₀' i) _ (E' X)).left, ⊤)) inferInstance inferInstance
-  -- written by AI (Claude): split up, since a single `rcases` with the nested pattern is slow
-  -- here (it pushed `exists_ideal_map_Θ_eq_intersectionOpens_ideal` over the heartbeat limit)
   have hlem := exists_ker_rationalModel_map_lift_eq I
   obtain ⟨F₀, hF₀⟩ := hlem
   obtain ⟨_, hF₀⟩ := hF₀
@@ -429,7 +422,6 @@ lemma exists_ideal_map_Θ_eq_intersectionOpens_ideal {i j : (𝒰 X).I₀} :
   refine ⟨‹FiniteDimensional (E' X) F₀›, ?_⟩
   let Uij := Over.mk (pullback.snd ((𝒰₀' i) _ (E' X)).hom ((𝒰₀' j) _ (E' X)).hom ≫
     ((𝒰₀' j) _ (E' X)).hom)
-  -- written by AI (Claude): `Γ(Yᵢ) ⊗[E' X] Γ(Yⱼ) ≃ₐ[E' X] Γ(Yᵢ ×_{E' X} Yⱼ)`, `Yₖ = 𝒰₀' k _ (E' X)`
   let f : Γ(((𝒰₀' i) _ (E' X)).left, ⊤) ⊗[E' X] Γ(((𝒰₀' j) _ (E' X)).left, ⊤) ≃ₐ[E' X]
       Γ(Uij.left, ⊤) := by
     have h := (isPushout_appTop_of_isPullback (IsPullback.of_hasPullback _ _)).of_iso
@@ -490,5 +482,3 @@ theorem exists_model_of_isSeparated_of_locallyOfFiniteType :
     ∃ X₀ : Over (Spec ↧E), IsSeparated X₀.hom ∧ LocallyOfFiniteType X₀.hom ∧
     Nonempty ((X₀ _ (AlgebraicClosure K)) ≅ X) := by
   sorry
-
-#min_imports

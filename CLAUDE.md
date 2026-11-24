@@ -12,10 +12,7 @@ lives in `CMAbelianVarieties/Theorem.lean` (not yet proven).
   An explicit task (e.g. "run the checklist") permits only the edits that task covers.
 - Do not commit or push unless I ask (or the checklist tells you to). Commit directly on
   `master`; never create a new branch.
-- If you write a proof or definition, mark it with a comment directly above it
-  saying it was written by AI (see "AI usage" in README.md).
-  When you edit inside an existing proof, do not mark each edit separately: one such comment
-  directly above the lemma/theorem/def is enough (add it there if it is not there yet).
+- Do not add "written by AI" comments to code; I decide where to put them.
 - If you notice a pattern in my commands (e.g. I keep asking for the same kind of task, or
   keep giving the same correction), you may suggest an instruction to add to this file.
   Only suggest it, with the proposed wording; never add it yourself. I decide whether it
@@ -124,6 +121,27 @@ When I ask you to solve a `sorry` and allow helper lemmas:
 - Build one module: `lake build CMAbelianVarieties.Path.To.File`
 - Regenerate `CMAbelianVarieties.lean` (imports every library file): `lake exe mk_all`
 - `relaxedAutoImplicit = false` and the Mathlib standard linter set are enabled.
+
+## Pushing
+Whenever I ask you to push, do it in a new terminal window. Do not try to push yourself: you do
+not have my GitHub credentials. Open a new terminal window that runs the push with my username
+already filled in, so that I only have to enter my token. If a push fails (e.g. I mistype the
+token), it tries again, up to 3 attempts in total. It writes the result to a log file in your
+scratchpad directory (`<LOG>` below):
+    gnome-terminal --working-directory="$(git rev-parse --show-toplevel)" -- bash -c '
+      for i in 1 2 3; do
+        git -c credential.username=abhijitaj1997 push && { r=0; break; }
+        r=1; [ $i -lt 3 ] && echo "Push failed, trying again (attempt $((i+1)) of 3)"
+      done
+      echo "PUSH FINISHED (exit $r)" | tee <LOG>; exec bash'
+(Run this from inside the project; the project path differs between my computers, so do not
+hard-code it.)
+Tell me when the window has been opened. Then, without waiting for me to say anything, wait in
+the background for the `PUSH FINISHED` line to appear in the log, check with
+    git status -sb
+that master is no longer ahead of origin/master, and tell me the result: either that the push
+succeeded, or that all 3 attempts failed (in which case I can read the error in the terminal
+window).
 
 ## Updating Mathlib
 When I ask you to update Mathlib, do the following in the project root, in order.
