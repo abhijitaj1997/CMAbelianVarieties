@@ -10,8 +10,8 @@ public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Homomorphism
 /-!
 ## Goal
 
-In this file, we will show that `End (A _ K)` is the colimit of the endomorphism rings
-`End (A _ L)`, where `L : IntermediateField K₀ K`.
+In this file, we will show that `End (A ⊗ₛ K)` is the colimit of the endomorphism rings
+`End (A ⊗ₛ L)`, where `L : IntermediateField K₀ K`.
 
 -/
 
@@ -30,7 +30,7 @@ variable {K : Type u} [Field K] [Algebra K₀ K]
 variable (A K) in
 open AddGrp in
 def RatEnd : (IntermediateField K₀ K) ⥤ RingCat.{u} where
-  obj L := ↧(End⁰ (A _ L))
+  obj L := ↧(End⁰ (A ⊗ₛ L))
   map f := by
     rename_i L₁ L₂
     algebraize [((IntermediateField.inclusion (leOfHom f) : L₁ →ₐ[K₀] L₂) : L₁ →+* L₂)]
@@ -64,7 +64,7 @@ def RatEnd : (IntermediateField K₀ K) ⥤ RingCat.{u} where
 -- aided by claude
 variable (A K) in
 def limitRatEnd : Limits.Cocone (RatEnd A K) where
-  pt := ↧(End⁰ (A _ K))
+  pt := ↧(End⁰ (A ⊗ₛ K))
   ι := {
     app L := RingCat.ofHom (baseChangeHom A L K)
     naturality L₁ L₂ f := by

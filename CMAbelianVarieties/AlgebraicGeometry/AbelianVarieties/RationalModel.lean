@@ -14,7 +14,7 @@ public import CMAbelianVarieties.AlgebraicGeometry.RationalModel.Morphism
 The goal of this file is to show that an abelian variety `A` over `AlgebraicClosure K`
 has a model over a finite extension of `K`. That is, there is a finite extension `E/K`
 inside `AlgebraicClosure K` and an abelian variety `A₀` over `E`, such that
-`A₀ _ (AlgebraicClosure K) ≅ A` as group objects.
+`A₀ ⊗ₛ (AlgebraicClosure K) ≅ A` as group objects.
 
 For `K = ℚ`, `E` is a number field.
 
@@ -37,7 +37,7 @@ variable (A) in
 theorem AbelianVarieties.exists_finiteDimensional_model :
     ∃ (E : IntermediateField K (AlgebraicClosure K)) (_ : FiniteDimensional K E)
     (A₀ : Over (Spec ↧E)) (_ : IsProper A₀.hom) (_ : GeometricallyIntegral A₀.hom)
-    (_ : AddGrpObj A₀), Nonempty (AddGrp.mk (A₀ _ (AlgebraicClosure K)) ≅ AddGrp.mk A) := by
+    (_ : AddGrpObj A₀), Nonempty (AddGrp.mk (A₀ ⊗ₛ (AlgebraicClosure K)) ≅ AddGrp.mk A) := by
   let E₁ := (exists_model_of_isSeparated_of_locallyOfFiniteType A).choose
   let A₁ : Over (Spec ↧E₁) :=
     (exists_model_of_isSeparated_of_locallyOfFiniteType A).choose_spec.2.choose
@@ -46,16 +46,16 @@ theorem AbelianVarieties.exists_finiteDimensional_model :
   have : IsAlgebraic E₁ (AlgebraicClosure K) := .tower_top (K := K) E₁
   obtain ⟨ψ⟩ :=
     (exists_model_of_isSeparated_of_locallyOfFiniteType A).choose_spec.2.choose_spec.2.2
-  let : AddGrpObj (A₁ _ (AlgebraicClosure K)) := .ofIso ψ.symm
-  let φ : AddGrp.mk (A₁ _ (AlgebraicClosure K)) ≅ AddGrp.mk A := (AddGrp.mkIso' ψ.symm).symm
+  let : AddGrpObj (A₁ ⊗ₛ (AlgebraicClosure K)) := .ofIso ψ.symm
+  let φ : AddGrp.mk (A₁ ⊗ₛ (AlgebraicClosure K)) ≅ AddGrp.mk A := (AddGrp.mkIso' ψ.symm).symm
   let E := fieldOfDefintion A₁ (AlgebraicClosure K)
-  let h_addGrp : AddGrpObj (A₁ _ E) := AddGroupObj_overFieldOfDefintion A₁ (AlgebraicClosure K)
+  let h_addGrp : AddGrpObj (A₁ ⊗ₛ E) := AddGroupObj_overFieldOfDefintion A₁ (AlgebraicClosure K)
   have : FiniteDimensional E₁ E := FiniteDimensional_ofFieldOfDefintion A₁ (AlgebraicClosure K)
   have : FiniteDimensional K E₁ :=
     (exists_model_of_isSeparated_of_locallyOfFiniteType A).choose_spec.1
   have : FiniteDimensional K E := Module.Finite.trans E₁ E
-  have hP : IsProper (A₁ _ E).hom := inferInstance
-  have hGI : GeometricallyIntegral (A₁ _ E).hom := inferInstance
+  have hP : IsProper (A₁ ⊗ₛ E).hom := inferInstance
+  have hGI : GeometricallyIntegral (A₁ ⊗ₛ E).hom := inferInstance
   refine ⟨E.restrictScalars K, this, ?_⟩
-  use (A₁ _ E), hP, hGI, h_addGrp
+  use (A₁ ⊗ₛ E), hP, hGI, h_addGrp
   exact ⟨(AddGroupObj_overFieldOfDefintion_Iso A₁ (AlgebraicClosure K)).trans φ⟩

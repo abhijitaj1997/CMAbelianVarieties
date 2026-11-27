@@ -16,7 +16,7 @@ states the following:
 
 >   If `A` is a CM abelian variety over an algebraically closed field `K` of
 >   characteristic 0, then it, along with the CM structure, has a model `A₀` over
->   a number field `E`, such that `K` is an `E`-algebra, and `A₀ _ K ≅ A` along
+>   a number field `E`, such that `K` is an `E`-algebra, and `A₀ ⊗ₛ K ≅ A` along
 >   with its CM Strucutre.
 
 -/
@@ -54,11 +54,11 @@ theorem exists_finiteDimensional_model {L : Type*} [Field L]
     (_ : GeometricallyIntegral A₀.hom) (_ : AddGrpObj A₀) (ι₀ : CMStructure A₀ F),
     Nonempty ((ι₀.basechange (AlgebraicClosure L)).Iso ι) := by
   obtain ⟨E₁, _, A₁, _, _, _, hφ⟩ := AbelianVarieties.exists_finiteDimensional_model A
-  let ι' : CMStructure (A₁ _ (AlgebraicClosure L)) F := ι.ofIso hφ.some.symm
+  let ι' : CMStructure (A₁ ⊗ₛ (AlgebraicClosure L)) F := ι.ofIso hφ.some.symm
   have : IsAlgClosure E₁ (AlgebraicClosure L) := ⟨inferInstance, .tower_top (K := L) E₁⟩
   let σ : AlgebraicClosure L ≃ₐ[E₁] AlgebraicClosure E₁ :=
     IsAlgClosure.equiv E₁ (AlgebraicClosure L) (AlgebraicClosure E₁)
-  let ι'' : CMStructure (A₁ _ (AlgebraicClosure E₁)) F :=
+  let ι'' : CMStructure (A₁ ⊗ₛ (AlgebraicClosure E₁)) F :=
     letI : Algebra (AlgebraicClosure L) (AlgebraicClosure E₁) := σ.toRingHom.toAlgebra
     letI : Algebra E₁ (AlgebraicClosure E₁) := AlgebraicClosure.instAlgebra E₁
     letI : SMul E₁ (AlgebraicClosure E₁) := (AlgebraicClosure.instAlgebra E₁).toSMul
@@ -76,9 +76,9 @@ theorem exists_finiteDimensional_model {L : Type*} [Field L]
     (Module.Finite.trans E₁ (E'.map σ.symm.toAlgHom) : FiniteDimensional L _)
   algebraize [e.toRingHom]
   have : IsScalarTower E₁ E' E := .of_algebraMap_eq fun x ↦ Subtype.ext (σ.symm.commutes x).symm
-  let ι₀ : CMStructure (A₁ _ E) F :=
+  let ι₀ : CMStructure (A₁ ⊗ₛ E) F :=
     (ι₀'.basechange E).ofIso (basechange_over_Field.trans_addGrpObj A₁ E' E)
-  refine ⟨E, h_fin, A₁ _ E, inferInstance, inferInstance, inferInstance, ι₀, ?_⟩
+  refine ⟨E, h_fin, A₁ ⊗ₛ E, inferInstance, inferInstance, inferInstance, ι₀, ?_⟩
   have hι : ι'.Iso ι := CMStructure.Iso.symm (ι_A := ι) ⟨hφ.some.symm, rfl⟩
   let : Algebra (AlgebraicClosure E₁) (AlgebraicClosure L) := σ.symm.toRingHom.toAlgebra
   have P₁ : (ι'.basechange (AlgebraicClosure L)).Iso (ι''.basechange (AlgebraicClosure L)) :=

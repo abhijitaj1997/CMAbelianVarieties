@@ -91,8 +91,8 @@ lemma ringKrullDim_basechange (A K K₁ : Type*) [CommRing A] [Field K] [Field K
 open TensorProduct Scheme Algebra in
 lemma topologicalKrullDim_basechange_affine (X : Over (Spec ↧K)) [IsAffine X.left]
     [LocallyOfFiniteType X.hom] (K₁ : Type u) [Field K₁] [Algebra K K₁] :
-    topologicalKrullDim X.left = topologicalKrullDim (X _ K₁).left := by
-  have : IsAffine (X _ K₁).left := by dsimp; infer_instance
+    topologicalKrullDim X.left = topologicalKrullDim (X ⊗ₛ K₁).left := by
+  have : IsAffine (X ⊗ₛ K₁).left := by dsimp; infer_instance
   have : FiniteType K Γ(X.left, ⊤) :=
     (HasRingHomProperty.appTop @LocallyOfFiniteType X.hom ‹_›).comp
       (.of_surjective _ (ΓSpecIso ↧K).commRingCatIsoToRingEquiv.symm.surjective)
@@ -100,7 +100,7 @@ lemma topologicalKrullDim_basechange_affine (X : Over (Spec ↧K)) [IsAffine X.l
     rw [← PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim Γ(α, ⊤)]
     exact IsHomeomorph.topologicalKrullDim_eq (homeoOfIso α.isoSpec)
       (homeoOfIso α.isoSpec).isHomeomorph
-  have : Γ((X _ K₁).left, ⊤) ≃+* K₁ ⊗[K] Γ(X.left, ⊤) := by
+  have : Γ((X ⊗ₛ K₁).left, ⊤) ≃+* K₁ ⊗[K] Γ(X.left, ⊤) := by
     have h : X.hom ≫ 𝟙 _ =
         X.left.isoSpec.hom ≫ Spec.map (ofHom (algebraMap K Γ(X.left, ⊤))) := by
       rw [Category.comp_id, RingHom.algebraMap_toAlgebra, ofHom_hom, Spec.map_comp,
@@ -114,7 +114,7 @@ lemma topologicalKrullDim_basechange_affine (X : Over (Spec ↧K)) [IsAffine X.l
 
 theorem dimension_isStableUnderBasechange (X : Over (Spec ↧K)) [LocallyOfFiniteType X.hom]
     (K₁ : Type u) [Field K₁] [Algebra K K₁] :
-    topologicalKrullDim X.left = topologicalKrullDim (X _ K₁).left := by
+    topologicalKrullDim X.left = topologicalKrullDim (X ⊗ₛ K₁).left := by
   let 𝒰 : X.left.OpenCover := X.left.affineCover
   rw [topologicalKrullDim_eq_iSup_openCover 𝒰,
     topologicalKrullDim_eq_iSup_openCover (basechangeOpenCover X K₁ 𝒰)]

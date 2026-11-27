@@ -13,7 +13,7 @@ public import CMAbelianVarieties.AlgebraicGeometry.RationalModel.Affine
 The goal of this file is to show that a seperated scheme `X` of finite type over
 `AlgebraicClosure ℚ` has a model over a number field that is also separated and of
 finite type. That is, there is a number field `E` and a seperated scheme of finite
-type `X₀` over `E`, such that `X₀ _ (AlgebraicClosure ℚ) ≅ X`.
+type `X₀` over `E`, such that `X₀ ⊗ₛ (AlgebraicClosure ℚ) ≅ X`.
 
 -/
 
@@ -96,21 +96,21 @@ lemma CommRingCat.isPushout_induction {A B C P : CommRingCat.{u}} {f : A ⟶ B} 
 
 -- statement and proof written by AI (Claude)
 open Limits in
-/-- A quasi-compact open of `U _ L` already comes from `U _ F'` for some finite subextension
+/-- A quasi-compact open of `U ⊗ₛ L` already comes from `U ⊗ₛ F'` for some finite subextension
 `F'` of `L/F`. Idea: write it as a finite union of basic opens `D(g)`, and adjoin to `F`
 the finitely many coefficients of the `g`s in `Γ(U) ⊗[F] L`. Alternatively, it is
-`exists_preimage_eq` (Mathlib/AlgebraicGeometry/AffineTransitionLimit.lean), once `U _ L` is
-the limit of the `U _ F'`. -/
+`exists_preimage_eq` (Mathlib/AlgebraicGeometry/AffineTransitionLimit.lean), once `U ⊗ₛ L` is
+the limit of the `U ⊗ₛ F'`. -/
 lemma exists_opens_basechange_of_isCompact {F L : Type u} [Field F] [Field L] [Algebra F L]
     [Algebra.IsAlgebraic F L] (U : Over (Spec ↧F)) [IsAffine U.left]
-    (W : (U _ L).left.Opens) (hW : IsCompact (W : Set (U _ L).left)) :
+    (W : (U ⊗ₛ L).left.Opens) (hW : IsCompact (W : Set (U ⊗ₛ L).left)) :
     ∃ F' : IntermediateField F L, FiniteDimensional F F' ∧
-      ∃ W₀ : (U _ F').left.Opens, basechange_over_Field.proj U F' L ⁻¹ᵁ W₀ = W := by
+      ∃ W₀ : (U ⊗ₛ F').left.Opens, basechange_over_Field.proj U F' L ⁻¹ᵁ W₀ = W := by
   classical
-  -- every global section of `U _ L` comes from `U _ F'` once `F'` contains a finite set `s`
-  have key : ∀ g : Γ((U _ L).left, ⊤), ∃ s : Finset L, ∀ F' : IntermediateField F L,
+  -- every global section of `U ⊗ₛ L` comes from `U ⊗ₛ F'` once `F'` contains a finite set `s`
+  have key : ∀ g : Γ((U ⊗ₛ L).left, ⊤), ∃ s : Finset L, ∀ F' : IntermediateField F L,
       (s : Set L) ⊆ F' →
-        ∃ g' : Γ((U _ F').left, ⊤), (basechange_over_Field.proj U F' L).appTop g' = g := by
+        ∃ g' : Γ((U ⊗ₛ F').left, ⊤), (basechange_over_Field.proj U F' L).appTop g' = g := by
     refine CommRingCat.isPushout_induction
       (isPushout_appTop_of_isPullback (IsPullback.of_hasPullback _ _)) (fun x y ↦ ?_)
       fun p q ⟨s, hs⟩ ⟨t, ht⟩ ↦ ?_
@@ -132,7 +132,7 @@ lemma exists_opens_basechange_of_isCompact {F L : Type u} [Field F] [Field L] [A
       obtain ⟨q', rfl⟩ := ht F' hF'.2
       exact ⟨p' + q', map_add _ _ _⟩
   -- write `W` as a finite union of basic opens and descend each of them
-  have : IsAffine (U _ L).left := inferInstanceAs (IsAffine (pullback _ _))
+  have : IsAffine (U ⊗ₛ L).left := inferInstanceAs (IsAffine (pullback _ _))
   obtain ⟨Us, hUs, hUsf, rfl⟩ := (isBasis_basicOpen _).exists_finite_of_isCompact hW
   have := hUsf.to_subtype
   choose g hg using fun V : Us ↦ hUs V.2
@@ -143,7 +143,7 @@ lemma exists_opens_basechange_of_isCompact {F L : Type u} [Field F] [Field L] [A
   choose g' hg' using fun V : Us ↦ hs V F'
     ((Set.subset_iUnion (fun V ↦ (s V : Set L)) V).trans (IntermediateField.subset_adjoin F S))
   refine ⟨F', IntermediateField.finiteDimensional_adjoin fun x _ ↦ Algebra.IsIntegral.isIntegral x,
-    ⨆ V, (U _ F').left.basicOpen (g' V), ?_⟩
+    ⨆ V, (U ⊗ₛ F').left.basicOpen (g' V), ?_⟩
   simp only [Scheme.Hom.preimage_iSup, Scheme.preimage_basicOpen_top, hg', hg, sSup_eq_iSup']
 
 -- aided by claude
@@ -152,7 +152,7 @@ theorem exists_model_of_isSeparated_of_locallyOfFiniteType [LocallyOfFiniteType 
     [CompactSpace X.left] :
     ∃ E : IntermediateField K (AlgebraicClosure K), FiniteDimensional K E ∧
     ∃ X₀ : Over (Spec ↧E), IsSeparated X₀.hom ∧ LocallyOfFiniteType X₀.hom ∧
-    Nonempty ((X₀ _ (AlgebraicClosure K)) ≅ X) := by
+    Nonempty ((X₀ ⊗ₛ (AlgebraicClosure K)) ≅ X) := by
   let 𝒰 : X.left.OpenCover := X.left.affineCover.finiteSubcover
   have h𝒰_aff (i : 𝒰.I₀) : IsAffine (Over.mk (𝒰.f i ≫ X.hom)).left :=
     inferInstanceAs (IsAffine (𝒰.X i))
@@ -168,7 +168,7 @@ theorem exists_model_of_isSeparated_of_locallyOfFiniteType [LocallyOfFiniteType 
     have (i : 𝒰.I₀) : FiniteDimensional K (model i).choose := (model i).choose_spec.1
     IntermediateField.finiteDimensional_iSup_of_finite
   let U' (i : 𝒰.I₀) : Over (Spec ↧E₀) :=
-    ((model i).choose_spec.2.choose : Over (Spec ↧(E₀' i))) _ E₀
+    ((model i).choose_spec.2.choose : Over (Spec ↧(E₀' i))) ⊗ₛ E₀
   let W (i j : 𝒰.I₀) : X.left.Opens := (𝒰.f i).opensRange ⊓ (𝒰.f j).opensRange
   have hW_aff (i j : 𝒰.I₀) : IsAffine (Over.mk ((W i j).ι ≫ X.hom)).left :=
     have : IsAffine (𝒰.f i).opensRange := isAffineOpen_opensRange (𝒰.f i)
@@ -182,13 +182,13 @@ theorem exists_model_of_isSeparated_of_locallyOfFiniteType [LocallyOfFiniteType 
   have hU'_aff (i : 𝒰.I₀) : IsAffine (U' i).left :=
     have := (model i).choose_spec.2.choose_spec.1
     inferInstanceAs (IsAffine (Limits.pullback _ _))
-  let eU' (i : 𝒰.I₀) : (U' i) _ (AlgebraicClosure K) ≅ Over.mk (𝒰.f i ≫ X.hom) :=
+  let eU' (i : 𝒰.I₀) : (U' i) ⊗ₛ (AlgebraicClosure K) ≅ Over.mk (𝒰.f i ≫ X.hom) :=
     basechange_over_Field.trans _ E₀ (AlgebraicClosure K) ≪≫
       (model i).choose_spec.2.choose_spec.2.2.some
-  -- `W i j`, seen inside `U' i _ (AlgebraicClosure K)`
-  let W' (i j : 𝒰.I₀) : ((U' i) _ (AlgebraicClosure K)).left.Opens :=
+  -- `W i j`, seen inside `U' i ⊗ₛ (AlgebraicClosure K)`
+  let W' (i j : 𝒰.I₀) : ((U' i) ⊗ₛ (AlgebraicClosure K)).left.Opens :=
     (eU' i).hom.left ⁻¹ᵁ (𝒰.f i) ⁻¹ᵁ W i j
-  have hW' (i j : 𝒰.I₀) : IsCompact (W' i j : Set ((U' i) _ (AlgebraicClosure K)).left) := by
+  have hW' (i j : 𝒰.I₀) : IsCompact (W' i j : Set ((U' i) ⊗ₛ (AlgebraicClosure K)).left) := by
     refine (eU' i).hom.left.isOpenEmbedding.isInducing.isCompact_preimage' ?_ ?_
     · refine (𝒰.f i).isOpenEmbedding.isInducing.isCompact_preimage' ?_ fun x hx ↦ hx.1
       exact IsAffineOpen.isCompact (hW_aff i j)
@@ -209,10 +209,10 @@ theorem exists_model_of_isSeparated_of_locallyOfFiniteType [LocallyOfFiniteType 
         le_sup_right)).toRingHom.toAlgebra
   have : IsScalarTower E₀ E (AlgebraicClosure K) := .of_algebraMap_eq fun _ ↦ rfl
   have (i j : 𝒰.I₀) : IsScalarTower E₀ (F i j) E := .of_algebraMap_eq fun _ ↦ rfl
-  let U (i : 𝒰.I₀) : Over (Spec ↧E) := (U' i) _ E
+  let U (i : 𝒰.I₀) : Over (Spec ↧E) := (U' i) ⊗ₛ E
   let V (i j : 𝒰.I₀) : (U i).left.Opens :=
     basechange_over_Field.proj (U' i) (F i j) E ⁻¹ᵁ (desc i j).choose_spec.2.choose
-  let eU (i : 𝒰.I₀) : (U i) _ (AlgebraicClosure K) ≅ Over.mk (𝒰.f i ≫ X.hom) :=
+  let eU (i : 𝒰.I₀) : (U i) ⊗ₛ (AlgebraicClosure K) ≅ Over.mk (𝒰.f i ≫ X.hom) :=
     basechange_over_Field.trans (U' i) E (AlgebraicClosure K) ≪≫ eU' i
   sorry
 
@@ -267,9 +267,9 @@ Step 8 (glue). Build `D : Scheme.GlueData` and set `X₀ := Over.mk (D.openCover
 Step 9 (`LocallyOfFiniteType X₀.hom`). Local on the source; each `U i` is of finite type.
 
 
-Step 10 (`X₀ _ K̄ ≅ X`; base change commutes with gluing, not in Mathlib). The pullback of
-`D.openCover` covers `X₀ _ K̄` by the `U i _ K̄`. Glue `eU i ≫ 𝒰.f i` to a map
-`X₀ _ K̄ ⟶ X` and the inverses to `X ⟶ X₀ _ K̄` (compatible on overlaps by Step 4); check
+Step 10 (`X₀ ⊗ₛ K̄ ≅ X`; base change commutes with gluing, not in Mathlib). The pullback of
+`D.openCover` covers `X₀ ⊗ₛ K̄` by the `U i ⊗ₛ K̄`. Glue `eU i ≫ 𝒰.f i` to a map
+`X₀ ⊗ₛ K̄ ⟶ X` and the inverses to `X ⟶ X₀ ⊗ₛ K̄` (compatible on overlaps by Step 4); check
 both composites are identities on the covers.
 
 

@@ -33,23 +33,23 @@ namespace End
 
 open CommRingCat Spec in
 def algHom_ofBaseChange (A : Over (Spec ↧K)) [AddGrpObj A] [IsCommAddMonObj A] (K₁ : Type u)
-    [Field K₁] [Algebra K K₁] : End (AddGrp.mk A) →ₐ[ℤ] End (AddGrp.mk (A _ K₁)) :=
+    [Field K₁] [Algebra K K₁] : End (AddGrp.mk A) →ₐ[ℤ] End (AddGrp.mk (A ⊗ₛ K₁)) :=
   AddGrp.End.algHom_ofBaseChange (Over.pullback (map (ofHom (Algebra.algebraMap K K₁))))
 
 -- written by Claude
 variable (A) in
 def baseChangeHom (K₁ K₂ : Type u) [Field K₁]
     [Field K₂] [Algebra K K₁] [Algebra K K₂] [Algebra K₁ K₂] [IsScalarTower K K₁ K₂] :
-    End (mk (A _ K₁)) →+* End (mk (A _ K₂)) :=
+    End (mk (A ⊗ₛ K₁)) →+* End (mk (A ⊗ₛ K₂)) :=
   (Iso.conjAlgEquiv (basechange_over_Field.trans_addGrpObj A K₁ K₂)).toRingHom.comp
-    (End.algHom_ofBaseChange (A _ K₁) K₂).toRingHom
+    (End.algHom_ofBaseChange (A ⊗ₛ K₁) K₂).toRingHom
 
 -- proof written by Claude
 variable (A) in
 open basechange_over_Field in
 lemma baseChangeHom_left_comp_proj (K₁ K₂ : Type u) [Field K₁]
     [Field K₂] [Algebra K K₁] [Algebra K K₂] [Algebra K₁ K₂] [IsScalarTower K K₁ K₂] :
-    ∀ f : End (mk (A _ K₁)), (End.baseChangeHom A K₁ K₂ f).asHom.hom.hom.left ≫ proj A K₁ K₂ =
+    ∀ f : End (mk (A ⊗ₛ K₁)), (End.baseChangeHom A K₁ K₂ f).asHom.hom.hom.left ≫ proj A K₁ K₂ =
     proj A K₁ K₂ ≫ f.asHom.hom.hom.left := by
   intro f
   simp only [End.baseChangeHom, Iso.conjAlgEquiv, Iso.conjRingEquiv, RingHom.coe_comp,
@@ -68,11 +68,11 @@ lemma baseChangeHom_left_comp_proj (K₁ K₂ : Type u) [Field K₁]
 
 -- written by Claude
 omit [IsProper A.hom] [GeometricallyIntegral A.hom] in
-/-- Two endomorphisms of `A _ K₁` are equal if they agree after composing with the projection
-`(A _ K₁).left ⟶ A.left`. The other component of the pullback is automatic, since both are
+/-- Two endomorphisms of `A ⊗ₛ K₁` are equal if they agree after composing with the projection
+`(A ⊗ₛ K₁).left ⟶ A.left`. The other component of the pullback is automatic, since both are
 morphisms over `Spec K₁`. -/
 lemma ext_of_left_comp_fst {K₁ : Type u} [Field K₁] [Algebra K K₁]
-    {g h : End (mk (A _ K₁))}
+    {g h : End (mk (A ⊗ₛ K₁))}
     (H : g.asHom.hom.hom.left ≫ Limits.pullback.fst _ _ =
       h.asHom.hom.hom.left ≫ Limits.pullback.fst _ _) : g = h := by
   ext : 3
@@ -82,11 +82,11 @@ lemma ext_of_left_comp_fst {K₁ : Type u} [Field K₁] [Algebra K K₁]
 -- written by Claude
 variable (A) in
 open basechange_over_Field in
-/-- `End.baseChangeHom A K₁ K₂ f` is the unique endomorphism `g` of `A _ K₂` with
+/-- `End.baseChangeHom A K₁ K₂ f` is the unique endomorphism `g` of `A ⊗ₛ K₂` with
 `g.left ≫ proj A K₁ K₂ = proj A K₁ K₂ ≫ f.left`. -/
 lemma eq_baseChangeHom_iff {K₁ K₂ : Type u} [Field K₁] [Field K₂] [Algebra K K₁]
-    [Algebra K K₂] [Algebra K₁ K₂] [IsScalarTower K K₁ K₂] (f : End (mk (A _ K₁)))
-    (g : End (mk (A _ K₂))) : g = End.baseChangeHom A K₁ K₂ f ↔
+    [Algebra K K₂] [Algebra K₁ K₂] [IsScalarTower K K₁ K₂] (f : End (mk (A ⊗ₛ K₁)))
+    (g : End (mk (A ⊗ₛ K₂))) : g = End.baseChangeHom A K₁ K₂ f ↔
       g.asHom.hom.hom.left ≫ proj A K₁ K₂ = proj A K₁ K₂ ≫ f.asHom.hom.hom.left := by
   refine ⟨fun h ↦ h ▸ End.baseChangeHom_left_comp_proj A K₁ K₂ f, fun h ↦ ?_⟩
   apply End.ext_of_left_comp_fst
@@ -102,10 +102,10 @@ lemma baseChangeHom_inj (K₁ K₂ : Type u) [Field K₁] [Field K₂] [Algebra 
   rw [RingHom.injective_iff_ker_eq_bot]
   ext φ
   constructor <;> intro hφ
-  · let p := fun f : (A _ K₂).left ⟶ (A _ K₂).left ↦ f ≫ (proj A K₁ K₂)
+  · let p := fun f : (A ⊗ₛ K₂).left ⟶ (A ⊗ₛ K₂).left ↦ f ≫ (proj A K₁ K₂)
     simp only [RingHom.mem_ker, Submodule.mem_bot] at hφ ⊢
     have h_epi : Epi (proj A K₁ K₂) := by
-      have hpb : IsPullback (proj A K₁ K₂) (A _ K₂).hom (A _ K₁).hom
+      have hpb : IsPullback (proj A K₁ K₂) (A ⊗ₛ K₂).hom (A ⊗ₛ K₁).hom
           (Spec.map (CommRingCat.ofHom (algebraMap K₁ K₂))) := by
         refine IsPullback.of_right ?_ (by simp [proj]) (IsPullback.of_hasPullback _ _)
         simpa [proj, ← Spec.map_comp, ← CommRingCat.ofHom_comp,
@@ -115,17 +115,17 @@ lemma baseChangeHom_inj (K₁ K₂ : Type u) [Field K₁] [Field K₂] [Algebra 
       have : AlgebraicGeometry.Surjective (proj A K₁ K₂) :=
         MorphismProperty.of_isPullback hpb.flip inferInstance
       exact Flat.epi_of_flat_of_surjective _
-    have h_diag : ∀ f : End (mk (A _ K₁)), p (baseChangeHom A K₁ K₂ f).asHom.hom.hom.left =
+    have h_diag : ∀ f : End (mk (A ⊗ₛ K₁)), p (baseChangeHom A K₁ K₂ f).asHom.hom.hom.left =
         proj A K₁ K₂ ≫ f.asHom.hom.hom.left := by
       intro f
       exact baseChangeHom_left_comp_proj A K₁ K₂ f
     specialize h_diag φ
-    have h_zero : p (0 : End (mk (A _ K₂))).asHom.hom.hom.left =
-        proj A K₁ K₂ ≫ (0 : End (mk (A _ K₁))).asHom.hom.hom.left := by
+    have h_zero : p (0 : End (mk (A ⊗ₛ K₂))).asHom.hom.hom.left =
+        proj A K₁ K₂ ≫ (0 : End (mk (A ⊗ₛ K₁))).asHom.hom.hom.left := by
       have h := baseChangeHom_left_comp_proj A K₁ K₂ 0
       rwa [map_zero] at h
     simp [hφ, h_zero] at h_diag
-    have : φ.asHom.hom.hom.left = (0 : End (mk (A _ K₁))).asHom.hom.hom.left :=
+    have : φ.asHom.hom.hom.left = (0 : End (mk (A ⊗ₛ K₁))).asHom.hom.hom.left :=
       (cancel_epi (proj A K₁ K₂)).mp h_diag.symm
     exact ext_of_left_comp_fst (congrFun (congrArg CategoryStruct.comp this)
       (Limits.pullback.fst A.hom (Spec.map (CommRingCat.ofHom (algebraMap K K₁)))))
@@ -185,23 +185,23 @@ lemma conjAlgEquiv.trans {B : Over (Spec ↧K)} [IsProper B.hom] [GeometricallyI
 
 open CommRingCat Spec in
 def rational_end_morphism (A : Over (Spec ↧K)) [IsProper A.hom] [GeometricallyIntegral A.hom]
-    [AddGrpObj A] (K₁ : Type u) [Field K₁] [Algebra K K₁] : End⁰ A →+* End⁰ ((A _ K₁)) :=
+    [AddGrpObj A] (K₁ : Type u) [Field K₁] [Algebra K K₁] : End⁰ A →+* End⁰ ((A ⊗ₛ K₁)) :=
   (Algebra.TensorProduct.map (AlgHom.id ℤ ℚ) (End.algHom_ofBaseChange A K₁)).toRingHom
 
 variable (A) in
 def baseChangeHom (K₁ K₂ : Type u) [Field K₁] [Field K₂] [Algebra K K₁] [Algebra K K₂]
-    [Algebra K₁ K₂] [IsScalarTower K K₁ K₂] : End⁰ (A _ K₁) →+* End⁰ (A _ K₂) :=
+    [Algebra K₁ K₂] [IsScalarTower K K₁ K₂] : End⁰ (A ⊗ₛ K₁) →+* End⁰ (A ⊗ₛ K₂) :=
   (conjAlgEquiv (basechange_over_Field.trans_addGrpObj A K₁ K₂)).toRingHom.comp
-  (rational_end_morphism (A _ K₁) K₂)
+  (rational_end_morphism (A ⊗ₛ K₁) K₂)
 
 -- proof written by Claude
 variable (A) in
 include A in
 lemma baseChangeHom_self (K₁ : Type u) [Field K₁] [Algebra K K₁] :
-    baseChangeHom A K₁ K₁ = RingHom.id (End⁰ (A _ K₁)) := by
+    baseChangeHom A K₁ K₁ = RingHom.id (End⁰ (A ⊗ₛ K₁)) := by
   have hproj : basechange_over_Field.proj A K₁ K₁ = 𝟙 _ := by
     apply Limits.pullback.hom_ext <;> simp [basechange_over_Field.proj]
-  have h (f : End (mk (A _ K₁))) : End.baseChangeHom A K₁ K₁ f = f :=
+  have h (f : End (mk (A ⊗ₛ K₁))) : End.baseChangeHom A K₁ K₁ f = f :=
     ((End.eq_baseChangeHom_iff A f f).mpr (by simp [hproj])).symm
   ext f
   · simp [baseChangeHom, rational_end_morphism, conjAlgEquiv]
@@ -221,7 +221,7 @@ lemma baseChangeHom_comp (K₁ K₂ K₃ : Type u) [Field K₁] [Field K₂] [Fi
     apply Limits.pullback.hom_ext
     · simp [proj]
     · simp [proj, ← Spec.map_comp, ← CommRingCat.ofHom_comp, ← IsScalarTower.algebraMap_eq]
-  have h (f : End (mk (A _ K₁))) :
+  have h (f : End (mk (A ⊗ₛ K₁))) :
       End.baseChangeHom A K₂ K₃ (End.baseChangeHom A K₁ K₂ f) = End.baseChangeHom A K₁ K₃ f := by
     rw [End.eq_baseChangeHom_iff, ← hproj,
       reassoc_of% End.baseChangeHom_left_comp_proj A K₂ K₃,

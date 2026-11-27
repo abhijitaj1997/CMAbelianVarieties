@@ -12,7 +12,7 @@ public import CMAbelianVarieties.AlgebraicGeometry.AbelianVarieties.Homomorphism
 
 `exists_finiteDimensional_bijective_baseChangeHom`: for an abelian variety `A` over `K₀` and an
 extension `K / K₀`, there is an intermediate field `E` of `K / K₀`, finite over `K₀`, such that
-base change `End⁰ (A _ E) → End⁰ (A _ K)` is bijective.
+base change `End⁰ (A ⊗ₛ E) → End⁰ (A ⊗ₛ K)` is bijective.
 
 -/
 
@@ -28,17 +28,17 @@ variable {A : Over (Spec ↧K₀)} [IsProper A.hom] [GeometricallyIntegral A.hom
 variable {K : Type u} [Field K] [Algebra K₀ K]
 
 variable (A K) in
-def I := (Fin (Module.finrank ℚ (End⁰ (A _ K))))
+def I := (Fin (Module.finrank ℚ (End⁰ (A ⊗ₛ K))))
 
 -- written by Claude
 variable (A K) in
-/-- A `ℚ`-basis of `End⁰ (A _ K)`, indexed by `Fin n` with `n` its `ℚ`-dimension. -/
-def ℬ : Module.Basis (I A K) ℚ (End⁰ (A _ K)) :=
+/-- A `ℚ`-basis of `End⁰ (A ⊗ₛ K)`, indexed by `Fin n` with `n` its `ℚ`-dimension. -/
+def ℬ : Module.Basis (I A K) ℚ (End⁰ (A ⊗ₛ K)) :=
   Module.finBasis ℚ _
 
 -- aided by Claude
 lemma exists_baseChangeHom_eq_ℬ (i : I A K) : ∃ (E : IntermediateField K₀ K)
-    (_ : FiniteDimensional K₀ E) (φ : End⁰ (A _ E)), baseChangeHom A E K φ = ℬ A K i := by
+    (_ : FiniteDimensional K₀ E) (φ : End⁰ (A ⊗ₛ E)), baseChangeHom A E K φ = ℬ A K i := by
   have : IsDirectedOrder {L : IntermediateField K₀ K // FiniteDimensional K₀ L} :=
     ⟨fun L₁ L₂ ↦ ⟨⟨L₁.val ⊔ L₂.val, have := L₁.property; have := L₂.property; inferInstance⟩,
       le_sup_left (a := L₁.val), le_sup_right (a := L₁.val)⟩⟩
@@ -53,7 +53,7 @@ theorem exists_finiteDimensional_bijective_baseChangeHom : ∃ (E : Intermediate
     (_ : FiniteDimensional K₀ E), Bijective (baseChangeHom A E K) := by
   let E' (i : I A K) : IntermediateField K₀ K := (exists_baseChangeHom_eq_ℬ i).choose
   have (i : I A K) : FiniteDimensional K₀ (E' i) := (exists_baseChangeHom_eq_ℬ i).choose_spec.choose
-  let φ (i : I A K) : End⁰ (A _ (E' i)) := by
+  let φ (i : I A K) : End⁰ (A ⊗ₛ (E' i)) := by
     have (i : I A K) : E' i = (exists_baseChangeHom_eq_ℬ i).choose := rfl
     rw [this]
     exact (exists_baseChangeHom_eq_ℬ i).choose_spec.choose_spec.choose
@@ -75,7 +75,7 @@ theorem exists_finiteDimensional_bijective_baseChangeHom : ∃ (E : Intermediate
   use E, this
   constructor
   · exact baseChangeHom_inj A (↥E) K
-  · have (i : I A K) : ∃ φ : End⁰ (A _ E), baseChangeHom A E K φ = ℬ A K i := by
+  · have (i : I A K) : ∃ φ : End⁰ (A ⊗ₛ E), baseChangeHom A E K φ = ℬ A K i := by
       use baseChangeHom A (E' i) E (φ i)
       simp [← hφ i, ← baseChangeHom_comp A (E' i) E K]
     let f := (baseChangeHom A E K).toAddMonoidHom.toRatLinearMap

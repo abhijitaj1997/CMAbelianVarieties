@@ -187,7 +187,7 @@ RationalEnd.baseChangeHom_inj (ℚ is flat over ℤ) are done.
 
 AlgebraicGeometry/AbelianVarieties/Homomorphism/EndLimit.lean
 --------------------------------------------------------------
-New file (2026-10-31). Goal: End⁰ (A _ K) is the colimit of End⁰ (A _ L)
+New file (2026-10-31). Goal: End⁰ (A ⊗ₛ K) is the colimit of End⁰ (A ⊗ₛ L)
 over the intermediate fields L of K/K₀ that are finite over K₀. Line
 numbers as of 2026-11-06 (commit dd42364). The functor RatEnd (over all
 intermediate fields) and its cocone limitRatEnd are done; RatEndFin /
@@ -195,7 +195,7 @@ limitRatEndFin restrict them to {L // FiniteDimensional K₀ L} (via
 Monotone.functor and Cocone.whisker).
 [ ] limitRatEnd.isColimit : Limits.IsColimit (limitRatEndFin A K)    (l.100)
       `sorry`. Needs "spreading out" of endomorphisms (every endomorphism
-      of A _ K is defined over a finite L). There is no assumption on
+      of A ⊗ₛ K is defined over a finite L). There is no assumption on
       K/K₀ at the moment (IsGalois was removed; it is not needed). Without
       `Algebra.IsAlgebraic K₀ K` the statement is still true, but only via
       Chow's rigidity theorem (not in Mathlib); with it, spreading out
@@ -226,7 +226,7 @@ depends on limitRatEnd.isColimit (EndLimit.lean) and fin_gen_end
       `φ` / `hφ`). Find the slow step.
 [ ] `φ` is defined through `rw` (a cast), to avoid a whnf timeout when
       the type of `….choose_spec.choose_spec.choose` is compared with
-      End⁰ (A _ (E' i)). Cleaner: `choose E' hE' φ hφ using
+      End⁰ (A ⊗ₛ (E' i)). Cleaner: `choose E' hE' φ hφ using
       exists_baseChangeHom_eq_ℬ` inside the proof.
 [ ] Naming: a global def `ℬ` (and `I`) is not Mathlib style; e.g.
       RationalEnd.finBasis, with ℬ as local notation. Making `I` an
@@ -318,7 +318,7 @@ other sorries left).
 [ ] Possible refactor: a lemma topologicalKrullDim X = ⨆ x, coheight x,
       from which both topologicalKrullDim_eq_iSup_ringKrullDim_stalk and
       topologicalKrullDim_eq_iSup_openCover follow without stalks.
-[ ] Possibly add an instance IsAffine (X _ K₁).left for IsAffine X.left
+[ ] Possibly add an instance IsAffine (X ⊗ₛ K₁).left for IsAffine X.left
       (currently `by dsimp; infer_instance` inside
       topologicalKrullDim_basechange_affine), e.g. in AlgebraicGeometry/Basic.lean.
 
@@ -327,15 +327,15 @@ AlgebraicGeometry/Basic.lean
 ----------------------------
 New file (2026-10-30), replaces AbelianVarieties/BaseFieldChange.lean
 (deleted). Basic AG results used elsewhere. Section BaseChange:
-`abbrev basechange_over_Field`, notation `X _ K₁`, instances IsProper,
-GeometricallyIntegral, AddGrpObj, IsCommAddMonObj for X _ K₁. Section
+`abbrev basechange_over_Field`, notation `X ⊗ₛ K₁`, instances IsProper,
+GeometricallyIntegral, AddGrpObj, IsCommAddMonObj for X ⊗ₛ K₁. Section
 Covers: basechangeOpenCover / basechangeOpenCoverXIso (from
 Dimension.lean). Section CompactofProper: CompactSpace X.left for X proper
 over a field. Line numbers as of 2026-10-31. No sorries left:
 basechange_over_Field.refl / .trans (as Over.isoMk of pullback.lifts),
 refl_addGroup_hom, trans_addGroup_hom, trans_addGrpObj and
 basechange_over_Field_addGrpObj_zero(_eqn) are done. The notation
-`X _ E` is now scoped (open scoped BaseChange).
+`X ⊗ₛ E` is now scoped (open scoped BaseChange).
 Section SeparateOpen (2026-11-07): intersectionOpens_ofSeparated (affine
 opens of a separated X over Spec A have affine intersection), done.
 [ ] "Hey claude" notes (l.84, l.205): should trans / trans_addGrpObj use
@@ -365,11 +365,11 @@ charts. exists_ideal_map_Θ_eq_intersectionOpens_ideal is proved
       Gaps found (2026-11-24): G1 one common F for all pairs (i, j)
       (ideal_map_Θ_eq_of_basechange already works for any F ⊇ F₀);
       G2 Z₀ := Spec((A_i ⊗_F A_j)/I) with projections and
-      Z₀ _ K̄ ≅ pullback (𝒰.f i) (𝒰.f j) (main chunk); G3 Spec K̄ → Spec F
+      Z₀ ⊗ₛ K̄ ≅ pullback (𝒰.f i) (𝒰.f j) (main chunk); G3 Spec K̄ → Spec F
       surjective/flat/quasi-compact; G4 projections of Z₀ are open
       immersions (fpqc descent); G5 Z₀ᵢⱼ ≅ Z₀ⱼᵢ (descended ideals are
       unique: Ideal.comap_map_eq_self_of_faithfullyFlat); G6 GlueData over
-      F, cocycle via faithfulness of Over.pullback; G7 glued _ K̄ ≅ X (no
+      F, cocycle via faithfulness of Over.pullback; G7 glued ⊗ₛ K̄ ≅ X (no
       Mathlib lemma for base change of a gluing); G8 LocallyOfFiniteType;
       G9 IsSeparated (direct, or via descent). Alternative route: descend
       the transition maps via Scheme.preservesColimit_yoneda
@@ -390,7 +390,7 @@ IntegralModel/Model.lean); moved to Test/ (2026-11-10), outside the library.
 Line numbers as of 2026-11-10.
 CommRingCat.isPushout_induction (l.79) and
 exists_opens_basechange_of_isCompact (l.104: a quasi-compact open of
-U _ L comes from U _ F' for a finite F' ⊆ L) are done.
+U ⊗ₛ L comes from U ⊗ₛ F' for a finite F' ⊆ L) are done.
 [ ] isAffine_opensRange_inf_opensRange (l.66): intersections of affine
       opens of a separated X are affine. Still `sorry`, but should now
       follow from intersectionOpens_ofSeparated (AlgebraicGeometry/Basic.lean)
@@ -399,9 +399,9 @@ U _ L comes from U _ F' for a finite F' ⊆ L) are done.
       Statement now says IsSeparated X₀.hom.
       Done in the proof: finite affine cover 𝒰, models U' i over the
       compositum E₀, the intersections W i j (affine), their preimages
-      W' i j in U' i _ K̄ (compact), descended via
+      W' i j in U' i ⊗ₛ K̄ (compact), descended via
       exists_opens_basechange_of_isCompact to F i j, the compositum E,
-      U i := U' i _ E, opens V i j ⊆ U i and isos eU i.
+      U i := U' i ⊗ₛ E, opens V i j ⊆ U i and isos eU i.
       Still `sorry`: hW_aff (l.179; `intersectionOpens_ofSeparated _ _`
       no longer fits since that lemma changed, commented out), and the
       gluing (l.217: transition maps t, t', cocycle, descended to a further
@@ -449,7 +449,7 @@ Morphism, GroupStructure).
 
 Pottentially.lean
 -----------------
-potentiallyCMStructure A F: a CM structure on A _ (AlgebraicClosure K).
+potentiallyCMStructure A F: a CM structure on A ⊗ₛ (AlgebraicClosure K).
 of_CMStructure and exists_cmStructure_basechange_iso are done (the latter
 depends on exists_finiteDimensional_bijective_baseChangeHom,
 Homomorphism/RationalModel.lean).

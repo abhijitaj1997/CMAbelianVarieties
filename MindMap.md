@@ -28,8 +28,8 @@ graph TD
     Finite["<b>Finite</b><br/><i>finite over a field ⇒ Artinian</i>"]
     InvertibleSheaf["<b>InvertibleSheaf</b><br/><i>line bundles</i>"]
     TheCube["<b>TheCube</b><br/><i>theorem of the cube</i>"]
-    AGBasic["<b>Basic</b><br/><i>base change X _ K₁ (+ instances, X ≅ X _ K, (X _ K₁) _ K₂ ≅ X _ K₂), base change of open covers, proper ⇒ quasi-compact</i>"]
-    AGDimension["<b>Dimension</b><br/><i>dim X = sup of dim 𝒪_{X,x} / over an open cover; dim X = dim (X _ K₁) under base change</i>"]
+    AGBasic["<b>Basic</b><br/><i>base change X ⊗ₛ K₁ (+ instances, X ≅ X ⊗ₛ K, (X ⊗ₛ K₁) ⊗ₛ K₂ ≅ X ⊗ₛ K₂), base change of open covers, proper ⇒ quasi-compact</i>"]
+    AGDimension["<b>Dimension</b><br/><i>dim X = sup of dim 𝒪_{X,x} / over an open cover; dim X = dim (X ⊗ₛ K₁) under base change</i>"]
     subgraph RM["RationalModel/"]
       direction TB
       RMAffine["<b>Affine</b><br/><i>affine X of finite type over K̄ has a model over a finite E/K</i>"]
@@ -52,9 +52,9 @@ graph TD
       Complex["<b>Complex</b><br/><i>complex abelian varieties: exp, lattice, ℝ ⊗ lattice ≅ Lie A, free of rank 2g</i>"]
       subgraph HOM["Homomorphism/"]
         direction TB
-        EndomorphismRing["<b>EndomorphismRing</b><br/><i>End A, End⁰ A = ℚ ⊗ End A (finite over ℚ), conjugation by isomorphisms, base change End⁰ A → End⁰ (A _ K₁)</i>"]
-        EndLimit["<b>EndLimit</b><br/><i>End⁰ (A _ L) as a functor of L : IntermediateField K₀ K; End⁰ (A _ K) as its colimit over the L finite over K₀</i>"]
-        HomRationalModel["<b>RationalModel</b><br/><i>End⁰ (A _ E) ≅ End⁰ (A _ K) for some finite E/K₀</i>"]
+        EndomorphismRing["<b>EndomorphismRing</b><br/><i>End A, End⁰ A = ℚ ⊗ End A (finite over ℚ), conjugation by isomorphisms, base change End⁰ A → End⁰ (A ⊗ₛ K₁)</i>"]
+        EndLimit["<b>EndLimit</b><br/><i>End⁰ (A ⊗ₛ L) as a functor of L : IntermediateField K₀ K; End⁰ (A ⊗ₛ K) as its colimit over the L finite over K₀</i>"]
+        HomRationalModel["<b>RationalModel</b><br/><i>End⁰ (A ⊗ₛ E) ≅ End⁰ (A ⊗ₛ K) for some finite E/K₀</i>"]
         FiniteGen["<b>FiniteGen</b><br/><i>Hom(A, B), End A finitely generated</i>"]
         TorsionFree["<b>TorsionFree</b><br/><i>Hom(A, B) torsion free</i>"]
         IntHomAV["<b>IntHom</b><br/><i>[n], A[n] finite & discrete</i>"]

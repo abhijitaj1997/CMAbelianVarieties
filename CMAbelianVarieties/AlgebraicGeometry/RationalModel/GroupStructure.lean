@@ -27,24 +27,24 @@ namespace GroupStructure
 universe u
 
 variable {K Kₐ : Type u} [Field K] [Field Kₐ] [Algebra K Kₐ] [IsAlgebraic K Kₐ]
-variable {G : Over (Spec ↧K)} [AddGrpObj (G _ Kₐ)]
+variable {G : Over (Spec ↧K)} [AddGrpObj (G ⊗ₛ Kₐ)]
 
 def fieldOfDefintion (G : Over (Spec ↧K)) (Kₐ : Type u) [Field Kₐ] [Algebra K Kₐ]
-    [IsAlgebraic K Kₐ] [AddGrpObj (G _ Kₐ)] : IntermediateField K Kₐ := sorry
+    [IsAlgebraic K Kₐ] [AddGrpObj (G ⊗ₛ Kₐ)] : IntermediateField K Kₐ := sorry
 
 instance FiniteDimensional_ofFieldOfDefintion (G : Over (Spec ↧K)) (Kₐ : Type u) [Field Kₐ]
-    [Algebra K Kₐ] [IsAlgebraic K Kₐ] [AddGrpObj (G _ Kₐ)] :
+    [Algebra K Kₐ] [IsAlgebraic K Kₐ] [AddGrpObj (G ⊗ₛ Kₐ)] :
     FiniteDimensional K (fieldOfDefintion G Kₐ) := sorry
 
 instance AddGroupObj_overFieldOfDefintion (G : Over (Spec ↧K)) (Kₐ : Type u) [Field Kₐ]
-    [Algebra K Kₐ] [IsAlgebraic K Kₐ] [AddGrpObj (G _ Kₐ)] :
-    AddGrpObj (G _ (fieldOfDefintion G Kₐ)) := sorry
+    [Algebra K Kₐ] [IsAlgebraic K Kₐ] [AddGrpObj (G ⊗ₛ Kₐ)] :
+    AddGrpObj (G ⊗ₛ (fieldOfDefintion G Kₐ)) := sorry
 
 open AddGrp in
 def AddGroupObj_overFieldOfDefintion_Iso (G : Over (Spec ↧K)) (Kₐ : Type u) [Field Kₐ]
-    [Algebra K Kₐ] [IsAlgebraic K Kₐ] [AddGrpObj (G _ Kₐ)] :
+    [Algebra K Kₐ] [IsAlgebraic K Kₐ] [AddGrpObj (G ⊗ₛ Kₐ)] :
     letI := AddGroupObj_overFieldOfDefintion G Kₐ
-    mk ((G _ (fieldOfDefintion G Kₐ)) _ Kₐ) ≅ mk (G _ Kₐ) := by
+    mk ((G ⊗ₛ (fieldOfDefintion G Kₐ)) ⊗ₛ Kₐ) ≅ mk (G ⊗ₛ Kₐ) := by
   sorry
 
 end GroupStructure

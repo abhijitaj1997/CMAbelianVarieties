@@ -28,34 +28,34 @@ variable {A : Over (Spec ↧K)} [IsProper A.hom] [GeometricallyIntegral A.hom] [
 
 variable (A) in
 structure potentiallyCMStructure (F : Type*) [Field F] [NumberField F] [IsCMField F] extends
-  CMStructure (A _ (AlgebraicClosure K)) F
+  CMStructure (A ⊗ₛ (AlgebraicClosure K)) F
 
 def potentiallyCMStructure.of_CMStructure {F : Type*} [Field F] [NumberField F] [IsCMField F]
-    (ι : CMStructure (A _ (AlgebraicClosure K)) F) : potentiallyCMStructure A F where
+    (ι : CMStructure (A ⊗ₛ (AlgebraicClosure K)) F) : potentiallyCMStructure A F where
       incl := ι.incl
       finrank_of_CM_field := ι.finrank_of_CM_field
 
 lemma potentiallyCMStructure.exists_cmStructure_basechange_iso {F : Type*} [Field F]
     [NumberField F] [IsCMField F] (ι : potentiallyCMStructure A F) :
     ∃ (E : IntermediateField K (AlgebraicClosure K)) (_ : FiniteDimensional K E)
-    (ι_E : CMStructure (A _ E) F),
+    (ι_E : CMStructure (A ⊗ₛ E) F),
     Nonempty (((ι_E.basechange (AlgebraicClosure K)).ofIso
     (basechange_over_Field.trans_addGrpObj A E (AlgebraicClosure K))).Iso ι.toCMStructure) := by
   rcases exists_finiteDimensional_bijective_baseChangeHom (A := A) (K := AlgebraicClosure K)
     with ⟨E, _, hf⟩
   let f := baseChangeHom A E (AlgebraicClosure K)
   let φ := (RingEquiv.ofBijective f hf).symm
-  let ψ : (A _ E) _ (AlgebraicClosure K) ≅ A _ (AlgebraicClosure K) :=
+  let ψ : (A ⊗ₛ E) ⊗ₛ (AlgebraicClosure K) ≅ A ⊗ₛ (AlgebraicClosure K) :=
     basechange_over_Field.trans A (↥E) (AlgebraicClosure K)
-  have : topologicalKrullDim ((A _ E) _ (AlgebraicClosure K)).left =
-      topologicalKrullDim (A _ (AlgebraicClosure K)).left := by
+  have : topologicalKrullDim ((A ⊗ₛ E) ⊗ₛ (AlgebraicClosure K)).left =
+      topologicalKrullDim (A ⊗ₛ (AlgebraicClosure K)).left := by
     exact IsHomeomorph.topologicalKrullDim_eq _
       (Scheme.homeoOfIso ((Over.forget _).mapIso ψ)).isHomeomorph
-  let ι_E : CMStructure (A _ E) F := {
+  let ι_E : CMStructure (A ⊗ₛ E) F := {
     incl := by
       exact φ.toRingHom.comp ι.toCMStructure.incl
     finrank_of_CM_field := by
-      rw [dimension_isStableUnderBasechange (A _ E) (AlgebraicClosure K), this]
+      rw [dimension_isStableUnderBasechange (A ⊗ₛ E) (AlgebraicClosure K), this]
       exact ι.toCMStructure.finrank_of_CM_field
   }
   use E, inferInstance, ι_E
@@ -68,7 +68,7 @@ lemma potentiallyCMStructure.exists_cmStructure_basechange_iso {F : Type*} [Fiel
         (φ.toRingHom.comp ι.toCMStructure.incl) := rfl
       simp only [conjAlgEquiv.refl, RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_toRingHom,
         AlgEquiv.refl_toRingHom, h, RingHomCompTriple.comp_eq]
-      have hr (y : End⁰ (A _ (AlgebraicClosure K))) :
+      have hr (y : End⁰ (A ⊗ₛ (AlgebraicClosure K))) :
           RationalEnd.baseChangeHom A E (AlgebraicClosure K) (φ y) = y :=
         (RingEquiv.ofBijective f hf).apply_symm_apply y
       ext x

@@ -16,7 +16,7 @@ The goal of this file is to show that a affine scheme `X` of finite type over
 `AlgebraicClosure K` has a model over a finite extension of `K` that is also
 affine and of finite type. That is, there is a finite extension `E/K` and a
 seperated scheme of finite type `X₀` over `E`, such that
-`X₀ _ (AlgebraicClosure K) ≅ X`.
+`X₀ ⊗ₛ (AlgebraicClosure K) ≅ X`.
 
 -/
 
@@ -34,7 +34,7 @@ theorem exists_model_of_isAffine_of_locallyOfFiniteType (X : Over (Spec ↧(Alge
     [LocallyOfFiniteType X.hom] [IsAffine X.left] :
     ∃ E : IntermediateField K (AlgebraicClosure K), FiniteDimensional K E ∧
       ∃ X₀ : Over (Spec ↧E), IsAffine X₀.left ∧ LocallyOfFiniteType X₀.hom ∧
-        Nonempty ((X₀ _ (AlgebraicClosure K)) ≅ X) := by
+        Nonempty ((X₀ ⊗ₛ (AlgebraicClosure K)) ≅ X) := by
   have : Algebra.FiniteType (AlgebraicClosure K) Γ(X.left, ⊤) :=
     (HasRingHomProperty.appTop @LocallyOfFiniteType X.hom ‹_›).comp
       (.of_surjective _ (Scheme.ΓSpecIso _).commRingCatIsoToRingEquiv.symm.surjective)
