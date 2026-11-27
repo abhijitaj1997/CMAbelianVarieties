@@ -100,6 +100,9 @@ When I ask you to solve a `sorry` and allow helper lemmas:
   clean and spawn up to three subagents to finish it (how many, and which models, depends on
   the difficulty; use stronger models for harder tasks). The agents must keep you updated,
   especially when they hit a timeout.
+- Use Fable only for extremely hard tasks. Whenever you use it (spawning an agent with it, or
+  giving an existing Fable agent a new task), tell me which agent and which task. This is only
+  to inform me: do not ask for or wait for my approval.
 - Subagents never edit project files. They test their work in copies in your scratchpad
   directory. When an agent has a finished change, it sends you the exact text and where it
   goes. Your only job is to paste it in with the Edit tool, unchanged, so that the change

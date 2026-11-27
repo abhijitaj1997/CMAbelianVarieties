@@ -8,12 +8,16 @@ So that it stays readable, the picture is split into parts, one diagram each:
 1. [Main argument: CM structures, potentially CM, the main theorem](#part-1) (`Theorem`, `Pottentially`, `Defn`)
 2. [Endomorphism rings](#part-2) (`AlgebraicGeometry/AbelianVarieties/Homomorphism` except the files of Part 5, `AbstractNonsense/EndRingIso`, `AbstractNonsense/EndBaseChange`, `ForMathlib/Endomorphism`, `ForMathlib/FunctorCommAddObj`, `AlgebraicGeometry/AbelianVarieties/Commutativity`)
 3. [Base change of schemes and dimension](#part-3) (`AlgebraicGeometry/Basic`, `AlgebraicGeometry/Dimension`)
-4. [Rational models (descent to a finitely generated field)](#part-4) (`AlgebraicGeometry/AbelianVarieties/RationalModel`, `AlgebraicGeometry/RationalModel`)
+4. [Rational models (descent to a finitely generated field)](#part-4) (`AlgebraicGeometry/AbelianVarieties/RationalModel`, `AlgebraicGeometry/RationalModel`, `Algebra/ForAG`)
 5. [Finiteness of `End⁰` over finite extensions](#part-5) (`AlgebraicGeometry/AbelianVarieties/Homomorphism/EndLimit`, `…/Homomorphism/RationalModel`, `…/Homomorphism/FiniteGen`)
 
 Inside a part, boxes are grouped by file (labelled by file name only; the folders are listed above).
 The one exception is `Homomorphism/RationalModel.lean`, which is labelled with its folder to tell it
 apart from `AbelianVarieties/RationalModel.lean` (Part 4).
+
+For `exists_model_of_isSeparated_of_locallyOfFiniteType` (Part 4) only the key steps of its proof are
+shown: the auxiliary terms that only it uses (in `RationalModel/Separated`, `RationalModel/Affine`,
+`Algebra/ForAG` and `AlgebraicGeometry/Basic`) are left out, and arrows pass through them.
 
 - An arrow `A --> B` means "A uses B". An arrow `A --> B` is left out when `B` is already
   reachable from `A` through other arrows of the same diagram. Arrows point from left to right.
@@ -256,18 +260,22 @@ graph LR
     n_basechange_over_Field_trans_addGrpObj["<b>basechange_over_<br/>Field.trans_<br/>addGrpObj</b>"]
     n_basechange_over_Field_trans_map_comp["<b>basechange_over_<br/>Field.trans_map_comp</b>"]
     n_basechange_over_Field_hom["<b>basechange_over_<br/>Field_hom</b>"]
+    n_finiteAffineCover["<b>finiteAffineCover</b>"]
     n_instAddGrpObjOverSchemeSpecOfBasechange_over_Field["<i>instance</i><br/>AddGrpObj (G _ K₁)"]
     n_instAlgebraCarrierObjOppositeOpensCarrierCarrierCommRingCatLeftSchemePresheafOpOpensTop_cMAbelianVarieties["<i>instance</i><br/>Algebra K Γ(X.left, ⊤)"]
     n_instCompactSpaceCarrierCarrierCommRingCatLeftSchemeOfIsProperHom_cMAbelianVarieties["<i>instance</i><br/>CompactSpace ↥X.left"]
     n_instGeometricallyIntegralHomSchemeBasechange_over_Field["<i>instance</i><br/>GeometricallyIntegral<br/>(X _ K₁).hom"]
     n_instIsCommAddMonObjOverSchemeSpecOfBasechange_over_Field["<i>instance</i><br/>IsCommAddMonObj (G _ K₁)"]
     n_instIsProperHomSchemeBasechange_over_Field["<i>instance</i><br/>IsProper (X _ K₁).hom"]
+    n_intersectionOpens_ideal["<b>intersectionOpens_<br/>ideal</b>"]
+    n_intersectionOpens_ofSeparated["<b>intersectionOpens_<br/>ofSeparated</b>"]
   end
   subgraph m_CMAbelianVarieties_AlgebraicGeometry_Dimension["Dimension.lean"]
     direction TB
     n_dimension_isStableUnderBasechange["<b>dimension_<br/>isStableUnderBasechange</b>"]
     n_ringKrullDim_basechange["<b>ringKrullDim_<br/>basechange</b>"]
     n_ringKrullDim_eq_of_isIntegral_of_injective["<b>ringKrullDim_eq_of_<br/>isIntegral_of_<br/>injective</b>"]
+    n_topologicalKrullDim["<b>topologicalKrullDim</b>"]
     n_topologicalKrullDim_basechange_affine["<b>topologicalKrullDim_<br/>basechange_affine</b>"]
     n_topologicalKrullDim_eq_iSup_openCover["<b>topologicalKrullDim_<br/>eq_iSup_openCover</b>"]
     n_topologicalKrullDim_eq_iSup_ringKrullDim_stalk["<b>topologicalKrullDim_<br/>eq_iSup_<br/>ringKrullDim_stalk</b>"]
@@ -281,9 +289,9 @@ graph LR
   n_basechange_over_Field_refl --> n_basechange_over_Field_refl_hom_eqn
   n_basechange_over_Field_refl_addGroup_hom --> n_basechange_over_Field_refl
   n_basechange_over_Field_refl_addGroup_hom --> n_instAddGrpObjOverSchemeSpecOfBasechange_over_Field
+  n_basechange_over_Field_trans --> n_basechange_over_Field_hom
   n_basechange_over_Field_trans --> n_basechange_over_Field_proj
   n_basechange_over_Field_trans --> n_basechange_over_Field_trans_map_comp
-  n_basechange_over_Field_trans --> n_basechange_over_Field_hom
   n_basechange_over_Field_trans_addGroup_hom --> n_basechange_over_Field_trans
   n_basechange_over_Field_trans_addGroup_hom --> n_instAddGrpObjOverSchemeSpecOfBasechange_over_Field
   n_basechange_over_Field_trans_addGrpObj --> n_basechange_over_Field_trans_addGroup_hom
@@ -296,17 +304,20 @@ graph LR
   n_instIsCommAddMonObjOverSchemeSpecOfBasechange_over_Field --> n_instAddGrpObjOverSchemeSpecOfBasechange_over_Field
   n_instIsCommAddMonObjOverSchemeSpecOfBasechange_over_Field --> x_CMAbelianVarieties_ForMathlib_FunctorCommAddObj
   n_instIsProperHomSchemeBasechange_over_Field --> n_basechange_over_Field
+  n_intersectionOpens_ideal --> n_finiteAffineCover
+  n_intersectionOpens_ofSeparated --> n_finiteAffineCover
   n_ringKrullDim_basechange --> n_ringKrullDim_eq_of_isIntegral_of_injective
   n_topologicalKrullDim_basechange_affine --> n_basechange_over_Field
   n_topologicalKrullDim_basechange_affine --> n_instAlgebraCarrierObjOppositeOpensCarrierCarrierCommRingCatLeftSchemePresheafOpOpensTop_cMAbelianVarieties
   n_topologicalKrullDim_basechange_affine --> n_ringKrullDim_basechange
   n_topologicalKrullDim_eq_iSup_openCover --> n_topologicalKrullDim_eq_iSup_ringKrullDim_stalk
+  n_topologicalKrullDim_eq_iSup_ringKrullDim_stalk --> n_topologicalKrullDim
 
   classDef ok fill:#c8e6c9,stroke:#2e7d32,color:#000
   classDef bad fill:#ffcdd2,stroke:#c62828,color:#000
   classDef main fill:#ffd54f,stroke:#b8860b,stroke-width:3px,color:#000
   classDef ext fill:#eeeeee,stroke:#9e9e9e,stroke-dasharray:5 5,color:#555
-  class n_basechangeOpenCover,n_basechangeOpenCoverXIso,n_basechange_over_Field,n_basechange_over_Field_proj,n_basechange_over_Field_refl,n_basechange_over_Field_refl_addGroup_hom,n_basechange_over_Field_refl_hom_eqn,n_basechange_over_Field_trans,n_basechange_over_Field_trans_addGroup_hom,n_basechange_over_Field_trans_addGrpObj,n_basechange_over_Field_trans_map_comp,n_basechange_over_Field_hom,n_dimension_isStableUnderBasechange,n_instAddGrpObjOverSchemeSpecOfBasechange_over_Field,n_instCompactSpaceCarrierCarrierCommRingCatLeftSchemeOfIsProperHom_cMAbelianVarieties,n_instGeometricallyIntegralHomSchemeBasechange_over_Field,n_instIsCommAddMonObjOverSchemeSpecOfBasechange_over_Field,n_instIsProperHomSchemeBasechange_over_Field,n_instAlgebraCarrierObjOppositeOpensCarrierCarrierCommRingCatLeftSchemePresheafOpOpensTop_cMAbelianVarieties,n_ringKrullDim_basechange,n_ringKrullDim_eq_of_isIntegral_of_injective,n_topologicalKrullDim_basechange_affine,n_topologicalKrullDim_eq_iSup_openCover,n_topologicalKrullDim_eq_iSup_ringKrullDim_stalk ok
+  class n_basechangeOpenCover,n_basechangeOpenCoverXIso,n_basechange_over_Field,n_basechange_over_Field_proj,n_basechange_over_Field_refl,n_basechange_over_Field_refl_addGroup_hom,n_basechange_over_Field_refl_hom_eqn,n_basechange_over_Field_trans,n_basechange_over_Field_trans_addGroup_hom,n_basechange_over_Field_trans_addGrpObj,n_basechange_over_Field_trans_map_comp,n_basechange_over_Field_hom,n_dimension_isStableUnderBasechange,n_finiteAffineCover,n_instAddGrpObjOverSchemeSpecOfBasechange_over_Field,n_instAlgebraCarrierObjOppositeOpensCarrierCarrierCommRingCatLeftSchemePresheafOpOpensTop_cMAbelianVarieties,n_instCompactSpaceCarrierCarrierCommRingCatLeftSchemeOfIsProperHom_cMAbelianVarieties,n_instGeometricallyIntegralHomSchemeBasechange_over_Field,n_instIsCommAddMonObjOverSchemeSpecOfBasechange_over_Field,n_instIsProperHomSchemeBasechange_over_Field,n_intersectionOpens_ideal,n_intersectionOpens_ofSeparated,n_ringKrullDim_basechange,n_ringKrullDim_eq_of_isIntegral_of_injective,n_topologicalKrullDim,n_topologicalKrullDim_basechange_affine,n_topologicalKrullDim_eq_iSup_openCover,n_topologicalKrullDim_eq_iSup_ringKrullDim_stalk ok
   class x_CMAbelianVarieties_ForMathlib_FunctorCommAddObj ext
 ```
 
@@ -316,9 +327,17 @@ graph LR
 ```mermaid
 %%{init: {"flowchart": {"useMaxWidth": false, "rankSpacing": 25, "nodeSpacing": 20}, "themeVariables": {"fontSize": "28px"}}}%%
 graph LR
+  subgraph m_CMAbelianVarieties_Algebra_ForAG["ForAG.lean"]
+    direction TB
+    n_exists_model_of_finiteType["<b>exists_model_of_<br/>finiteType</b>"]
+  end
   subgraph m_CMAbelianVarieties_AlgebraicGeometry_AbelianVarieties_RationalModel["RationalModel.lean"]
     direction TB
     n_AbelianVarieties_exists_finiteDimensional_model["<b>AbelianVarieties.<br/>exists_<br/>finiteDimensional_<br/>model</b>"]
+  end
+  subgraph m_CMAbelianVarieties_AlgebraicGeometry_RationalModel_Affine["Affine.lean"]
+    direction TB
+    n_exists_model_of_isAffine_of_locallyOfFiniteType["<b>exists_model_of_<br/>isAffine_of_<br/>locallyOfFiniteType</b>"]
   end
   subgraph m_CMAbelianVarieties_AlgebraicGeometry_RationalModel_GroupStructure["GroupStructure.lean"]
     direction TB
@@ -334,7 +353,18 @@ graph LR
   end
   subgraph m_CMAbelianVarieties_AlgebraicGeometry_RationalModel_Separated["Separated.lean"]
     direction TB
+    n_Eu27["<b>E'</b>"]
+    n_Xu2080["<b>X₀</b>"]
+    n_Xu2080_basechangeIso["<b>X₀_basechangeIso</b>"]
+    n_Xu2080_isSeparated["<b>X₀_isSeparated</b>"]
+    n_Xu2080_locallyOfFiniteType["<b>X₀_<br/>locallyOfFiniteType</b>"]
+    n_Zu2080["<b>Z₀</b>"]
+    n_Zu2080_isPullback_fst["<b>Z₀.isPullback_fst</b>"]
+    n_exists_ideal_map_u398_eq_intersectionOpens_ideal["<b>exists_ideal_map_Θ_<br/>eq_<br/>intersectionOpens_<br/>ideal</b>"]
     n_exists_model_of_isSeparated_of_locallyOfFiniteType["<b>exists_model_of_<br/>isSeparated_of_<br/>locallyOfFiniteType</b>"]
+    n_glueData["<b>glueData</b>"]
+    n_u398["<b>Θ</b>"]
+    n_u1d4b0["<b>𝒰</b>"]
   end
   x_CMAbelianVarieties_AlgebraicGeometry_Basic["Basic.lean<br/><i>see Part 3</i>"]
 
@@ -342,20 +372,36 @@ graph LR
   n_AbelianVarieties_exists_finiteDimensional_model --> n_GroupStructure_FiniteDimensional_ofFieldOfDefintion
   n_AbelianVarieties_exists_finiteDimensional_model --> n_geometricallyIntegral_model
   n_AbelianVarieties_exists_finiteDimensional_model --> n_isProper_model
+  n_Eu27 --> n_exists_model_of_isAffine_of_locallyOfFiniteType
+  n_Eu27 --> n_u1d4b0
   n_GroupStructure_AddGroupObj_overFieldOfDefintion --> n_GroupStructure_fieldOfDefintion
   n_GroupStructure_AddGroupObj_overFieldOfDefintion_Iso --> n_GroupStructure_AddGroupObj_overFieldOfDefintion
   n_GroupStructure_FiniteDimensional_ofFieldOfDefintion --> n_GroupStructure_fieldOfDefintion
   n_GroupStructure_fieldOfDefintion --> x_CMAbelianVarieties_AlgebraicGeometry_Basic
-  n_exists_model_of_isSeparated_of_locallyOfFiniteType --> x_CMAbelianVarieties_AlgebraicGeometry_Basic
+  n_Xu2080 --> n_glueData
+  n_Xu2080_basechangeIso --> n_Xu2080
+  n_Xu2080_isSeparated --> n_Xu2080_basechangeIso
+  n_Xu2080_locallyOfFiniteType --> n_Xu2080
+  n_Zu2080 --> n_Eu27
+  n_Zu2080_isPullback_fst --> n_Zu2080
+  n_Zu2080_isPullback_fst --> n_u398
+  n_exists_ideal_map_u398_eq_intersectionOpens_ideal --> n_u398
+  n_exists_model_of_isAffine_of_locallyOfFiniteType --> n_exists_model_of_finiteType
+  n_exists_model_of_isAffine_of_locallyOfFiniteType --> x_CMAbelianVarieties_AlgebraicGeometry_Basic
+  n_exists_model_of_isSeparated_of_locallyOfFiniteType --> n_Xu2080_isSeparated
+  n_exists_model_of_isSeparated_of_locallyOfFiniteType --> n_Xu2080_locallyOfFiniteType
+  n_exists_model_of_isSeparated_of_locallyOfFiniteType --> n_exists_ideal_map_u398_eq_intersectionOpens_ideal
   n_geometricallyIntegral_model --> n_exists_model_of_isSeparated_of_locallyOfFiniteType
+  n_glueData --> n_Zu2080_isPullback_fst
   n_isProper_model --> n_exists_model_of_isSeparated_of_locallyOfFiniteType
+  n_u398 --> n_Eu27
 
   classDef ok fill:#c8e6c9,stroke:#2e7d32,color:#000
   classDef bad fill:#ffcdd2,stroke:#c62828,color:#000
   classDef main fill:#ffd54f,stroke:#b8860b,stroke-width:3px,color:#000
   classDef ext fill:#eeeeee,stroke:#9e9e9e,stroke-dasharray:5 5,color:#555
-  class n_AbelianVarieties_exists_finiteDimensional_model ok
-  class n_GroupStructure_AddGroupObj_overFieldOfDefintion,n_GroupStructure_AddGroupObj_overFieldOfDefintion_Iso,n_GroupStructure_FiniteDimensional_ofFieldOfDefintion,n_GroupStructure_fieldOfDefintion,n_exists_model_of_isSeparated_of_locallyOfFiniteType,n_geometricallyIntegral_model,n_isProper_model bad
+  class n_AbelianVarieties_exists_finiteDimensional_model,n_Eu27,n_Xu2080,n_Xu2080_basechangeIso,n_Xu2080_isSeparated,n_Xu2080_locallyOfFiniteType,n_Zu2080,n_Zu2080_isPullback_fst,n_exists_ideal_map_u398_eq_intersectionOpens_ideal,n_exists_model_of_finiteType,n_exists_model_of_isAffine_of_locallyOfFiniteType,n_exists_model_of_isSeparated_of_locallyOfFiniteType,n_glueData,n_u398,n_u1d4b0 ok
+  class n_GroupStructure_AddGroupObj_overFieldOfDefintion,n_GroupStructure_AddGroupObj_overFieldOfDefintion_Iso,n_GroupStructure_FiniteDimensional_ofFieldOfDefintion,n_GroupStructure_fieldOfDefintion,n_geometricallyIntegral_model,n_isProper_model bad
   class x_CMAbelianVarieties_AlgebraicGeometry_Basic ext
 ```
 

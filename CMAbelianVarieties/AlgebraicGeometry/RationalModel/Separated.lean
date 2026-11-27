@@ -6,6 +6,7 @@ Authors: Abhijit A J
 module
 
 public import CMAbelianVarieties.AlgebraicGeometry.RationalModel.Affine
+public import Mathlib.AlgebraicGeometry.Morphisms.FlatDescent
 
 /-!
 ## Goal
@@ -167,8 +168,6 @@ def Θ (i j : (𝒰 X).I₀) : AlgebraicClosure K ⊗[F] (Γ(((𝒰₀' i) _ F).
 end
 
 -- written by AI (Claude). A separate `def`, not inside the proof of
--- `exists_ideal_map_Θ_eq_intersectionOpens_ideal`: there, it pushed that proof over the heartbeat
--- limit.
 open TensorProduct Limits in
 /-- `Γ(Yᵢ _ F) ⊗[F] Γ(Yⱼ _ F) ≃+* Γ(Uij _ F)`, for `Yₖ = 𝒰₀' k _ (E' X)` and an affine `Uij` with
 `Γ(Uij) ≃ₐ[E' X] Γ(Yᵢ) ⊗[E' X] Γ(Yⱼ)`. -/
@@ -199,9 +198,6 @@ def ΓBasechange_tensorRingEquiv {i j : (𝒰 X).I₀} (F : IntermediateField K 
   let τ := e₁.symm.trans (e₂.symm.trans (Algebra.TensorProduct.congr (σ i) (σ j)))
   exact τ.symm.toRingEquiv.trans ((Algebra.TensorProduct.congr (AlgEquiv.refl : F ≃ₐ[E' X] F)
     Uij_global.symm).toRingEquiv.trans (ΓBasechange_of_Affine Uij F).toRingEquiv)
-
-/-! Helper lemmas for `exists_ideal_map_Θ_eq_intersectionOpens_ideal` (written by AI (Claude),
-2026-11-11; see the `Pick up from here` note in that proof). -/
 
 -- written by AI (Claude)
 open TensorProduct Limits in
@@ -476,9 +472,918 @@ lemma exists_ideal_map_Θ_eq_intersectionOpens_ideal {i j : (𝒰 X).I₀} :
     map.symm.toRingHom fun c a b ↦ ?_
   exact ΓBasechange_tensorRingEquiv_symm_apply (F := F) Uij Uij_global ⟨c, c.property⟩ a b
 
+section Descent
+
+/-! The rest of the document was done by Claude based on the statements given to it -/
+
+omit [IsSeparated X.hom] in
+open TensorProduct Limits in
+/-- An ideal as in `exists_ideal_map_Θ_eq_intersectionOpens_ideal` over `F₁` gives one over every
+`F ⊇ F₁`. -/
+lemma exists_ideal_map_Θ_eq_intersectionOpens_ideal_of_le {i j : (𝒰 X).I₀}
+    {F₁ F : IntermediateField K (AlgebraicClosure K)} [Fact (E' X ≤ F₁)] [Fact (E' X ≤ F)]
+    (hF : F₁ ≤ F) (I₁ : Ideal (Γ(((𝒰₀' i) _ F₁).left, ⊤) ⊗[F₁] Γ(((𝒰₀' j) _ F₁).left, ⊤)))
+    (hI₁ : (I₁.map (Algebra.TensorProduct.includeRight (R := F₁) (A := AlgebraicClosure K))).map
+      (Θ F₁ i j) = intersectionOpens_ideal i j) :
+    ∃ I : Ideal (Γ(((𝒰₀' i) _ F).left, ⊤) ⊗[F] Γ(((𝒰₀' j) _ F).left, ⊤)),
+    (I.map (Algebra.TensorProduct.includeRight (R := F) (A := AlgebraicClosure K))).map (Θ F i j) =
+      intersectionOpens_ideal i j := by
+  let _ : Algebra F₁ F := (IntermediateField.inclusion hF).toRingHom.toAlgebra
+  have : IsScalarTower F₁ F (AlgebraicClosure K) := IsScalarTower.of_algebraMap_eq fun _ ↦ rfl
+  have : @IsScalarTower (E' X) F₁ F Algebra.toSMul Algebra.toSMul Algebra.toSMul :=
+    IsScalarTower.of_algebraMap_eq fun _ ↦ rfl
+  have hp (k : (𝒰 X).I₀) : ((φF F k).inv.left ≫ pullback.fst _ _) ≫
+      basechange_over_Field.proj (𝒰₀' k) F₁ F = (φF F₁ k).inv.left ≫ pullback.fst _ _ := by
+    simp only [φF, Iso.trans_inv, Over.comp_left, Category.assoc]
+    congr 1
+    apply pullback.hom_ext <;>
+      simp [basechange_over_Field.trans, basechange_over_Field.proj,
+        basechange_over_Field.trans_map_comp]
+  let g₁ := (Θ F₁ i j).toRingHom.comp
+    (Algebra.TensorProduct.includeRight (R := F₁) (A := AlgebraicClosure K)).toRingHom
+  let g := (Θ F i j).toRingHom.comp
+    (Algebra.TensorProduct.includeRight (R := F) (A := AlgebraicClosure K)).toRingHom
+  have hrange (x) : ∃ y, g y = g₁ x := by
+    induction x using TensorProduct.inductionOn with
+    | tmul a b =>
+      refine ⟨(basechange_over_Field.proj (𝒰₀' i) F₁ F).appTop a ⊗ₜ
+        (basechange_over_Field.proj (𝒰₀' j) F₁ F).appTop b, ?_⟩
+      simp only [g, g₁, RingHom.coe_comp, Function.comp_apply, AlgHom.toRingHom_eq_coe,
+        RingHom.coe_coe, RingEquiv.toRingHom_eq_coe, AlgEquiv.coe_toRingEquiv,
+        Algebra.TensorProduct.includeRight_apply, Θ_tmul,
+        φF_globalSection_one_tmul, ← hp i, ← hp j]
+      rfl
+    | add x y hx hy =>
+      obtain ⟨x', hx'⟩ := hx
+      obtain ⟨y', hy'⟩ := hy
+      exact ⟨x' + y', by rw [map_add, map_add, hx', hy']⟩
+  have hg {F' : IntermediateField K (AlgebraicClosure K)} [Fact (E' X ≤ F')]
+      (I : Ideal (Γ(((𝒰₀' i) _ F').left, ⊤) ⊗[F'] Γ(((𝒰₀' j) _ F').left, ⊤))) :
+      (I.map (Algebra.TensorProduct.includeRight (R := F') (A := AlgebraicClosure K))).map
+        (Θ F' i j) = I.map ((Θ F' i j).toRingHom.comp
+          (Algebra.TensorProduct.includeRight (R := F') (A := AlgebraicClosure K)).toRingHom) := by
+    rw [← Ideal.map_map]
+    rfl
+  refine ⟨(intersectionOpens_ideal i j).comap g,
+    le_antisymm ((hg _).trans_le Ideal.map_comap_le) ?_⟩
+  rw [hg, ← hI₁, hg]
+  refine Ideal.map_le_iff_le_comap.mpr fun x hx ↦ ?_
+  obtain ⟨y, hy⟩ := hrange x
+  change g₁ x ∈ Ideal.map g _
+  rw [← hy]
+  exact Ideal.mem_map_of_mem g (Ideal.mem_comap.mpr (hy ▸ Ideal.mem_map_of_mem g₁ hx))
+
+/-! ### `Spec K̄ ⟶ Spec F` is surjective, flat and quasi-compact -/
+
+instance (F : IntermediateField K (AlgebraicClosure K)) :
+    Flat (Spec.map (CommRingCat.ofHom (algebraMap F (AlgebraicClosure K)))) :=
+  Flat.SpecMap_iff.mpr (RingHom.flat_algebraMap_iff.mpr inferInstance)
+
+instance (F : IntermediateField K (AlgebraicClosure K)) :
+    Surjective (Spec.map (CommRingCat.ofHom (algebraMap F (AlgebraicClosure K)))) :=
+  ((flat_and_surjective_SpecMap_iff _).mpr
+    (RingHom.faithfullyFlat_algebraMap_iff.mpr inferInstance)).2
+
+instance (F : IntermediateField K (AlgebraicClosure K)) :
+    QuasiCompact (Spec.map (CommRingCat.ofHom (algebraMap F (AlgebraicClosure K)))) :=
+  (quasiCompact_iff_compactSpace _).mpr inferInstance
+
+section Projection
+
+variable {F : IntermediateField K (AlgebraicClosure K)} [Fact (E' X ≤ F)] (i : (𝒰 X).I₀)
+
+open Limits
+
+omit [IsSeparated X.hom] in
+/-- The projection `𝒰ᵢ ≅ ((𝒰₀' i) _ F) _ K̄ ⟶ (𝒰₀' i) _ F` is surjective. -/
+instance : Surjective ((φF F i).inv.left ≫ pullback.fst _ _) :=
+  have : Surjective (pullback.fst ((𝒰₀' i) _ F).hom
+      (Spec.map (CommRingCat.ofHom (algebraMap F (AlgebraicClosure K))))) :=
+    MorphismProperty.of_isPullback (IsPullback.of_hasPullback _ _).flip inferInstance
+  inferInstance
+
+end Projection
+
+omit [LocallyOfFiniteType X.hom] in
+/-- The intersection of two charts is affine (`intersectionOpens_ofSeparated`, for `𝒰 X`). -/
+instance (i j : (𝒰 X).I₀) : IsAffine (Limits.pullback ((𝒰 X).f i) ((𝒰 X).f j)) :=
+  intersectionOpens_ofSeparated i j
+
+section Gluing
+
+open TensorProduct
+
+variable {F : IntermediateField K (AlgebraicClosure K)} [Fact (E' X ≤ F)]
+variable (I : ∀ i j : (𝒰 X).I₀, Ideal (Γ(((𝒰₀' i) _ F).left, ⊤) ⊗[F] Γ(((𝒰₀' j) _ F).left, ⊤)))
+
+open TensorProduct in
+/-- The model `Spec ((Γ(𝒰₀ᵢ _ F) ⊗[F] Γ(𝒰₀ⱼ _ F)) ⧸ I i j)` of the intersection of the charts `i`
+and `j`. -/
+abbrev Z₀ (i j : (𝒰 X).I₀) : Scheme :=
+  Spec (.of ((Γ(((𝒰₀' i) _ F).left, ⊤) ⊗[F] Γ(((𝒰₀' j) _ F).left, ⊤)) ⧸ I i j))
+
+/-- The first projection `Z₀ i j ⟶ 𝒰₀ᵢ _ F`. -/
+def Z₀.fst (i j : (𝒰 X).I₀) : Z₀ I i j ⟶ ((𝒰₀' i) _ F).left :=
+  Spec.map (CommRingCat.ofHom ((Ideal.Quotient.mk (I i j)).comp
+    Algebra.TensorProduct.includeLeftRingHom)) ≫ ((𝒰₀' i) _ F).left.isoSpec.inv
+
+/-- The second projection `Z₀ i j ⟶ 𝒰₀ⱼ _ F`. -/
+def Z₀.snd (i j : (𝒰 X).I₀) : Z₀ I i j ⟶ ((𝒰₀' j) _ F).left :=
+  Spec.map (CommRingCat.ofHom ((Ideal.Quotient.mk (I i j)).comp
+    (Algebra.TensorProduct.includeRight (R := F)).toRingHom)) ≫ ((𝒰₀' j) _ F).left.isoSpec.inv
+
+omit [IsSeparated X.hom] in
+/-- The structure map of an affine scheme over `F`, in terms of `isoSpec`. -/
+lemma Over.hom_eq_isoSpec_hom_comp {F : Type u} [Field F] (Y : Over (Spec ↧F)) [IsAffine Y.left] :
+    Y.hom = Y.left.isoSpec.hom ≫ Spec.map (CommRingCat.ofHom (algebraMap F Γ(Y.left, ⊤))) := by
+  rw [RingHom.algebraMap_toAlgebra, CommRingCat.ofHom_hom, Spec.map_comp,
+    ← Category.assoc, Scheme.isoSpec_hom_naturality, Category.assoc, Scheme.isoSpec_Spec_hom,
+    ← Spec.map_comp, Iso.inv_hom_id, Spec.map_id, Category.comp_id]
+
+omit [IsSeparated X.hom] in
+/-- The two projections of `Z₀ i j` are compatible with the structure maps to `Spec F`. -/
+lemma Z₀.fst_hom (i j : (𝒰 X).I₀) :
+    Z₀.fst I i j ≫ ((𝒰₀' i) _ F).hom = Z₀.snd I i j ≫ ((𝒰₀' j) _ F).hom := by
+  rw [Z₀.fst, Z₀.snd, Over.hom_eq_isoSpec_hom_comp ((𝒰₀' i) _ F),
+    Over.hom_eq_isoSpec_hom_comp ((𝒰₀' j) _ F)]
+  simp only [Category.assoc, Iso.inv_hom_id_assoc, ← Spec.map_comp, ← CommRingCat.ofHom_comp]
+  congr 2
+  ext x
+  simp only [RingHom.comp_apply, Algebra.TensorProduct.includeLeftRingHom_apply,
+    AlgHom.toRingHom_eq_coe, RingHom.coe_coe, Algebra.TensorProduct.includeRight_apply,
+    Algebra.algebraMap_eq_smul_one, ← TensorProduct.smul_tmul]
+
+/-- The structure map `Z₀ i j ⟶ Spec F`. -/
+def Z₀.hom (i j : (𝒰 X).I₀) : Z₀ I i j ⟶ Spec ↧F := Z₀.fst I i j ≫ ((𝒰₀' i) _ F).hom
+
+variable (hI : ∀ i j, ((I i j).map (Algebra.TensorProduct.includeRight (R := F)
+  (A := AlgebraicClosure K))).map (Θ F i j) = intersectionOpens_ideal i j)
+
+open TensorProduct Limits in
+/-- The ring map `(Γ(𝒰₀ᵢ _ F) ⊗[F] Γ(𝒰₀ⱼ _ F)) ⧸ I i j →+* Γ(𝒰ᵢ ∩ 𝒰ⱼ)`: base change to `K̄`, then
+`Θ`, then restriction to the intersection. -/
+def Z₀.toBaseRingHom (i j : (𝒰 X).I₀) :
+    (Γ(((𝒰₀' i) _ F).left, ⊤) ⊗[F] Γ(((𝒰₀' j) _ F).left, ⊤)) ⧸ I i j →+*
+      Γ(pullback ((𝒰 X).f i) ((𝒰 X).f j), ⊤) :=
+  Ideal.Quotient.lift (I i j) ((intersectionOpens_map i j).appTop.hom.comp
+    (((productOpens_globalsections_ofAffine i j).symm.toRingHom.comp (Θ F i j).toRingHom).comp
+      (Algebra.TensorProduct.includeRight (R := F) (A := AlgebraicClosure K)).toRingHom))
+    fun x hx ↦ by
+      have h : (Θ F i j) (Algebra.TensorProduct.includeRight x) ∈ intersectionOpens_ideal i j :=
+        hI i j ▸ Ideal.mem_map_of_mem _ (Ideal.mem_map_of_mem _ hx)
+      obtain ⟨y, hy, hyx⟩ := (Ideal.mem_map_of_equiv (E := Γ(pullback ((𝒰 X).f i ≫ X.hom)
+        ((𝒰 X).f j ≫ X.hom), ⊤) ≃+* Γ((𝒰 X).X i, ⊤) ⊗[AlgebraicClosure K] Γ((𝒰 X).X j, ⊤))
+        (productOpens_globalsections_ofAffine i j) _).mp h
+      change (intersectionOpens_map i j).appTop.hom ((productOpens_globalsections_ofAffine i j).symm
+        ((Θ F i j) (Algebra.TensorProduct.includeRight x))) = 0
+      rw [← hyx]
+      exact (congrArg _ (RingEquiv.symm_apply_apply _ y)).trans (RingHom.mem_ker.mp hy)
+
+open Limits in
+/-- The base change map `𝒰ᵢ ∩ 𝒰ⱼ ⟶ Z₀ i j`. -/
+def Z₀.toBase (i j : (𝒰 X).I₀) : pullback ((𝒰 X).f i) ((𝒰 X).f j) ⟶ Z₀ I i j :=
+  (pullback ((𝒰 X).f i) ((𝒰 X).f j)).isoSpec.hom ≫
+    Spec.map (CommRingCat.ofHom (Z₀.toBaseRingHom I hI i j))
+
+omit [IsSeparated X.hom] [LocallyOfFiniteType X.hom] in
+/-- The charts of `𝒰 X` are affine. -/
+instance (i : (𝒰 X).I₀) : IsAffine ((𝒰 X).X i) := h𝒰_aff i
+
+omit [IsSeparated X.hom] [LocallyOfFiniteType X.hom] in
+/-- The charts of `𝒰 X` are affine (for `finiteAffineCover X`). -/
+instance (i : (𝒰 X).I₀) : IsAffine ((finiteAffineCover X).X i) := h𝒰_aff i
+
+omit [IsSeparated X.hom] [LocallyOfFiniteType X.hom] in
+open Limits in
+lemma productOpens_globalsections_ofAffine_symm_tmul_one (i j : (𝒰 X).I₀)
+    (a : Γ((𝒰 X).X i, ⊤)) :
+    (productOpens_globalsections_ofAffine i j).symm
+        (a ⊗ₜ 1 : Γ((𝒰 X).X i, ⊤) ⊗[AlgebraicClosure K] Γ((𝒰 X).X j, ⊤)) =
+      (pullback.fst ((𝒰 X).f i ≫ X.hom) ((𝒰 X).f j ≫ X.hom)).appTop a :=
+  congr($(IsPushout.inl_isoIsPushout_hom _ _ (CommRingCat.isPushout_tensorProduct
+    (AlgebraicClosure K) Γ((𝒰 X).X i, ⊤) Γ((𝒰 X).X j, ⊤)) _).hom a)
+
+omit [IsSeparated X.hom] [LocallyOfFiniteType X.hom] in
+open Limits in
+lemma productOpens_globalsections_ofAffine_symm_one_tmul (i j : (𝒰 X).I₀)
+    (b : Γ((𝒰 X).X j, ⊤)) :
+    (productOpens_globalsections_ofAffine i j).symm
+        (1 ⊗ₜ b : Γ((𝒰 X).X i, ⊤) ⊗[AlgebraicClosure K] Γ((𝒰 X).X j, ⊤)) =
+      (pullback.snd ((𝒰 X).f i ≫ X.hom) ((𝒰 X).f j ≫ X.hom)).appTop b :=
+  congr($(IsPushout.inr_isoIsPushout_hom _ _ (CommRingCat.isPushout_tensorProduct
+    (AlgebraicClosure K) Γ((𝒰 X).X i, ⊤) Γ((𝒰 X).X j, ⊤)) _).hom b)
+
+omit [IsSeparated X.hom] [LocallyOfFiniteType X.hom] in
+open Limits in
+lemma intersectionOpens_map_appTop_fst (i j : (𝒰 X).I₀) (a : Γ((𝒰 X).X i, ⊤)) :
+    (intersectionOpens_map i j).appTop
+      ((pullback.fst ((𝒰 X).f i ≫ X.hom) ((𝒰 X).f j ≫ X.hom)).appTop a) =
+      (pullback.fst ((𝒰 X).f i) ((𝒰 X).f j)).appTop a := by
+  have h : intersectionOpens_map i j ≫ pullback.fst _ _ = pullback.fst ((𝒰 X).f i) ((𝒰 X).f j) :=
+    pullback.lift_fst _ _ _
+  have h' := congrArg Scheme.Hom.appTop h
+  rw [Scheme.Hom.comp_appTop] at h'
+  exact congr($(h').hom a)
+
+omit [IsSeparated X.hom] [LocallyOfFiniteType X.hom] in
+open Limits in
+lemma intersectionOpens_map_appTop_snd (i j : (𝒰 X).I₀) (b : Γ((𝒰 X).X j, ⊤)) :
+    (intersectionOpens_map i j).appTop
+      ((pullback.snd ((𝒰 X).f i ≫ X.hom) ((𝒰 X).f j ≫ X.hom)).appTop b) =
+      (pullback.snd ((𝒰 X).f i) ((𝒰 X).f j)).appTop b := by
+  have h : intersectionOpens_map i j ≫ pullback.snd _ _ = pullback.snd ((𝒰 X).f i) ((𝒰 X).f j) :=
+    pullback.lift_snd _ _ _
+  have h' := congrArg Scheme.Hom.appTop h
+  rw [Scheme.Hom.comp_appTop] at h'
+  exact congr($(h').hom b)
+
+omit [IsSeparated X.hom] in
+open Limits in
+lemma Z₀.toBaseRingHom_mk (i j : (𝒰 X).I₀)
+    (x : Γ(((𝒰₀' i) _ F).left, ⊤) ⊗[F] Γ(((𝒰₀' j) _ F).left, ⊤)) :
+    Z₀.toBaseRingHom I hI i j (Ideal.Quotient.mk (I i j) x) =
+      (intersectionOpens_map i j).appTop
+        ((productOpens_globalsections_ofAffine i j).symm (Θ F i j (1 ⊗ₜ x))) :=
+  Ideal.Quotient.lift_mk _ _ _
+
+omit [IsSeparated X.hom] in
+open Limits in
+lemma Z₀.toBaseRingHom_mk_tmul_one (i j : (𝒰 X).I₀) (a : Γ(((𝒰₀' i) _ F).left, ⊤)) :
+    Z₀.toBaseRingHom I hI i j (Ideal.Quotient.mk (I i j) (a ⊗ₜ 1)) =
+      (pullback.fst ((𝒰 X).f i) ((𝒰 X).f j)).appTop
+        (((φF F i).inv.left ≫ pullback.fst _ _).appTop a) := by
+  rw [Z₀.toBaseRingHom_mk, Θ_tmul, φF_globalSection_one_tmul, ← Algebra.TensorProduct.one_def,
+    map_one, productOpens_globalsections_ofAffine_symm_tmul_one, intersectionOpens_map_appTop_fst]
+
+omit [IsSeparated X.hom] in
+open Limits in
+lemma Z₀.toBaseRingHom_mk_one_tmul (i j : (𝒰 X).I₀) (b : Γ(((𝒰₀' j) _ F).left, ⊤)) :
+    Z₀.toBaseRingHom I hI i j (Ideal.Quotient.mk (I i j) (1 ⊗ₜ b)) =
+      (pullback.snd ((𝒰 X).f i) ((𝒰 X).f j)).appTop
+        (((φF F j).inv.left ≫ pullback.fst _ _).appTop b) := by
+  rw [Z₀.toBaseRingHom_mk, Θ_tmul, φF_globalSection_one_tmul, map_one,
+    φF_globalSection_one_tmul, productOpens_globalsections_ofAffine_symm_one_tmul,
+    intersectionOpens_map_appTop_snd]
+
+omit [IsSeparated X.hom] in
+lemma Z₀.map_includeRight_eq (i j : (𝒰 X).I₀) :
+    (I i j).map (Algebra.TensorProduct.includeRight (R := F) (A := AlgebraicClosure K)) =
+      ((I i j).map (algebraMap (Γ(((𝒰₀' i) _ F).left, ⊤) ⊗[F] Γ(((𝒰₀' j) _ F).left, ⊤))
+        ((Γ(((𝒰₀' i) _ F).left, ⊤) ⊗[F] Γ(((𝒰₀' j) _ F).left, ⊤)) ⊗[F] AlgebraicClosure K))).map
+        (Algebra.TensorProduct.comm F (Γ(((𝒰₀' i) _ F).left, ⊤) ⊗[F] Γ(((𝒰₀' j) _ F).left, ⊤))
+          (AlgebraicClosure K)).toRingEquiv := by
+  rw [← Ideal.map_coe (Algebra.TensorProduct.comm F _ _).toRingEquiv, Ideal.map_map,
+    ← Ideal.map_coe (Algebra.TensorProduct.includeRight)]
+  congr 1
+
+open Limits in
+/-- `((Γ(𝒰₀ᵢ _ F) ⊗[F] Γ(𝒰₀ⱼ _ F)) ⧸ I i j) ⊗[F] K̄ ≃+* Γ(𝒰ᵢ ∩ 𝒰ⱼ)`: base change commutes with
+quotients, then `Θ`, then `Γ(𝒰ᵢ ∩ 𝒰ⱼ)` is the quotient of `Γ(𝒰ᵢ ×_K̄ 𝒰ⱼ)` by the kernel. -/
+def Z₀.tensorEquiv (i j : (𝒰 X).I₀) :
+    ((Γ(((𝒰₀' i) _ F).left, ⊤) ⊗[F] Γ(((𝒰₀' j) _ F).left, ⊤)) ⧸ I i j) ⊗[F] AlgebraicClosure K ≃+*
+      Γ(pullback ((𝒰 X).f i) ((𝒰 X).f j), ⊤) :=
+  have := intersectionOpens_map_ofSeparated i j
+  (Algebra.TensorProduct.cancelBaseChange F
+    (Γ(((𝒰₀' i) _ F).left, ⊤) ⊗[F] Γ(((𝒰₀' j) _ F).left, ⊤))
+    (Γ(((𝒰₀' i) _ F).left, ⊤) ⊗[F] Γ(((𝒰₀' j) _ F).left, ⊤))
+    ((Γ(((𝒰₀' i) _ F).left, ⊤) ⊗[F] Γ(((𝒰₀' j) _ F).left, ⊤)) ⧸ I i j)
+    (AlgebraicClosure K)).symm.toRingEquiv.trans <|
+  (Algebra.TensorProduct.comm (Γ(((𝒰₀' i) _ F).left, ⊤) ⊗[F] Γ(((𝒰₀' j) _ F).left, ⊤))
+    ((Γ(((𝒰₀' i) _ F).left, ⊤) ⊗[F] Γ(((𝒰₀' j) _ F).left, ⊤)) ⧸ I i j)
+    ((Γ(((𝒰₀' i) _ F).left, ⊤) ⊗[F] Γ(((𝒰₀' j) _ F).left, ⊤)) ⊗[F]
+      AlgebraicClosure K)).toRingEquiv.trans <|
+  (Algebra.TensorProduct.quotIdealMapEquivTensorQuot
+    ((Γ(((𝒰₀' i) _ F).left, ⊤) ⊗[F] Γ(((𝒰₀' j) _ F).left, ⊤)) ⊗[F] AlgebraicClosure K)
+    (I i j)).symm.toRingEquiv.trans <|
+  (Ideal.quotientEquiv (J := (I i j).map (Algebra.TensorProduct.includeRight (R := F)
+    (A := AlgebraicClosure K))) (I := (I i j).map (algebraMap _ _))
+    (Algebra.TensorProduct.comm F (Γ(((𝒰₀' i) _ F).left, ⊤) ⊗[F] Γ(((𝒰₀' j) _ F).left, ⊤))
+      (AlgebraicClosure K)).toRingEquiv (Z₀.map_includeRight_eq I i j)).trans <|
+  (Ideal.quotientEquiv (J := intersectionOpens_ideal i j) (I := (I i j).map
+    (Algebra.TensorProduct.includeRight (R := F) (A := AlgebraicClosure K)))
+    (Θ F i j).toRingEquiv (hI i j).symm).trans <|
+  (Ideal.quotientEquiv (I := intersectionOpens_ideal i j)
+    (J := RingHom.ker (intersectionOpens_map i j).appTop.hom)
+    (productOpens_globalsections_ofAffine i j).symm
+    (Ideal.map_of_equiv (productOpens_globalsections_ofAffine i j)).symm).trans <|
+  RingHom.quotientKerEquivOfSurjective
+    (IsClosedImmersion.isAffine_surjective_of_isAffine (intersectionOpens_map i j)).2
+
+open Limits in
+lemma Z₀.tensorEquiv_mk_tmul (i j : (𝒰 X).I₀)
+    (x : Γ(((𝒰₀' i) _ F).left, ⊤) ⊗[F] Γ(((𝒰₀' j) _ F).left, ⊤)) (c : AlgebraicClosure K) :
+    Z₀.tensorEquiv I hI i j (Ideal.Quotient.mk (I i j) x ⊗ₜ c) =
+      (intersectionOpens_map i j).appTop
+        ((productOpens_globalsections_ofAffine i j).symm (Θ F i j (c ⊗ₜ x))) := by
+  have h : (x • ((1 : Γ(((𝒰₀' i) _ F).left, ⊤) ⊗[F] Γ(((𝒰₀' j) _ F).left, ⊤)) ⊗ₜ[F] c) :
+      (Γ(((𝒰₀' i) _ F).left, ⊤) ⊗[F] Γ(((𝒰₀' j) _ F).left, ⊤)) ⊗[F] AlgebraicClosure K) =
+      x ⊗ₜ c := by
+    rw [TensorProduct.smul_tmul', smul_eq_mul, mul_one]
+  change (intersectionOpens_map i j).appTop ((productOpens_globalsections_ofAffine i j).symm
+    (Θ F i j (Algebra.TensorProduct.comm F _ (AlgebraicClosure K)
+      (x • ((1 : Γ(((𝒰₀' i) _ F).left, ⊤) ⊗[F] Γ(((𝒰₀' j) _ F).left, ⊤)) ⊗ₜ[F] c))))) = _
+  rw [h, Algebra.TensorProduct.comm_tmul]
+
+open Limits in
+lemma Z₀.tensorEquiv_tmul_one (i j : (𝒰 X).I₀)
+    (q : (Γ(((𝒰₀' i) _ F).left, ⊤) ⊗[F] Γ(((𝒰₀' j) _ F).left, ⊤)) ⧸ I i j) :
+    Z₀.tensorEquiv I hI i j (q ⊗ₜ 1) = Z₀.toBaseRingHom I hI i j q := by
+  obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective q
+  rw [Z₀.tensorEquiv_mk_tmul, Z₀.toBaseRingHom_mk]
+
+open Limits in
+lemma Z₀.tensorEquiv_one_tmul (i j : (𝒰 X).I₀) (c : AlgebraicClosure K) :
+    Z₀.tensorEquiv I hI i j (1 ⊗ₜ c) =
+      (pullback.fst ((𝒰 X).f i) ((𝒰 X).f j)).appTop
+        (algebraMap (AlgebraicClosure K) Γ((𝒰 X).X i, ⊤) c) := by
+  rw [← map_one (Ideal.Quotient.mk (I i j)), Z₀.tensorEquiv_mk_tmul,
+    Algebra.TensorProduct.one_def, Θ_tmul, φF_globalSection_tmul, φF_globalSection_one_tmul,
+    map_one, map_one, ← Algebra.algebraMap_eq_smul_one,
+    productOpens_globalsections_ofAffine_symm_tmul_one, intersectionOpens_map_appTop_fst]
+  rfl
+
+open Limits in
+/-- `Γ(𝒰ᵢ ∩ 𝒰ⱼ)` is the pushout of `(Γ(𝒰₀ᵢ _ F) ⊗[F] Γ(𝒰₀ⱼ _ F)) ⧸ I i j` and `K̄` over `F`. -/
+lemma Z₀.isPushout_toBaseRingHom (i j : (𝒰 X).I₀) :
+    IsPushout (CommRingCat.ofHom (algebraMap F Γ(((𝒰₀' i) _ F).left, ⊤)) ≫
+        CommRingCat.ofHom ((Ideal.Quotient.mk (I i j)).comp
+          Algebra.TensorProduct.includeLeftRingHom))
+      (CommRingCat.ofHom (algebraMap F (AlgebraicClosure K)))
+      (CommRingCat.ofHom (Z₀.toBaseRingHom I hI i j))
+      (((Scheme.ΓSpecIso _).inv ≫ ((𝒰 X).f i ≫ X.hom).appTop) ≫
+        (pullback.fst ((𝒰 X).f i) ((𝒰 X).f j)).appTop) :=
+  (CommRingCat.isPushout_tensorProduct F _ (AlgebraicClosure K)).of_iso (Iso.refl _) (Iso.refl _)
+    (Iso.refl _) (Z₀.tensorEquiv I hI i j).toCommRingCatIso
+    (by
+      ext r
+      change Ideal.Quotient.mk (I i j) (algebraMap F _ r) =
+        Ideal.Quotient.mk (I i j) (algebraMap F _ r ⊗ₜ 1)
+      rw [Algebra.TensorProduct.algebraMap_apply])
+    (by simp)
+    (by
+      refine CommRingCat.hom_ext (RingHom.ext fun q ↦ ?_)
+      exact Z₀.tensorEquiv_tmul_one I hI i j q)
+    (by
+      refine CommRingCat.hom_ext (RingHom.ext fun c ↦ ?_)
+      exact Z₀.tensorEquiv_one_tmul I hI i j c)
+
+omit [IsSeparated X.hom] in
+open Limits in
+/-- `Γ(𝒰ᵢ)` is the pushout of `Γ(𝒰₀ᵢ _ F)` and `K̄` over `F` (`φF_globalSection`). -/
+lemma isPushout_φF_inv_fst (i : (𝒰 X).I₀) :
+    IsPushout (CommRingCat.ofHom (algebraMap F Γ(((𝒰₀' i) _ F).left, ⊤)))
+      (CommRingCat.ofHom (algebraMap F (AlgebraicClosure K)))
+      ((φF F i).inv.left ≫ pullback.fst _ _).appTop
+      ((Scheme.ΓSpecIso _).inv ≫ ((𝒰 X).f i ≫ X.hom).appTop) :=
+  (CommRingCat.isPushout_tensorProduct F (AlgebraicClosure K) Γ(((𝒰₀' i) _ F).left, ⊤)).flip.of_iso
+    (Iso.refl _) (Iso.refl _) (Iso.refl _) (φF_globalSection F i).toRingEquiv.toCommRingCatIso
+    (by simp) (by simp)
+    (by ext a; exact φF_globalSection_one_tmul i a)
+    (by
+      ext c
+      exact (φF_globalSection_tmul i c 1).trans (by rw [map_one, Algebra.smul_def, mul_one]; rfl))
+
+open Limits in
+/-- The square of global sections of `Z₀.isPullback_fst` is a pushout. -/
+lemma Z₀.isPushout_fst (i j : (𝒰 X).I₀) :
+    IsPushout ((φF F i).inv.left ≫ pullback.fst _ _).appTop
+      (CommRingCat.ofHom ((Ideal.Quotient.mk (I i j)).comp
+        Algebra.TensorProduct.includeLeftRingHom))
+      (pullback.fst ((𝒰 X).f i) ((𝒰 X).f j)).appTop
+      (CommRingCat.ofHom (Z₀.toBaseRingHom I hI i j)) :=
+  (IsPushout.of_left (Z₀.isPushout_toBaseRingHom I hI i j)
+    (by ext a; exact Z₀.toBaseRingHom_mk_tmul_one I hI i j a) (isPushout_φF_inv_fst i)).flip
+
+omit [IsSeparated X.hom] [LocallyOfFiniteType X.hom] in
+open Limits in
+/-- The two `K̄`-algebra structures on `Γ(𝒰ᵢ ∩ 𝒰ⱼ)` (via `𝒰ᵢ` and via `𝒰ⱼ`) agree. -/
+lemma pullback_fst_appTop_algebraMap (i j : (𝒰 X).I₀) (c : AlgebraicClosure K) :
+    (pullback.fst ((𝒰 X).f i) ((𝒰 X).f j)).appTop
+        (algebraMap (AlgebraicClosure K) Γ((𝒰 X).X i, ⊤) c) =
+      (pullback.snd ((𝒰 X).f i) ((𝒰 X).f j)).appTop
+        (algebraMap (AlgebraicClosure K) Γ((𝒰 X).X j, ⊤) c) := by
+  change ((Scheme.ΓSpecIso _).inv ≫ ((𝒰 X).f i ≫ X.hom).appTop ≫
+      (pullback.fst ((𝒰 X).f i) ((𝒰 X).f j)).appTop).hom c =
+    ((Scheme.ΓSpecIso _).inv ≫ ((𝒰 X).f j ≫ X.hom).appTop ≫
+      (pullback.snd ((𝒰 X).f i) ((𝒰 X).f j)).appTop).hom c
+  rw [← Scheme.Hom.comp_appTop, ← Scheme.Hom.comp_appTop, pullback.condition_assoc]
+
+open Limits in
+/-- `Z₀.isPushout_toBaseRingHom`, with the `K̄`-algebra structure via `𝒰ⱼ`. -/
+lemma Z₀.isPushout_toBaseRingHom_snd (i j : (𝒰 X).I₀) :
+    IsPushout (CommRingCat.ofHom (algebraMap F Γ(((𝒰₀' j) _ F).left, ⊤)) ≫
+        CommRingCat.ofHom ((Ideal.Quotient.mk (I i j)).comp
+          (Algebra.TensorProduct.includeRight (R := F)).toRingHom))
+      (CommRingCat.ofHom (algebraMap F (AlgebraicClosure K)))
+      (CommRingCat.ofHom (Z₀.toBaseRingHom I hI i j))
+      (((Scheme.ΓSpecIso _).inv ≫ ((𝒰 X).f j ≫ X.hom).appTop) ≫
+        (pullback.snd ((𝒰 X).f i) ((𝒰 X).f j)).appTop) :=
+  (CommRingCat.isPushout_tensorProduct F _ (AlgebraicClosure K)).of_iso (Iso.refl _) (Iso.refl _)
+    (Iso.refl _) (Z₀.tensorEquiv I hI i j).toCommRingCatIso
+    (by
+      ext r
+      change Ideal.Quotient.mk (I i j) (algebraMap F _ r) =
+        Ideal.Quotient.mk (I i j) (1 ⊗ₜ algebraMap F _ r)
+      rw [Algebra.TensorProduct.algebraMap_apply, Algebra.algebraMap_eq_smul_one,
+        Algebra.algebraMap_eq_smul_one, TensorProduct.smul_tmul])
+    (by simp)
+    (by
+      refine CommRingCat.hom_ext (RingHom.ext fun q ↦ ?_)
+      exact Z₀.tensorEquiv_tmul_one I hI i j q)
+    (by
+      refine CommRingCat.hom_ext (RingHom.ext fun c ↦ ?_)
+      exact (Z₀.tensorEquiv_one_tmul I hI i j c).trans (pullback_fst_appTop_algebraMap i j c))
+
+open Limits in
+/-- The square of global sections of `Z₀.isPullback_snd` is a pushout. -/
+lemma Z₀.isPushout_snd (i j : (𝒰 X).I₀) :
+    IsPushout ((φF F j).inv.left ≫ pullback.fst _ _).appTop
+      (CommRingCat.ofHom ((Ideal.Quotient.mk (I i j)).comp
+        (Algebra.TensorProduct.includeRight (R := F)).toRingHom))
+      (pullback.snd ((𝒰 X).f i) ((𝒰 X).f j)).appTop
+      (CommRingCat.ofHom (Z₀.toBaseRingHom I hI i j)) :=
+  (IsPushout.of_left (Z₀.isPushout_toBaseRingHom_snd I hI i j)
+    (by ext b; exact Z₀.toBaseRingHom_mk_one_tmul I hI i j b) (isPushout_φF_inv_fst j)).flip
+
+open Limits in
+/-- `𝒰ᵢ ∩ 𝒰ⱼ` is the base change of `Z₀ i j` along `𝒰ᵢ ⟶ 𝒰₀ᵢ _ F` (first projections). -/
+lemma Z₀.isPullback_fst (i j : (𝒰 X).I₀) :
+    IsPullback (pullback.fst ((𝒰 X).f i) ((𝒰 X).f j)) (Z₀.toBase I hI i j)
+      ((φF F i).inv.left ≫ pullback.fst _ _) (Z₀.fst I i j) := by
+  refine (isPullback_SpecMap_of_isPushout _ _ _ _ (Z₀.isPushout_fst I hI i j)).of_iso
+    (pullback ((𝒰 X).f i) ((𝒰 X).f j)).isoSpec.symm ((𝒰 X).X i).isoSpec.symm (Iso.refl _)
+    ((𝒰₀' i) _ F).left.isoSpec.symm ?_ ?_ ?_ ?_
+  · simp only [Iso.symm_hom, Iso.eq_inv_comp, Scheme.isoSpec_hom_naturality_assoc,
+      Iso.hom_inv_id, Category.comp_id]
+  · simp [Z₀.toBase]
+  · simp only [Iso.symm_hom, Iso.eq_inv_comp, Scheme.isoSpec_hom_naturality_assoc,
+      Iso.hom_inv_id, Category.comp_id]
+  · simp [Z₀.fst]
+
+open Limits in
+/-- `𝒰ᵢ ∩ 𝒰ⱼ` is the base change of `Z₀ i j` along `𝒰ⱼ ⟶ 𝒰₀ⱼ _ F` (second projections). -/
+lemma Z₀.isPullback_snd (i j : (𝒰 X).I₀) :
+    IsPullback (pullback.snd ((𝒰 X).f i) ((𝒰 X).f j)) (Z₀.toBase I hI i j)
+      ((φF F j).inv.left ≫ pullback.fst _ _) (Z₀.snd I i j) := by
+  refine (isPullback_SpecMap_of_isPushout _ _ _ _ (Z₀.isPushout_snd I hI i j)).of_iso
+    (pullback ((𝒰 X).f i) ((𝒰 X).f j)).isoSpec.symm ((𝒰 X).X j).isoSpec.symm (Iso.refl _)
+    ((𝒰₀' j) _ F).left.isoSpec.symm ?_ ?_ ?_ ?_
+  · simp only [Iso.symm_hom, Iso.eq_inv_comp, Scheme.isoSpec_hom_naturality_assoc,
+      Iso.hom_inv_id, Category.comp_id]
+  · simp [Z₀.toBase]
+  · simp only [Iso.symm_hom, Iso.eq_inv_comp, Scheme.isoSpec_hom_naturality_assoc,
+      Iso.hom_inv_id, Category.comp_id]
+  · simp [Z₀.snd]
+
+include hI in
+/-- The first projection of `Z₀ i j` is an open immersion (fpqc descent). -/
+lemma Z₀.isOpenImmersion_fst (i j : (𝒰 X).I₀) : IsOpenImmersion (Z₀.fst I i j) :=
+  MorphismProperty.of_isPullback_of_descendsAlong (P := @IsOpenImmersion)
+    (Q := @Surjective ⊓ @Flat ⊓ @QuasiCompact)
+    (Z₀.isPullback_fst I hI i j) ⟨⟨inferInstance, inferInstance⟩, inferInstance⟩ inferInstance
+
+include hI in
+/-- The second projection of `Z₀ i j` is an open immersion (fpqc descent). -/
+lemma Z₀.isOpenImmersion_snd (i j : (𝒰 X).I₀) : IsOpenImmersion (Z₀.snd I i j) :=
+  MorphismProperty.of_isPullback_of_descendsAlong (P := @IsOpenImmersion)
+    (Q := @Surjective ⊓ @Flat ⊓ @QuasiCompact)
+    (Z₀.isPullback_snd I hI i j) ⟨⟨inferInstance, inferInstance⟩, inferInstance⟩ inferInstance
+
+include hI in
+open Limits in
+/-- `Z₀ i i ⟶ 𝒰₀ᵢ _ F` is an isomorphism (fpqc descent). -/
+lemma Z₀.isIso_fst_self (i : (𝒰 X).I₀) : IsIso (Z₀.fst I i i) :=
+  MorphismProperty.of_isPullback_of_descendsAlong (P := MorphismProperty.isomorphisms Scheme)
+    (Q := @Surjective ⊓ @Flat ⊓ @QuasiCompact)
+    (Z₀.isPullback_fst I hI i i) ⟨⟨inferInstance, inferInstance⟩, inferInstance⟩
+    (inferInstanceAs (IsIso (pullback.fst ((𝒰 X).f i) ((𝒰 X).f i))))
+
+include hI in
+open Limits in
+/-- `𝒰ᵢ ∩ 𝒰ⱼ ⟶ Z₀ i j` is surjective (a base change of `𝒰ⱼ ⟶ 𝒰₀ⱼ _ F`). -/
+lemma Z₀.toBase_surjective (i j : (𝒰 X).I₀) : Function.Surjective (Z₀.toBase I hI i j) :=
+  (MorphismProperty.of_isPullback (P := @Surjective) (Z₀.isPullback_snd I hI i j)
+    inferInstance).surj
+
+/-! ### The transition maps -/
+
+include hI in
+open Limits in
+/-- The image of `Z₀ i j` in `𝒰₀ⱼ _ F` is contained in that of `Z₀ j i`: after base change, both
+are `𝒰ᵢ ∩ 𝒰ⱼ`. -/
+lemma Z₀.range_snd_subset_range_fst (i j : (𝒰 X).I₀) :
+    Set.range (Z₀.snd I i j) ⊆ Set.range (Z₀.fst I j i) := by
+  rintro _ ⟨z, rfl⟩
+  obtain ⟨z', rfl⟩ := Z₀.toBase_surjective I hI i j z
+  obtain ⟨w, hw⟩ : pullback.snd ((𝒰 X).f i) ((𝒰 X).f j) z' ∈
+      Set.range (pullback.fst ((𝒰 X).f j) ((𝒰 X).f i)) := by
+    rw [Scheme.Pullback.range_fst]
+    refine ⟨pullback.fst ((𝒰 X).f i) ((𝒰 X).f j) z', ?_⟩
+    rw [← Scheme.Hom.comp_apply, ← Scheme.Hom.comp_apply, pullback.condition]
+  refine ⟨Z₀.toBase I hI j i w, ?_⟩
+  rw [← Scheme.Hom.comp_apply, ← Scheme.Hom.comp_apply, ← (Z₀.isPullback_fst I hI j i).w,
+    ← (Z₀.isPullback_snd I hI i j).w]
+  simp only [Scheme.Hom.comp_apply, hw]
+
+/-- The transition map `Z₀ i j ⟶ Z₀ j i`. -/
+def Z₀.t (i j : (𝒰 X).I₀) : Z₀ I i j ⟶ Z₀ I j i :=
+  have := Z₀.isOpenImmersion_fst I hI j i
+  IsOpenImmersion.lift (Z₀.fst I j i) (Z₀.snd I i j) (Z₀.range_snd_subset_range_fst I hI i j)
+
+@[reassoc (attr := simp)]
+lemma Z₀.t_fst (i j : (𝒰 X).I₀) : Z₀.t I hI i j ≫ Z₀.fst I j i = Z₀.snd I i j :=
+  have := Z₀.isOpenImmersion_fst I hI j i
+  IsOpenImmersion.lift_fac _ _ _
+
+include hI in
+open Limits in
+/-- `Z₀ i j ×[𝒰₀ᵢ] Z₀ i k ⟶ Z₀ i j ⟶ 𝒰₀ⱼ _ F` lands in the image of `Z₀ j k`: after base change,
+`𝒰ᵢ ∩ 𝒰ⱼ ∩ 𝒰ₖ ⊆ 𝒰ⱼ ∩ 𝒰ₖ`. -/
+lemma Z₀.range_fst_snd_subset_range_fst (i j k : (𝒰 X).I₀) :
+    have := Z₀.isOpenImmersion_fst I hI i j
+    have := Z₀.isOpenImmersion_fst I hI i k
+    Set.range (pullback.fst (Z₀.fst I i j) (Z₀.fst I i k) ≫ Z₀.snd I i j) ⊆
+      Set.range (Z₀.fst I j k) := by
+  intro _ _ y hy
+  obtain ⟨p, rfl⟩ := hy
+  obtain ⟨z₁, hz₁⟩ := Z₀.toBase_surjective I hI i j (pullback.fst (Z₀.fst I i j) (Z₀.fst I i k) p)
+  obtain ⟨z₂, hz₂, -⟩ := Scheme.exists_preimage_of_isPullback (Z₀.isPullback_fst I hI i k)
+    (pullback.fst ((𝒰 X).f i) ((𝒰 X).f j) z₁) (pullback.snd (Z₀.fst I i j) (Z₀.fst I i k) p) (by
+      rw [← Scheme.Hom.comp_apply, (Z₀.isPullback_fst I hI i j).w, Scheme.Hom.comp_apply, hz₁,
+        ← Scheme.Hom.comp_apply, pullback.condition]
+      simp only [Scheme.Hom.comp_apply])
+  obtain ⟨w, hw⟩ : pullback.snd ((𝒰 X).f i) ((𝒰 X).f j) z₁ ∈
+      Set.range (pullback.fst ((𝒰 X).f j) ((𝒰 X).f k)) := by
+    rw [Scheme.Pullback.range_fst]
+    refine ⟨pullback.snd ((𝒰 X).f i) ((𝒰 X).f k) z₂, ?_⟩
+    rw [← Scheme.Hom.comp_apply, ← pullback.condition, Scheme.Hom.comp_apply, hz₂,
+      ← Scheme.Hom.comp_apply, ← Scheme.Hom.comp_apply, pullback.condition]
+  refine ⟨Z₀.toBase I hI j k w, ?_⟩
+  rw [Scheme.Hom.comp_apply, ← hz₁, ← Scheme.Hom.comp_apply, ← Scheme.Hom.comp_apply,
+    ← (Z₀.isPullback_fst I hI j k).w, ← (Z₀.isPullback_snd I hI i j).w]
+  simp only [Scheme.Hom.comp_apply, hw]
+
+open Limits in
+/-- The transition map `Z₀ i j ×[𝒰₀ᵢ] Z₀ i k ⟶ Z₀ j k ×[𝒰₀ⱼ] Z₀ j i` of the gluing data. -/
+def Z₀.t' (i j k : (𝒰 X).I₀) :
+    have := Z₀.isOpenImmersion_fst I hI i j
+    have := Z₀.isOpenImmersion_fst I hI i k
+    have := Z₀.isOpenImmersion_fst I hI j k
+    have := Z₀.isOpenImmersion_fst I hI j i
+    pullback (Z₀.fst I i j) (Z₀.fst I i k) ⟶ pullback (Z₀.fst I j k) (Z₀.fst I j i) :=
+  have := Z₀.isOpenImmersion_fst I hI i j
+  have := Z₀.isOpenImmersion_fst I hI i k
+  have := Z₀.isOpenImmersion_fst I hI j k
+  have := Z₀.isOpenImmersion_fst I hI j i
+  pullback.lift (IsOpenImmersion.lift (Z₀.fst I j k) (pullback.fst _ _ ≫ Z₀.snd I i j)
+    (Z₀.range_fst_snd_subset_range_fst I hI i j k)) (pullback.fst _ _ ≫ Z₀.t I hI i j) (by simp)
+
+include hI in
+open Limits in
+/-- `𝒰ᵢ ∩ 𝒰ⱼ ⟶ Z₀ i j` is flat (a base change of `𝒰ⱼ ⟶ 𝒰₀ⱼ _ F`). -/
+lemma Z₀.toBase_flat (i j : (𝒰 X).I₀) : Flat (Z₀.toBase I hI i j) :=
+  MorphismProperty.of_isPullback (P := @Flat) (Z₀.isPullback_snd I hI i j) inferInstance
+
+include hI in
+open Limits in
+/-- `𝒰ᵢ ∩ 𝒰ⱼ ⟶ Z₀ i j` is an epimorphism. -/
+lemma Z₀.toBase_epi (i j : (𝒰 X).I₀) : Epi (Z₀.toBase I hI i j) :=
+  have := Z₀.toBase_flat I hI i j
+  have : Surjective (Z₀.toBase I hI i j) := ⟨Z₀.toBase_surjective I hI i j⟩
+  Flat.epi_of_flat_of_surjective _
+
+include hI in
+open Limits in
+/-- The two projections of `Z₀ i i` agree. -/
+lemma Z₀.snd_self (i : (𝒰 X).I₀) : Z₀.snd I i i = Z₀.fst I i i := by
+  have := Z₀.toBase_epi I hI i i
+  rw [← cancel_epi (Z₀.toBase I hI i i), ← (Z₀.isPullback_snd I hI i i).w,
+    ← (Z₀.isPullback_fst I hI i i).w, fst_eq_snd_of_mono_eq]
+
+open Limits in
+/-- The transition map `Z₀ i i ⟶ Z₀ i i` is the identity. -/
+lemma Z₀.t_self (i : (𝒰 X).I₀) : Z₀.t I hI i i = 𝟙 _ := by
+  have := Z₀.isOpenImmersion_fst I hI i i
+  rw [← cancel_mono (Z₀.fst I i i), Z₀.t_fst, Category.id_comp, Z₀.snd_self I hI]
+
+open Limits in
+/-- The base change map from the triple intersection `𝒰ᵢ ∩ 𝒰ⱼ ∩ 𝒰ₖ` to `Z₀ i j ×[𝒰₀ᵢ] Z₀ i k`. -/
+def Z₀.toBase₃ (i j k : (𝒰 X).I₀) :
+    pullback (pullback.fst ((𝒰 X).f i) ((𝒰 X).f j)) (pullback.fst ((𝒰 X).f i) ((𝒰 X).f k)) ⟶
+      pullback (Z₀.fst I i j) (Z₀.fst I i k) :=
+  pullback.lift (pullback.fst _ _ ≫ Z₀.toBase I hI i j) (pullback.snd _ _ ≫ Z₀.toBase I hI i k) (by
+    rw [Category.assoc, Category.assoc, ← (Z₀.isPullback_fst I hI i j).w,
+      ← (Z₀.isPullback_fst I hI i k).w, pullback.condition_assoc])
+
+open Limits in
+/-- `𝒰ᵢ ∩ 𝒰ⱼ ∩ 𝒰ₖ` is the base change of `Z₀ i j ×[𝒰₀ᵢ] Z₀ i k` along `𝒰ᵢ ∩ 𝒰ⱼ ⟶ Z₀ i j`. -/
+lemma Z₀.toBase₃_isPullback (i j k : (𝒰 X).I₀) :
+    IsPullback (pullback.fst (pullback.fst ((𝒰 X).f i) ((𝒰 X).f j))
+      (pullback.fst ((𝒰 X).f i) ((𝒰 X).f k))) (Z₀.toBase₃ I hI i j k) (Z₀.toBase I hI i j)
+      (pullback.fst (Z₀.fst I i j) (Z₀.fst I i k)) := by
+  have s : IsPullback (pullback.fst (pullback.fst ((𝒰 X).f i) ((𝒰 X).f j))
+      (pullback.fst ((𝒰 X).f i) ((𝒰 X).f k)))
+      (Z₀.toBase₃ I hI i j k ≫ pullback.snd (Z₀.fst I i j) (Z₀.fst I i k))
+      (Z₀.toBase I hI i j ≫ Z₀.fst I i j) (Z₀.fst I i k) := by
+    rw [Z₀.toBase₃, pullback.lift_snd, ← (Z₀.isPullback_fst I hI i j).w]
+    exact (IsPullback.of_hasPullback (pullback.fst ((𝒰 X).f i) ((𝒰 X).f j))
+      (pullback.fst ((𝒰 X).f i) ((𝒰 X).f k))).paste_vert (Z₀.isPullback_fst I hI i k)
+  exact s.of_bot (pullback.lift_fst _ _ _).symm (IsPullback.of_hasPullback _ _)
+
+include hI in
+open Limits in
+/-- `𝒰ᵢ ∩ 𝒰ⱼ ∩ 𝒰ₖ ⟶ Z₀ i j ×[𝒰₀ᵢ] Z₀ i k` is an epimorphism. -/
+lemma Z₀.toBase₃_epi (i j k : (𝒰 X).I₀) : Epi (Z₀.toBase₃ I hI i j k) :=
+  have := Z₀.toBase_flat I hI i j
+  have : Surjective (Z₀.toBase I hI i j) := ⟨Z₀.toBase_surjective I hI i j⟩
+  have : Flat (Z₀.toBase₃ I hI i j k) :=
+    MorphismProperty.of_isPullback (P := @Flat) (Z₀.toBase₃_isPullback I hI i j k) inferInstance
+  have : Surjective (Z₀.toBase₃ I hI i j k) :=
+    MorphismProperty.of_isPullback (P := @Surjective) (Z₀.toBase₃_isPullback I hI i j k)
+      inferInstance
+  Flat.epi_of_flat_of_surjective _
+
+open Limits in
+/-- The transition maps `Z₀.t'` are the base changes of the transition maps
+`gluedCoverT'` of the cover `𝒰 X`. -/
+@[reassoc]
+lemma Z₀.toBase₃_t' (i j k : (𝒰 X).I₀) :
+    Z₀.toBase₃ I hI i j k ≫ Z₀.t' I hI i j k =
+      (𝒰 X).gluedCoverT' i j k ≫ Z₀.toBase₃ I hI j k i := by
+  have := Z₀.isOpenImmersion_fst I hI j k
+  have := Z₀.isOpenImmersion_fst I hI j i
+  apply pullback.hom_ext
+  · rw [← cancel_mono (Z₀.fst I j k)]
+    simp only [Category.assoc, Z₀.t', pullback.lift_fst, IsOpenImmersion.lift_fac, Z₀.toBase₃,
+      pullback.lift_fst_assoc, ← (Z₀.isPullback_snd I hI i j).w, ← (Z₀.isPullback_fst I hI j k).w,
+      Scheme.Cover.gluedCoverT'_fst_fst_assoc]
+  · rw [← cancel_mono (Z₀.fst I j i)]
+    simp only [Category.assoc, Z₀.t', pullback.lift_snd, Z₀.t_fst, Z₀.toBase₃,
+      pullback.lift_fst_assoc, ← (Z₀.isPullback_snd I hI i j).w,
+      ← (Z₀.isPullback_fst I hI j i).w, Scheme.Cover.gluedCoverT'_snd_fst_assoc]
+
+open Limits in
+/-- The cocycle condition for the transition maps `Z₀.t'`. -/
+lemma Z₀.cocycle (i j k : (𝒰 X).I₀) :
+    Z₀.t' I hI i j k ≫ Z₀.t' I hI j k i ≫ Z₀.t' I hI k i j = 𝟙 _ := by
+  have := Z₀.toBase₃_epi I hI i j k
+  rw [← cancel_epi (Z₀.toBase₃ I hI i j k), Category.comp_id, Z₀.toBase₃_t'_assoc,
+    Z₀.toBase₃_t'_assoc, Z₀.toBase₃_t', reassoc_of% (Scheme.Cover.glued_cover_cocycle (𝒰 X) i j k)]
+
+/-! ### The glued model -/
+
+/-- The gluing data of the model: the charts `𝒰₀ᵢ _ F`, glued along the `Z₀ i j`. -/
+def glueData : Scheme.GlueData where
+  J := (𝒰 X).I₀
+  U i := ((𝒰₀' i) _ F).left
+  V ij := Z₀ I ij.1 ij.2
+  f i j := Z₀.fst I i j
+  f_mono i j := have := Z₀.isOpenImmersion_fst I hI i j; inferInstance
+  f_hasPullback _ _ _ := inferInstance
+  f_id i := Z₀.isIso_fst_self I hI i
+  t i j := Z₀.t I hI i j
+  t_id i := Z₀.t_self I hI i
+  t' i j k := Z₀.t' I hI i j k
+  t_fac _ _ _ := Limits.pullback.lift_snd _ _ _
+  cocycle := Z₀.cocycle I hI
+  f_open i j := Z₀.isOpenImmersion_fst I hI i j
+
+lemma Z₀.t_fst_hom (i j : (𝒰 X).I₀) :
+    Z₀.fst I i j ≫ ((𝒰₀' i) _ F).hom = (Z₀.t I hI i j ≫ Z₀.fst I j i) ≫ ((𝒰₀' j) _ F).hom := by
+  rw [Z₀.t_fst, Z₀.fst_hom]
+
+/-- The structure map of the glued scheme. -/
+def X₀hom : (glueData I hI).glued ⟶ Spec ↧F :=
+  Limits.Multicoequalizer.desc _ _ (fun i ↦ ((𝒰₀' i) _ F).hom) fun ij ↦ Z₀.t_fst_hom I hI ij.1 ij.2
+
+@[reassoc (attr := simp)]
+lemma X₀hom_ι (i : (𝒰 X).I₀) : (glueData I hI).ι i ≫ X₀hom I hI = ((𝒰₀' i) _ F).hom :=
+  Limits.Multicoequalizer.π_desc _ _ _ _ _
+
+/-- The model `X₀` of `X` over `F`. -/
+def X₀ : Over (Spec ↧F) := Over.mk (X₀hom I hI)
+
+lemma X₀hom_ι_locallyOfFiniteType (i : (𝒰 X).I₀) :
+    LocallyOfFiniteType ((glueData I hI).ι i ≫ X₀hom I hI) := by
+  rw [X₀hom_ι]
+  exact inferInstanceAs (LocallyOfFiniteType (Limits.pullback.snd _ _))
+
+lemma X₀_locallyOfFiniteType : LocallyOfFiniteType (X₀ I hI).hom :=
+  have := HasRingHomProperty.instIsZariskiLocalAtSource (P := @LocallyOfFiniteType.{u})
+    (Q := RingHom.FiniteType)
+  IsZariskiLocalAtSource.of_openCover (P := @LocallyOfFiniteType.{u})
+    (𝒰 := (glueData I hI).openCover) fun i ↦ X₀hom_ι_locallyOfFiniteType I hI i
+
+open Limits in
+/-- A morphism is separated if its base change along a surjective universally closed morphism
+is. -/
+lemma isSeparated_of_isSeparated_pullback_snd {Y S S' : Scheme.{u}} (f : Y ⟶ S) (g : S' ⟶ S)
+    [Surjective g] [UniversallyClosed g] [IsSeparated (pullback.snd f g)] : IsSeparated f := by
+  let q := pullback.map (pullback.snd f g) (pullback.snd f g) f f (pullback.fst f g)
+    (pullback.fst f g) g pullback.condition.symm pullback.condition.symm
+  have hq : IsPullback q (pullback.fst _ _) (pullback.fst f f) (pullback.fst f g) := by
+    refine ⟨⟨by simp [q]⟩, ⟨PullbackCone.IsLimit.mk _ ?_ ?_ ?_ ?_⟩⟩
+    · intro c
+      refine pullback.lift c.snd
+        (pullback.lift (c.fst ≫ pullback.snd _ _) (c.snd ≫ pullback.snd _ _) ?_) ?_
+      · rw [Category.assoc, ← pullback.condition (f := f), c.condition_assoc,
+          pullback.condition, Category.assoc]
+      · simp
+    · intro c
+      apply pullback.hom_ext <;> simp [q, c.condition]
+    · intro c
+      simp
+    · intro c m hfst hsnd
+      refine pullback.hom_ext (by simpa) ?_
+      apply pullback.hom_ext <;> simp [q, ← hsnd, pullback.condition, ← hfst]
+  have hΔ : IsPullback (pullback.fst f g) (pullback.diagonal (pullback.snd f g))
+      (pullback.diagonal f) q := by
+    refine ⟨⟨by ext <;> simp [q]⟩, ⟨PullbackCone.IsLimit.mk _ ?_ ?_ ?_ ?_⟩⟩
+    · intro c
+      exact c.snd ≫ pullback.fst _ _
+    · intro c
+      simpa [q] using (c.condition =≫ pullback.fst f f).symm
+    · intro c
+      have h₁ := c.condition =≫ pullback.fst f f
+      have h₂ := c.condition =≫ pullback.snd f f
+      simp only [Category.assoc, pullback.diagonal_fst, pullback.diagonal_snd, Category.comp_id,
+        q, pullback.lift_fst, pullback.lift_snd] at h₁ h₂
+      apply pullback.hom_ext
+      · simp
+      · apply pullback.hom_ext
+        · simp [← h₁, ← h₂]
+        · simp [pullback.condition]
+    · intro c m hfst hsnd
+      simp [← hsnd]
+  have : Surjective q := MorphismProperty.of_isPullback hq.flip inferInstance
+  have : UniversallyClosed q := MorphismProperty.of_isPullback hq.flip inferInstance
+  refine ⟨.of_isPreimmersion _ ?_⟩
+  have h := Scheme.image_preimage_eq_of_isPullback hΔ Set.univ
+  rw [Set.preimage_univ, Set.image_univ, Set.image_univ] at h
+  rw [← Set.image_preimage_eq (Set.range _) q.surjective, ← h]
+  exact q.isClosedMap _ (Scheme.Hom.isClosedEmbedding _).isClosed_range
+
+section BasechangeIso
+
+open Limits
+
+-- `glueData` and `X₀` must unfold when `simp`/`rw` check implicit arguments (`(glueData I hI).J`,
+-- `(glueData I hI).U i`, `(X₀ I hI).left`): otherwise terms mixing `(glueData I hI).ι i` or
+-- `(X₀ I hI).hom` with the charts and `X₀hom I hI` are "not type-correct under the `implicit`
+-- transparency level", and `simp`/`rw` fail on them.
+attribute [local implicit_reducible] glueData X₀
+
+@[simp]
+lemma glueData_f (i j : (𝒰 X).I₀) : (glueData I hI).f i j = Z₀.fst I i j := rfl
+
+@[simp]
+lemma glueData_t (i j : (𝒰 X).I₀) : (glueData I hI).t i j = Z₀.t I hI i j := rfl
+
+@[reassoc]
+lemma Z₀.snd_ι (i j : (𝒰 X).I₀) :
+    Z₀.snd I i j ≫ (glueData I hI).ι j = Z₀.fst I i j ≫ (glueData I hI).ι i := by
+  simpa using (glueData I hI).glue_condition i j
+
+omit [IsSeparated X.hom] in
+@[reassoc]
+lemma φF_hom_left_f_hom (i : (𝒰 X).I₀) :
+    (φF F i).hom.left ≫ (𝒰 X).f i ≫ X.hom = pullback.snd ((𝒰₀' i) _ F).hom
+      (Spec.map (CommRingCat.ofHom (algebraMap F (AlgebraicClosure K)))) := by
+  simpa using Over.w (φF F i).hom
+
+omit [IsSeparated X.hom] in
+@[reassoc]
+lemma φF_inv_left_snd (i : (𝒰 X).I₀) :
+    (φF F i).inv.left ≫ pullback.snd ((𝒰₀' i) _ F).hom
+      (Spec.map (CommRingCat.ofHom (algebraMap F (AlgebraicClosure K)))) = (𝒰 X).f i ≫ X.hom := by
+  simpa using Over.w (φF F i).inv
+
+/-- The open cover of `(X₀ _ K̄).left` by the base changes `(𝒰₀ᵢ _ F) _ K̄` of the charts of `X₀`
+(`Scheme.Pullback.openCoverOfLeft`, with `(𝒰₀ᵢ _ F) _ K̄` in place of
+`pullback (ι i ≫ X₀hom) _`). -/
+abbrev X₀_basechangeCover : ((X₀ I hI) _ (AlgebraicClosure K)).left.OpenCover where
+  I₀ := (𝒰 X).I₀
+  X i := (((𝒰₀' i) _ F) _ (AlgebraicClosure K)).left
+  f i := pullback.lift (pullback.fst _ _ ≫ (glueData I hI).ι i) (pullback.snd _ _)
+    (by simp [X₀, pullback.condition])
+  mem₀ := ((Scheme.Pullback.openCoverOfLeft (glueData I hI).openCover (X₀hom I hI)
+    (Spec.map (CommRingCat.ofHom (algebraMap F (AlgebraicClosure K))))).copy (𝒰 X).I₀ _ _
+    (Equiv.refl _) (fun i ↦ pullback.congrHom (X₀hom_ι I hI i).symm rfl) fun i ↦ by
+      change pullback.lift _ _ _ = (pullback.congrHom (X₀hom_ι I hI i).symm rfl).hom ≫
+        pullback.map ((glueData I hI).ι i ≫ X₀hom I hI) _ (X₀hom I hI) _ ((glueData I hI).ι i)
+          (𝟙 _) (𝟙 _) (by simp) (by simp)
+      ext <;> simp).mem₀
+
+/-- The maps `(𝒰₀ᵢ _ F) _ K̄ ≅ 𝒰ᵢ ⟶ X` agree on the overlaps of `X₀_basechangeCover`. -/
+lemma X₀_basechangeCover_compat (i j : (𝒰 X).I₀) :
+    pullback.fst ((X₀_basechangeCover I hI).f i) ((X₀_basechangeCover I hI).f j) ≫
+      (φF F i).hom.left ≫ (𝒰 X).f i =
+    pullback.snd _ _ ≫ (φF F j).hom.left ≫ (𝒰 X).f j := by
+  have e₁ (k : (𝒰 X).I₀) : pullback.fst _ _ ≫ (glueData I hI).ι k =
+      (X₀_basechangeCover I hI).f k ≫ pullback.fst _ _ := (pullback.lift_fst _ _ _).symm
+  have e₂ (k : (𝒰 X).I₀) : (X₀_basechangeCover I hI).f k ≫ pullback.snd _ _ =
+      pullback.snd _ _ := pullback.lift_snd _ _ _
+  -- the overlap maps to `Z₀ i j`
+  obtain ⟨w, hw₁, hw₂⟩ : ∃ w : pullback ((X₀_basechangeCover I hI).f i)
+      ((X₀_basechangeCover I hI).f j) ⟶ Z₀ I i j,
+      w ≫ Z₀.fst I i j = pullback.fst _ _ ≫ pullback.fst _ _ ∧
+      w ≫ Z₀.t I hI i j ≫ Z₀.fst I j i = pullback.snd _ _ ≫ pullback.fst _ _ :=
+    ⟨PullbackCone.IsLimit.lift ((glueData I hI).vPullbackConeIsLimit i j) _ _
+      (by rw [Category.assoc, Category.assoc, e₁ i, e₁ j, pullback.condition_assoc]),
+      PullbackCone.IsLimit.lift_fst _ _ _ _, PullbackCone.IsLimit.lift_snd _ _ _ _⟩
+  rw [Z₀.t_fst] at hw₂
+  -- hence to `𝒰ᵢ ∩ 𝒰ⱼ`
+  obtain ⟨u, hu₁, hu₂⟩ : ∃ u : pullback ((X₀_basechangeCover I hI).f i)
+      ((X₀_basechangeCover I hI).f j) ⟶ pullback ((𝒰 X).f i) ((𝒰 X).f j),
+      u ≫ pullback.fst _ _ = pullback.fst _ _ ≫ (φF F i).hom.left ∧
+      u ≫ Z₀.toBase I hI i j = w :=
+    ⟨(Z₀.isPullback_fst I hI i j).lift _ _
+      (by simp only [Category.assoc, Over.hom_left_inv_left_assoc, hw₁]),
+      IsPullback.lift_fst _ _ _ _, IsPullback.lift_snd _ _ _ _⟩
+  have key : u ≫ pullback.snd _ _ ≫ (φF F j).inv.left = pullback.snd _ _ := by
+    apply pullback.hom_ext
+    · simp only [Category.assoc, (Z₀.isPullback_snd I hI i j).w, reassoc_of% hu₂, hw₂]
+    · have : pullback.fst ((X₀_basechangeCover I hI).f i) ((X₀_basechangeCover I hI).f j) ≫
+          pullback.snd _ _ = pullback.snd _ _ ≫ pullback.snd _ _ := by
+        rw [← e₂ i, ← e₂ j, pullback.condition_assoc]
+      rw [Category.assoc, Category.assoc, φF_inv_left_snd, ← pullback.condition_assoc,
+        reassoc_of% hu₁, φF_hom_left_f_hom, this]
+  rw [← reassoc_of% hu₁, pullback.condition, ← reassoc_of% key, Over.inv_left_hom_left_assoc]
+
+/-- The map `(X₀ _ K̄).left ⟶ X.left`, glued from the identifications `φF` of the charts. -/
+def X₀_basechangeHom : ((X₀ I hI) _ (AlgebraicClosure K)).left ⟶ X.left :=
+  (X₀_basechangeCover I hI).glueMorphisms (fun i ↦ (φF F i).hom.left ≫ (𝒰 X).f i)
+    (X₀_basechangeCover_compat I hI)
+
+@[reassoc]
+lemma f_X₀_basechangeHom (i : (𝒰 X).I₀) :
+    (X₀_basechangeCover I hI).f i ≫ X₀_basechangeHom I hI = (φF F i).hom.left ≫ (𝒰 X).f i :=
+  (X₀_basechangeCover I hI).ι_glueMorphisms _ _ i
+
+/-- The map `X.left ⟶ (X₀ _ K̄).left`, glued from the identifications `φF` of the charts. -/
+def X₀_basechangeInv : X.left ⟶ ((X₀ I hI) _ (AlgebraicClosure K)).left :=
+  (𝒰 X).glueMorphisms (fun i ↦ (φF F i).inv.left ≫ (X₀_basechangeCover I hI).f i) fun i j ↦ by
+    apply pullback.hom_ext
+    · simp only [Category.assoc, pullback.lift_fst, reassoc_of% (Z₀.isPullback_fst I hI i j).w,
+        reassoc_of% (Z₀.isPullback_snd I hI i j).w, Z₀.snd_ι]
+    · simp only [Category.assoc, pullback.lift_snd, φF_inv_left_snd, pullback.condition_assoc]
+
+@[reassoc]
+lemma f_X₀_basechangeInv (i : (𝒰 X).I₀) :
+    (𝒰 X).f i ≫ X₀_basechangeInv I hI = (φF F i).inv.left ≫ (X₀_basechangeCover I hI).f i :=
+  (𝒰 X).ι_glueMorphisms _ _ i
+
+/-- `X₀ _ K̄ ≅ X`. -/
+def X₀_basechangeIso : (X₀ I hI) _ (AlgebraicClosure K) ≅ X :=
+  Over.isoMk
+    { hom := X₀_basechangeHom I hI
+      inv := X₀_basechangeInv I hI
+      hom_inv_id := (X₀_basechangeCover I hI).hom_ext _ _ fun i ↦ by
+        rw [Category.comp_id, ← Category.assoc, f_X₀_basechangeHom, Category.assoc,
+          f_X₀_basechangeInv, Over.hom_left_inv_left_assoc]
+      inv_hom_id := (𝒰 X).hom_ext _ _ fun i ↦ by
+        rw [Category.comp_id, ← Category.assoc, f_X₀_basechangeInv, Category.assoc,
+          f_X₀_basechangeHom, Over.inv_left_hom_left_assoc] }
+    ((X₀_basechangeCover I hI).hom_ext _ _ fun i ↦ by
+      rw [← Category.assoc, f_X₀_basechangeHom, Category.assoc, φF_hom_left_f_hom]
+      exact (pullback.lift_snd _ _ _).symm)
+
+end BasechangeIso
+
+open Limits in
+lemma X₀_isSeparated : IsSeparated (X₀ I hI).hom := by
+  let g := Spec.map (CommRingCat.ofHom (algebraMap F (AlgebraicClosure K)))
+  have : IsSeparated (pullback.snd (X₀ I hI).hom g) := by
+    change IsSeparated ((X₀ I hI) _ (AlgebraicClosure K)).hom
+    rw [← Over.w (X₀_basechangeIso I hI).hom]
+    infer_instance
+  have : IsIntegralHom g := IsIntegralHom.SpecMap_iff.mpr Algebra.IsIntegral.isIntegral
+  exact isSeparated_of_isSeparated_pullback_snd (X₀ I hI).hom g
+
+end Gluing
+
+end Descent
+
 variable (X) in
 theorem exists_model_of_isSeparated_of_locallyOfFiniteType :
     ∃ E : IntermediateField K (AlgebraicClosure K), FiniteDimensional K E ∧
     ∃ X₀ : Over (Spec ↧E), IsSeparated X₀.hom ∧ LocallyOfFiniteType X₀.hom ∧
     Nonempty ((X₀ _ (AlgebraicClosure K)) ≅ X) := by
-  sorry
+  choose F₁ hE _ I₁ hI₁ using fun i j : (𝒰 X).I₀ ↦
+    exists_ideal_map_Θ_eq_intersectionOpens_ideal (X := X) (i := i) (j := j)
+  let F : IntermediateField K (AlgebraicClosure K) := ⨆ i, ⨆ j, F₁ i j
+  have (i j : (𝒰 X).I₀) : FiniteDimensional K (F₁ i j) :=
+    have := hE i j
+    have : IsScalarTower K (E' X) (F₁ i j) := IsScalarTower.of_algebraMap_eq fun _ ↦ rfl
+    FiniteDimensional.trans K (E' X) (F₁ i j)
+  have : FiniteDimensional K F :=
+    have (i : (𝒰 X).I₀) : FiniteDimensional K (⨆ j, F₁ i j : IntermediateField K _) :=
+      IntermediateField.finiteDimensional_iSup_of_finite
+    IntermediateField.finiteDimensional_iSup_of_finite
+  have : Fact (E' X ≤ F) := ⟨iSup_le fun i ↦ (le_iSup E'' i).trans
+    ((hE i i).out.trans (le_iSup₂ (f := fun i j ↦ F₁ i j) i i))⟩
+  choose I hI using fun i j : (𝒰 X).I₀ ↦ have := hE i j
+    exists_ideal_map_Θ_eq_intersectionOpens_ideal_of_le (le_iSup₂ (f := fun i j ↦ F₁ i j) i j)
+      (I₁ i j) (hI₁ i j)
+  exact ⟨F, inferInstance, X₀ I hI, X₀_isSeparated I hI, X₀_locallyOfFiniteType I hI,
+    ⟨X₀_basechangeIso I hI⟩⟩
