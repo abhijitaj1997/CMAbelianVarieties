@@ -1,66 +1,73 @@
 ToDo — unfinished results (still containing `sorry`)
 ====================================================
-Line numbers refer to the files as of the date/commit given in each
-section (default: 2026-09-26, commit 2b5817e). They will drift as files
-change. Only pending tasks are listed; completed ones are removed.
+Line numbers refer to the files as of 2026-11-27 (commit 265be7b), unless
+a section says otherwise. They will drift as files change. Only pending
+tasks are listed; completed ones are removed.
 
 
 AbstractNonsense/PullbackAddGrp.lean
 ------------------------------------
-[ ] AddGrpObj (pullback f g)                                         (l.43)
+[ ] AddGrpObj (pullback f g)                                         (l.47)
       The pullback of two group homomorphisms f : G → T, g : H → T is
       again a group object (addition and zero taken componentwise).
-      zero_add is started (two `have`s left as sorry).
-      Still missing: zero_add, add_zero, add_assoc, neg, left_neg, right_neg.
+      zero and add are defined, and the lift conditions
+      (zero_lift_condition, add_lift_condition) are proved.
+      zero_add is started (two `have`s and the final goal left as sorry,
+      l.59, 60, 62). Still missing: add_zero (l.63), add_assoc (l.64),
+      neg (l.65), left_neg (l.66), right_neg (l.67).
 
-[ ] IsCommAddMonObj (pullback f g)                                   (l.65)
+[ ] IsCommAddMonObj (pullback f g)                                   (l.70)
       If G and H are commutative, so is their pullback.
 
-[ ] IsAddMonHom (pullback.fst f g)                                   (l.71)
+[ ] IsAddMonHom (pullback.fst f g)                                   (l.76)
       The projection G ×_T H → G is a group homomorphism.
 
-[ ] IsAddMonHom (pullback.snd f g)                                   (l.73)
+[ ] IsAddMonHom (pullback.snd f g)                                   (l.78)
       The projection G ×_T H → H is a group homomorphism.
 
-[ ] IsAddMonHom.pullback_lift                                        (l.75)
+[ ] IsAddMonHom.pullback_lift                                        (l.80)
       A map into the pullback built from two group homomorphisms is
       itself a group homomorphism.
+
+[ ] Cleanup: commented-out `--instance : HasPullbacks (AddGrp C) := sorry`
+      (l.28).
 
 
 AlgebraicGeometry/Finite.lean
 -----------------------------
-[ ] isArtinianScheme_of_isFiniteOverField                            (l.47)
+[ ] isArtinianScheme_of_isFiniteOverField                            (l.51)
       A scheme that is finite over Spec K is Artinian.
-      Last step: move the Artinian property along X ≅ Spec Γ(X, ⊤)
-      (`IsArtinianScheme.of_isIso` does not seem to exist).
+      Last step (l.57–58): move the Artinian property along
+      X ≅ Spec Γ(X, ⊤) (`IsArtinianScheme.of_isIso` does not seem to exist).
 
 
 AlgebraicGeometry/LieAlgebra/Defn.lean
----------------------------------
-New file (d13a8ab), line numbers as of 2026-10-12 (commit c4f93e5).
+--------------------------------------
 Defines the identity point e G, the Lie algebra Lie G = Dual (m/m²) of a
 group scheme G over K, stalkEnd / cotangentEnd, and the representation of
 End (mk G) on Lie G. No sorries left in this file.
-[ ] Cleanup: fix the typos in the names lie_algebra_repsentation' /
-      lie_algebra_represenation (and use lowerCamelCase for defs).
-[ ] Remaining naming nits: the def hζ (h for "hom"); proofs named
-      f₁ / f₂ in left_add_eq_tan (hφ₁ / hφ₂ are now taken; e.g.
-      hφc₁ / hφc₂); section name k2 (from the old `k`).
-[ ] The IsLocalHom instance for mapR has the docstring "The map
-      `κ_{G,e} ⊕ M ⟶ κ_{G,e} ⊕ N`", which does not say what it proves.
-[ ] Possibly replace the `erw`s (stalkEnd_one, fixedStalkMap_comp,
-      residueFieldCongr_residueFieldMap_of_comp_eq, exists_eq_tan,
-      tan_closedPoint) by rw + explicit rfl lemmas / change.
-[ ] Reminder from the "hey claude" comment (l.113): the docstring of
+[ ] Cleanup: fix the typos in the names lie_algebra_repsentation' (l.237)
+      / lie_algebra_represenation (l.743) (and use lowerCamelCase for
+      defs). Both are also used in Complex.lean.
+[ ] Remaining naming nits: the def hζ (l.317; h for "hom"); proofs named
+      f₁ / f₂ in left_add_eq_tan (l.562, 564; hφ₁ / hφ₂ are taken; e.g.
+      hφc₁ / hφc₂).
+[ ] Possibly replace the `erw`s (residueFieldCongr_residueFieldMap l.90,
+      fixedStalkMap_comp l.162, stalkEnd_one l.167, exists_eq_tan l.303,
+      tan_closedPoint l.313) by rw + explicit rfl lemmas / change.
+[ ] residueFieldCongr_residueFieldMap (l.90) uses `eqToIso` / `eqToHom`
+      (accepted for now, see the comment at l.75–78).
+[ ] Reminder from the "hey claude" comment (l.124): the docstring of
       Ideal.mapCotangent (Mathlib) uses I, J while the theorem uses
       I₁, I₂.
+[ ] Reminder from the "hey claude" comment (l.737):
+      lie_algebra_represenation should probably have type
+      End (mk G) →+* (Lie G →ₗ[K] Lie G).
 
 
 AlgebraicGeometry/AbelianVarieties/Homomorphism/IntHom.lean
 ------------------------------------------------------------
-Line numbers as of 2026-10-10 (commit a93522c).
-
-[ ] isFinite_int_hom                                                 (l.86)
+[ ] isFinite_int_hom                                                 (l.77)
       [n]_ A : A → A is a finite morphism when n ≠ 0.
 
 
@@ -83,91 +90,91 @@ to_additive_do_translate).
 
 AlgebraicGeometry/AbelianVarieties/Complex.lean
 -----------------------------------------------
-Complex abelian varieties A over Spec ℂ and uniformization. Line numbers
-as of 2026-10-26. lattice_representation and lattice_freeModule are done
-modulo the sorries below.
-[ ] exponential : Lie A →+ |A ℂ|                                     (l.30)
+Complex abelian varieties A over Spec ℂ and uniformization.
+lattice_representation and lattice_freeModule (l.109) are done modulo
+the sorries below.
+[ ] exponential : Lie A →+ |A ℂ|                                     (l.31)
       The exponential map. Currently `sorry`.
-[ ] end_comp_exponential f g                                         (l.35)
+[ ] end_comp_exponential f g                                         (l.36)
       (AddMonoidHom_of_End f) (exp g) = exp ((lie_algebra_represenation A f) g).
-[ ] lattice_isLattice_map : ℝ ⊗[ℤ] lattice A ≃ₗ[ℝ] Lie A             (l.47)
+[ ] lattice_isLattice_map : ℝ ⊗[ℤ] lattice A ≃ₗ[ℝ] Lie A             (l.48)
       (replaces the old `Nonempty` lemma lattice_isLattice, whose `.some`
       was an arbitrary isomorphism, not compatible with endomorphisms.)
-      toFun is the canonical map r ⊗ l ↦ r • l (via TensorProduct.lift).
+      toFun is the canonical map r ⊗ l ↦ r • l (via TensorProduct.lift);
+      lattice_isLattice_map_tmul (l.71) holds by rfl.
       Still `sorry`: map_add', map_smul', invFun, left_inv, right_inv
-      (l.61–65). Suggestion: toFun := LinearMap.liftBaseChange ℝ
+      (l.62–66). Suggestion: toFun := LinearMap.liftBaseChange ℝ
       (lattice A).subtype.toIntLinearMap (already ℝ-linear), and build
       the equiv with LinearEquiv.ofBijective, leaving only bijectivity
       as a `sorry`.
-[ ] lattice_linearEquiv                                              (l.97)
-      (renamed from lattice_addEquiv) lattice A ≃ₗ[ℤ] (Fin (2 * g) → ℤ)
-      for g = dim A: the lattice is free of rank 2 * dim A.
-[ ] Drop the prime of lattice_representation' (l.67) eventually.
-[ ] Cleanup: typo "uniforization" in the module docstring (l.15).
+[ ] lattice_linearEquiv                                              (l.104)
+      (renamed from lattice_addEquiv)
+      Nonempty (lattice A ≃ₗ[ℤ] (Fin (2 * g) → ℤ)) for g with
+      topologicalKrullDim A.left = g: the lattice is free of rank 2 * dim A.
+[ ] Drop the prime of lattice_representation' (l.74) eventually.
+[ ] Cleanup: typo "uniforization" in the module docstring (l.16).
 
 
 AlgebraicGeometry/AbelianVarieties/TateModule.lean
 --------------------------------------------------
 Points are now geometric points: morphisms from `gspec K` = Spec K̄ (with
-K̄ = `AlgebraicClosure K`), instead of K-points from `specᵤ K`.
+K̄ = `AlgebraicClosure K`, l.38), instead of K-points from `specᵤ K`.
 
 
-[-] int_hom_rational, rational_torsion                               (l.42–60)
+[-] int_hom_rational, rational_torsion                               (l.45–63)
       Commented out ("probably don't need this"). If needed after all,
       move to AbstractNonsense / IntHom. rational_torsion still lacks the
-      inductive step and the final goal.
+      inductive step (l.62) and the final goal (l.63).
 
-[ ] finite_torsion_points                                            (l.65)
+[ ] finite_torsion_points                                            (l.68)
       A[n](K̄) is finite when n ≠ 0.
-      In progress (2b5817e): the proof now gets IsFinite A[n].hom, IsAffine
-      A[n].left, Module.Finite Γ(Spec K, ⊤) Γ(A[n].left, ⊤), and that
+      The proof gets IsFinite A[n].hom, IsAffine A[n].left,
+      Module.Finite Γ(Spec K, ⊤) Γ(A[n].left, ⊤), and that
       Γ(A[n].left, ⊤) is Artinian.
-      Note: `have := hhom ▸ step₂ hn` needs the explicit type
+      Note: `have := hhom ▸ step₂ hn` (l.73) needs the explicit type
       `IsFinite (A[n]).hom`, otherwise the hidden source/target stay as
       (pullback …).left / (𝟙_ _).left and instance search fails.
       Still missing:
-        - Finite (Γ(A[n].left, ⊤) →ₐ[Γ(Spec K, ⊤)] Γ(Spec K, ⊤))   (l.89)
-        - the final goal (l.92).
+        - Finite (Γ(A[n].left, ⊤) →ₐ[Γ(Spec K, ⊤)] Γ(Spec K, ⊤))   (l.92–94)
+        - the final goal (l.95).
       These are still stated for K-points; they need changing to K̄-points
       (algebra maps into K̄, finitely many because the algebra is finite
       over K), probably using the base change functor.
-      The old proof is kept in a comment below the sorry.
+      The old proof is kept in a comment below the sorry (from l.96).
 
 [ ] tate_module_representation                                       (l.271)
       A homomorphism f : A → B induces T_ p (A) → T_ p (B).
-      functorial_ker_int (IntHom.lean) is now done, so this is unblocked.
-      Note: f and [IsAddMonHom f] are section variables not mentioned in
-      the statement, so they are currently NOT arguments of this def
-      (needs `include f in` or explicit binders).
-      The placeholder `blah` (l.268) should be removed or replaced.
+      functorial_ker_int (IntHom.lean) is done, so this is unblocked.
+      Note: f and [IsAddMonHom f] are section variables (l.267–268) not
+      mentioned in the statement, so they are currently NOT arguments of
+      this def (needs `include f in` or explicit binders).
+      The placeholder `blah` (l.265) should be removed or replaced.
 
 
-[ ] Cleanup (see module docstring "Fixes")
-      torsion_point_as_profinite and AddGrpCatHom_of_torsion_map view
-      A[n](K̄) as an object of AddGrpCat / FiniteAddGrp ad hoc. Add
-      definitions giving A[n](K̄) as an object of AddGrpCat and of
+[ ] Cleanup (see module docstring "Fixes", l.16)
+      torsion_point_as_profinite (l.149) and AddGrpCatHom_of_torsion_map
+      (l.145) view A[n](K̄) as an object of AddGrpCat / FiniteAddGrp ad
+      hoc. Add definitions giving A[n](K̄) as an object of AddGrpCat and of
       FiniteAddGrp, and use them. AddGrpCatHom_of_torsion_map may be
       unnecessary.
 
 
 AlgebraicGeometry/AbelianVarieties/Homomorphism/FiniteGen.lean
 ---------------------------------------------------------------
-Line numbers as of 2026-10-31.
-[ ] fin_gen_hom                                                      (l.32)
+[ ] fin_gen_hom                                                      (l.31)
       Hom(A, B) is a finitely generated abelian group.
-[ ] fin_gen_end                                                      (l.36)
+[ ] fin_gen_end                                                      (l.35)
       End(A) is a finitely generated abelian group (should follow from
       fin_gen_hom). Used for Module.Finite ℚ (End⁰ A) (EndomorphismRing.lean),
       hence for the basis ℬ in Homomorphism/RationalModel.lean.
-[ ] Leftover `#check @Module.Finite.iff_addGroup_fg` (l.38) to remove.
+[ ] Leftover `#check @Module.Finite.iff_addGroup_fg` (l.37) to remove.
 
 
 AlgebraicGeometry/AbelianVarieties/Homomorphism/EndomorphismRing.lean
 ----------------------------------------------------------------------
 New file (7305ad4): defines RationalEnd A = ℚ ⊗[ℤ] End (mk A),
-notation `End⁰ A` (scoped in RationalEnd). Line numbers as of 2026-11-06
-(commit dd42364). No sorries left.
-Module.Finite ℚ (End⁰ A) is done (from fin_gen_end, still `sorry`).
+notation `End⁰ A` (scoped in RationalEnd). No sorries left.
+Module.Finite ℚ (End⁰ A) (l.145) is done (from fin_gen_end, still `sorry`).
 End.baseChangeHom / RationalEnd.baseChangeHom with baseChangeHom_self,
 baseChangeHom_comp, rational_end_morphism_eq_baseChangeHom_comp,
 baseChangeHom_eq_map and the injectivity lemmas End.baseChangeHom_inj
@@ -177,62 +184,63 @@ RationalEnd.baseChangeHom_inj (ℚ is flat over ℤ) are done.
       baseChangeHom_comp (l.213),
       rational_end_morphism_eq_baseChangeHom_comp (l.236) and probably on
       End.baseChangeHom_inj (l.98) and RationalEnd.baseChangeHom_inj
-      (l.265); the `open basechange_over_Field` on the latter is unused.
-[ ] End.baseChangeHom_inj: the `let p := fun f ↦ f ≫ proj …` is only used
-      to state h_diag / h_zero; they could be stated with `≫ proj` directly.
-[ ] Collect the remaining instances from the Hom files for End A.
-[ ] Naming: conjAlgEquiv.refl / .symm / .trans would be conjAlgEquiv_refl
-      / _symm / _trans in Mathlib style.
+      (l.265); the `open basechange_over_Field Function in` (l.266) on the
+      latter is unused.
+[ ] End.baseChangeHom_inj: the `let p := fun f ↦ f ≫ proj …` (l.105) is
+      only used to state h_diag / h_zero (l.118, 123); they could be
+      stated with `≫ proj` directly.
+[ ] Collect the remaining instances from the Hom files for End A
+      (module docstring, l.17).
+[ ] Naming: conjAlgEquiv.refl / .symm / .trans (l.158, 167, 177) would be
+      conjAlgEquiv_refl / _symm / _trans in Mathlib style (also used in
+      Defn.lean and Pottentially.lean).
 
 
 AlgebraicGeometry/AbelianVarieties/Homomorphism/EndLimit.lean
 --------------------------------------------------------------
-New file (2026-10-31). Goal: End⁰ (A ⊗ₛ K) is the colimit of End⁰ (A ⊗ₛ L)
-over the intermediate fields L of K/K₀ that are finite over K₀. Line
-numbers as of 2026-11-06 (commit dd42364). The functor RatEnd (over all
+Goal: End⁰ (A ⊗ₛ K) is the colimit of End⁰ (A ⊗ₛ L) over the intermediate
+fields L of K/K₀ that are finite over K₀. The functor RatEnd (over all
 intermediate fields) and its cocone limitRatEnd are done; RatEndFin /
 limitRatEndFin restrict them to {L // FiniteDimensional K₀ L} (via
 Monotone.functor and Cocone.whisker).
-[ ] limitRatEnd.isColimit : Limits.IsColimit (limitRatEndFin A K)    (l.100)
+[ ] limitRatEnd.isColimit : Limits.IsColimit (limitRatEndFin A K)    (l.99)
       `sorry`. Needs "spreading out" of endomorphisms (every endomorphism
       of A ⊗ₛ K is defined over a finite L). There is no assumption on
-      K/K₀ at the moment (IsGalois was removed; it is not needed). Without
-      `Algebra.IsAlgebraic K₀ K` the statement is still true, but only via
-      Chow's rigidity theorem (not in Mathlib); with it, spreading out
-      suffices. See the note in the file above the def.
+      K/K₀ at the moment (IsGalois was removed; it is not needed; see the
+      note above the def, l.92–96). Without `Algebra.IsAlgebraic K₀ K` the
+      statement is still true, but only via Chow's rigidity theorem (not
+      in Mathlib); with it, spreading out suffices.
       Useful: Types.FilteredColimit.isColimit_eq_iff',
       isColimitOfPreserves (forget RingCat) (injectivity of the cocone maps).
-[ ] Remaining refactor: proj_self / proj_comp / proj_fst and simp lemmas
-      for trans.hom/inv ≫ pullback.fst/snd, refl_addGrpObj (Basic.lean);
-      Iso constructions for CMStructure.basechange' (Defn.lean); use them
-      in Theorem.lean (ι'', ι₀, P₁, P₂) and Pottentially.lean. (The list
-      used to be in a comment at the end of the file; that comment is gone.)
-[ ] Module docstring still says "colimit over L : IntermediateField K₀ K";
-      it is now over the finite ones.
+[ ] Remaining refactor: use CMStructure.basechange' / Iso.basechangeTrans
+      (Defn.lean) instead of the hand-built ι'', ι₀, P₁, P₂ in
+      Theorem.lean (l.61–84).
+[ ] Module docstring (l.12–14) still says "colimit over
+      L : IntermediateField K₀ K"; it is now over the finite ones.
 
 
 AlgebraicGeometry/AbelianVarieties/Homomorphism/RationalModel.lean
 ------------------------------------------------------------------
-New file (2026-11-06), replaces RationalEnd.exists_finiteDimensional_model
-(over AlgebraicClosure K) by the general version. Line numbers as of
-commit dd42364.
 exists_finiteDimensional_bijective_baseChangeHom (l.52): there is a finite
 E/K₀ inside K with baseChangeHom A E K bijective. No `sorry` of its own;
-depends on limitRatEnd.isColimit (EndLimit.lean) and fin_gen_end
-(FiniteGen.lean). Used in Pottentially.lean with K := AlgebraicClosure K.
-[ ] Slow: the file takes about 40 s to build, all in the proof of
+depends on limitRatEnd.isColimit (EndLimit.lean, via
+exists_baseChangeHom_eq_ℬ) and fin_gen_end (FiniteGen.lean, via
+Module.Finite ℚ (End⁰ A)). Used in Pottentially.lean (l.44) with
+K := AlgebraicClosure K.
+[ ] Slow: the file took about 40 s to build, all in the proof of
       exists_finiteDimensional_bijective_baseChangeHom (probably the
-      `simp [← hφ i, ← baseChangeHom_comp …]` step or the `rw`s around
-      `φ` / `hφ`). Find the slow step.
-[ ] `φ` is defined through `rw` (a cast), to avoid a whnf timeout when
-      the type of `….choose_spec.choose_spec.choose` is compared with
-      End⁰ (A ⊗ₛ (E' i)). Cleaner: `choose E' hE' φ hφ using
+      `simp [← hφ i, ← baseChangeHom_comp …]` step (l.82) or the `rw`s
+      around `φ` / `hφ`). Find the slow step. (Timing not rechecked since
+      the Mathlib update.)
+[ ] `φ` is defined through `rw` (a cast; l.59–62, hφ l.64–67), to avoid a
+      whnf timeout when the type of `….choose_spec.choose_spec.choose` is
+      compared with End⁰ (A ⊗ₛ (E' i)). Cleaner: `choose E' hE' φ hφ using
       exists_baseChangeHom_eq_ℬ` inside the proof.
-[ ] Naming: a global def `ℬ` (and `I`) is not Mathlib style; e.g.
-      RationalEnd.finBasis, with ℬ as local notation. Making `I` an
+[ ] Naming: a global def `ℬ` (l.36) (and `I`, l.31) is not Mathlib style;
+      e.g. RationalEnd.finBasis, with ℬ as local notation. Making `I` an
       `abbrev` would remove the `inferInstanceAs (Finite (Fin _))`.
 [ ] The theorem is in the root namespace (the old one was in RationalEnd).
-[ ] Two files are now called RationalModel.lean
+[ ] Two files are called RationalModel.lean
       (AbelianVarieties/RationalModel.lean and Homomorphism/RationalModel.lean);
       consider renaming this one (e.g. Homomorphism/EndModel.lean).
 
@@ -245,16 +253,15 @@ AlgebraicGeometry/InvertibleSheaf.lean
 
 
 AlgebraicGeometry/LieAlgebra/Dimension.lean
---------------------------------
-New file (00aaa88). Line numbers as of 2026-10-29 (commit 7129820).
+-------------------------------------------
 topologicalKrullDim_eq_iSup_ringKrullDim_stalk and ringKrullDim_basechange
 moved to AlgebraicGeometry/Dimension.lean.
 [ ] topologicalKrullDim_eq_finrank_Lie                               (l.110)
       dim G = finrank (κ_ G) (Lie G). Currently `sorry`; it is used
-      (e.g. in Defn.lean) only to know that dim A is finite, which is far
-      stronger than needed. Note in the file: move the finiteness of the
-      dimension (and commutativity) to a separate `Basic.lean`, or get
-      finiteness from the CM structure (finrank_of_CM_field).
+      (e.g. in Defn.lean, l.256) only to know that dim A is finite, which
+      is far stronger than needed. Note in the file: move the finiteness
+      of the dimension (and commutativity) to a separate `Basic.lean`, or
+      get finiteness from the CM structure (finrank_of_CM_field).
 [ ] Module docstring ("Dimension of a group scheme") is a placeholder.
       Intended: dim of a group scheme, e.g. via dim of Lie G / the local
       ring at e (needed for step 1 of CMType).
@@ -268,8 +275,8 @@ moved to AlgebraicGeometry/Dimension.lean.
 [ ] Strategy Step C: ringKrullDim 𝒪_{G,e} = n (≤ is free; ≥ needs
       dimension theory of smooth/étale algebras, not in Mathlib). Gives
       regularity and dim Lie G = topologicalKrullDim G (with homogeneity).
-[ ] smooth_of_grpObj is for GrpObj; additivize with to_additive as in
-      IntHom.lean to use it for AddGrpObj.
+[ ] smooth_of_grpObj (only a #check, l.43) is for GrpObj; additivize with
+      to_additive as in IntHom.lean to use it for AddGrpObj.
 [ ] Strategy comment l.70: write
       `Algebra.IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential`
       (namespace missing).
@@ -282,169 +289,145 @@ AlgebraicGeometry/TheCube.lean
 
 Defn.lean (CM abelian varieties)
 --------------------------------
-Line numbers as of 2026-10-31. No sorries left. CMStructure, ofIso,
-Iso (with refl / symm / trans), basechange (with ofIso, refl, trans),
-Iso.basechangeTrans, the F-module structure on the rational lattice, u,
-u_ℝ and CMType ι := preCMType.ofComplexStructure (J_one ι) are done
-(modulo dimension_isStableUnderBasechange).
+No sorries left. CMStructure, ofIso, Iso (with refl / symm / trans),
+basechange (with ofIso, refl, trans), basechange', Iso.basechangeTrans,
+the F-module structure on the rational lattice, u, u_ℝ and
+CMType ι := preCMType.ofComplexStructure (J_one ι) are done.
 [ ] Check the dimension condition: Module.finrank ℚ F : ℕ is compared
-      with topologicalKrullDim A.left : WithBot ℕ∞ (via a cast). Decide
-      whether to state dim A as a natural number instead. (In
-      finrank_rational_lattice_of_CMStructure the cast is undone with
-      `norm_cast`.)
-[ ] Cleanup: `#check lattice_isLattice_map` (l.386). u_ℚ_mul (l.313)
+      with topologicalKrullDim A.left : WithBot ℕ∞ (via a cast;
+      finrank_of_CM_field, l.49). Decide whether to state dim A as a
+      natural number instead. (In finrank_rational_lattice_of_CMStructure
+      the cast is undone with `norm_cast`, l.273.)
+[ ] Cleanup: `#check lattice_isLattice_map` (l.379). u_ℚ_mul (l.306)
       could be proved by `exact u_mul ι a b`.
-[ ] Naming: basechange.refl / basechange.trans make `basechange` a
-      namespace, so dot notation `ι.basechange.trans` does not work.
+[ ] Naming: basechange.refl / basechange.trans (l.166, 185) make
+      `basechange` a namespace, so dot notation `ι.basechange.trans` does
+      not work.
 
 
 AlgebraicGeometry/Dimension.lean
 --------------------------------
-Line numbers as of 2026-10-30 (commit 238316e). dim X = sup over an
-open cover (topologicalKrullDim_eq_iSup_openCover) and the affine case
-topologicalKrullDim_basechange_affine are done (basechangeOpenCover /
-basechangeOpenCoverXIso moved to AlgebraicGeometry/Basic.lean);
-dimension_isStableUnderBasechange reduces to ringKrullDim_basechange (no
-other sorries left).
-[ ] ringKrullDim_basechange                                          (l.67)
-      dim A = dim (K₁ ⊗[K] A) for A of finite type over a field K.
-      [FiniteType K A] is needed (false for A = K(t), K₁ = K(s)). Proof
-      plan (Noether normalization, missing "dim S = dim R for R → S
-      injective integral") is written in the comment at the end of the
-      file.
-[ ] dimension_isStableUnderBasechange: the `have` IsAffine (𝒰.X i)
-      (l.106) is marked "can be removed eventually".
-[ ] Cleanup: eight blank lines before the final comment.
+No sorries left. dim X = sup over an open cover
+(topologicalKrullDim_eq_iSup_openCover), the affine case
+topologicalKrullDim_basechange_affine, ringKrullDim_basechange (via
+Noether normalization and ringKrullDim_eq_of_isIntegral_of_injective) and
+dimension_isStableUnderBasechange are done (basechangeOpenCover /
+basechangeOpenCoverXIso moved to AlgebraicGeometry/Basic.lean).
+[ ] dimension_isStableUnderBasechange: check whether the `have` IsAffine
+      (l.124) is still needed.
 [ ] Possible refactor: a lemma topologicalKrullDim X = ⨆ x, coheight x,
       from which both topologicalKrullDim_eq_iSup_ringKrullDim_stalk and
       topologicalKrullDim_eq_iSup_openCover follow without stalks.
 [ ] Possibly add an instance IsAffine (X ⊗ₛ K₁).left for IsAffine X.left
       (currently `by dsimp; infer_instance` inside
-      topologicalKrullDim_basechange_affine), e.g. in AlgebraicGeometry/Basic.lean.
+      topologicalKrullDim_basechange_affine, l.95; also needed in
+      RationalModel/Separated.lean l.108, 170, 356), e.g. in
+      AlgebraicGeometry/Basic.lean.
 
 
 AlgebraicGeometry/Basic.lean
 ----------------------------
-New file (2026-10-30), replaces AbelianVarieties/BaseFieldChange.lean
-(deleted). Basic AG results used elsewhere. Section BaseChange:
-`abbrev basechange_over_Field`, notation `X ⊗ₛ K₁`, instances IsProper,
-GeometricallyIntegral, AddGrpObj, IsCommAddMonObj for X ⊗ₛ K₁. Section
-Covers: basechangeOpenCover / basechangeOpenCoverXIso (from
-Dimension.lean). Section CompactofProper: CompactSpace X.left for X proper
-over a field. Line numbers as of 2026-10-31. No sorries left:
+Replaces AbelianVarieties/BaseFieldChange.lean (deleted). Basic AG
+results used elsewhere. No sorries left.
+Section BaseChange: `abbrev basechange_over_Field`, scoped notation
+`X ⊗ₛ K₁` (open scoped BaseChange), instances IsProper,
+GeometricallyIntegral, AddGrpObj, IsCommAddMonObj for X ⊗ₛ K₁;
 basechange_over_Field.refl / .trans (as Over.isoMk of pullback.lifts),
 refl_addGroup_hom, trans_addGroup_hom, trans_addGrpObj and
-basechange_over_Field_addGrpObj_zero(_eqn) are done. The notation
-`X ⊗ₛ E` is now scoped (open scoped BaseChange).
-Section SeparateOpen (2026-11-07): intersectionOpens_ofSeparated (affine
-opens of a separated X over Spec A have affine intersection), done.
-[ ] "Hey claude" notes (l.84, l.205): should trans / trans_addGrpObj use
+basechange_over_Field_addGrpObj_zero(_eqn).
+Section Covers (l.223–244): basechangeOpenCover / basechangeOpenCoverXIso.
+Section CompactofProper (l.246–256): CompactSpace X.left for X proper
+over a field.
+Section SeparateOpen (l.258–395): intersectionOpens_ofSeparated (affine
+opens of a separated X over Spec A have affine intersection),
+finiteAffineCover, chart_Algebra, intersectionOpens_map_ofSeparated,
+Z.isOpenImmersion_map_fst / snd.
+Section Basechange (l.397–433): Algebra K Γ(X.left, ⊤) and
+L ⊗[K] Γ(X.left, ⊤) ≃ₐ[L] Γ((X ⊗ₛ L).left, ⊤).
+[ ] "Hey claude" notes (l.93, l.211): should trans / trans_addGrpObj use
       IntermediateField? To discuss.
 [ ] Cleanup: unused `variable {A …}` (l.31).
-[ ] The scoped notation `X _ E` still makes a bare `_` followed by an
-      argument parse as base change (e.g. `Category.id_comp _` before a
-      new line in tactic proofs); use `?_` or named arguments there.
-[ ] CompactofProper instance could assume only [QuasiCompact X.hom].
+[ ] CompactofProper instance (l.253) could assume only [QuasiCompact X.hom].
 
 
 AlgebraicGeometry/RationalModel/Affine.lean
 -------------------------------------------
-New file (2026-10-30), no sorries. exists_model_of_finiteType (algebra)
-and exists_model_of_isAffine_of_locallyOfFiniteType (an affine X of
-finite type over K̄ has an affine model of finite type over a finite
-E/K ⊆ K̄).
-[ ] Cleanup: module docstring typos ("a affine", "seperated").
+No sorries. exists_model_of_finiteType (algebra) and
+exists_model_of_isAffine_of_locallyOfFiniteType (an affine X of finite
+type over K̄ has an affine model of finite type over a finite E/K ⊆ K̄).
+[ ] Cleanup: module docstring typos ("a affine" l.15, "seperated" l.18;
+      the latter should say "affine").
 
 
 AlgebraicGeometry/RationalModel/Separated.lean
 ----------------------------------------------
-New approach (2026-11-10), via the ideals of the intersections of the
-charts. exists_ideal_map_Θ_eq_intersectionOpens_ideal is proved
-(2026-11-24). Line numbers as of 2026-11-24.
-[ ] exists_model_of_isSeparated_of_locallyOfFiniteType: `sorry`     (l.480)
-      Gaps found (2026-11-24): G1 one common F for all pairs (i, j)
-      (ideal_map_Θ_eq_of_basechange already works for any F ⊇ F₀);
-      G2 Z₀ := Spec((A_i ⊗_F A_j)/I) with projections and
-      Z₀ ⊗ₛ K̄ ≅ pullback (𝒰.f i) (𝒰.f j) (main chunk); G3 Spec K̄ → Spec F
-      surjective/flat/quasi-compact; G4 projections of Z₀ are open
-      immersions (fpqc descent); G5 Z₀ᵢⱼ ≅ Z₀ⱼᵢ (descended ideals are
-      unique: Ideal.comap_map_eq_self_of_faithfullyFlat); G6 GlueData over
-      F, cocycle via faithfulness of Over.pullback; G7 glued ⊗ₛ K̄ ≅ X (no
-      Mathlib lemma for base change of a gluing); G8 LocallyOfFiniteType;
-      G9 IsSeparated (direct, or via descent). Alternative route: descend
-      the transition maps via Scheme.preservesColimit_yoneda
-      (AffineTransitionLimit.lean).
-[ ] Cleanup: the comment above the helper lemmas (l.203-204) still
-      refers to the deleted `Pick up from here` note; the type ascription
-      in `Θ` (l.156) may no longer be needed after the
-      `attribute [-instance]` line (l.22); module docstring typos
-      ("seperated", l.13, l.15).
-[ ] Ideal.map_map_map_map_coe / Ideal.map_map_map_coe are general facts
-      about ideals: candidates for ForMathlib/.
+No sorries. exists_model_of_isSeparated_of_locallyOfFiniteType (l.1335)
+is proved, via the ideals of the intersections of the charts, glued into
+X₀ (glueData, X₀, X₀_basechangeIso, X₀_isSeparated,
+X₀_locallyOfFiniteType).
+[ ] Cleanup: the type ascription in `e₁` of `Θ` (l.151–152; def at l.143)
+      may no longer be needed now that the `attribute [-instance]` line is
+      gone; module docstring typos ("seperated", l.14, l.16).
+[ ] Ideal.map_map_map_map_coe (l.269) / Ideal.map_map_map_coe (l.279) are
+      general facts about ideals: candidates for ForMathlib/.
+[ ] Over.hom_eq_isoSpec_hom_comp (l.558) is a general fact about Over and
+      affine schemes: candidate for AlgebraicGeometry/Basic.lean or
+      ForMathlib/.
 
 
 Test/SeparatedOld.lean
 ----------------------
 The previous version of RationalModel/Separated.lean (was
 IntegralModel/Model.lean); moved to Test/ (2026-11-10), outside the library.
-Line numbers as of 2026-11-10.
+Superseded: RationalModel/Separated.lean now proves
+exists_model_of_isSeparated_of_locallyOfFiniteType.
 CommRingCat.isPushout_induction (l.79) and
 exists_opens_basechange_of_isCompact (l.104: a quasi-compact open of
-U ⊗ₛ L comes from U ⊗ₛ F' for a finite F' ⊆ L) are done.
-[ ] isAffine_opensRange_inf_opensRange (l.66): intersections of affine
-      opens of a separated X are affine. Still `sorry`, but should now
-      follow from intersectionOpens_ofSeparated (AlgebraicGeometry/Basic.lean)
-      with isAffineOpen_opensRange. Leftover #checks (l.70–71).
-[ ] exists_model_of_isSeparated_of_locallyOfFiniteType               (l.151)
-      Statement now says IsSeparated X₀.hom.
-      Done in the proof: finite affine cover 𝒰, models U' i over the
-      compositum E₀, the intersections W i j (affine), their preimages
-      W' i j in U' i ⊗ₛ K̄ (compact), descended via
-      exists_opens_basechange_of_isCompact to F i j, the compositum E,
-      U i := U' i ⊗ₛ E, opens V i j ⊆ U i and isos eU i.
-      Still `sorry`: hW_aff (l.179; `intersectionOpens_ofSeparated _ _`
-      no longer fits since that lemma changed, commented out), and the
-      gluing (l.217: transition maps t, t', cocycle, descended to a further
-      finite extension; base change commutes with gluing is not in
-      Mathlib). The plan is in the comment after the proof.
-[ ] "Hey claude" note (l.74): move the results about affine schemes
-      (isPushout_induction, exists_opens_basechange_of_isCompact) to
-      Affine.lean.
-[ ] Cleanup: module docstring typos ("seperated"); blank lines after the
-      proof (l.218–221).
+U ⊗ₛ L comes from U ⊗ₛ F' for a finite F' ⊆ L) are done; neither is used
+in the library.
+[ ] Decide whether to keep the file. Its sorries are all obsolete:
+      isAffine_opensRange_inf_opensRange (l.66; now
+      intersectionOpens_ofSeparated in Basic.lean) and
+      exists_model_of_isSeparated_of_locallyOfFiniteType (l.151; hW_aff
+      l.179, gluing l.217).
+[ ] "Hey claude" note (l.74): move isPushout_induction and
+      exists_opens_basechange_of_isCompact to Affine.lean — or drop them,
+      since the library does not use them.
 
 
 AlgebraicGeometry/RationalModel/Morphism.lean
 ---------------------------------------------
-New file (2026-10-30). Properties of the model chosen by
+Properties of the model chosen by
 exists_model_of_isSeparated_of_locallyOfFiniteType.
 [ ] isProper_model                                                   (l.28)
       Descend along Spec K̄ → Spec E (surjective, flat, quasi-compact):
       UniversallyClosed and LocallyOfFiniteType descend in Mathlib
-      (FlatDescent.lean, LocalFlatDescent.lean); IsSeparated does not
-      (would need descent of closed immersions) — but the statement of
-      exists_model_of_isSeparated_of_locallyOfFiniteType now gives
-      IsSeparated X₀.hom.
+      (FlatDescent.lean, LocalFlatDescent.lean); IsSeparated X₀.hom is
+      already given by exists_model_of_isSeparated_of_locallyOfFiniteType,
+      so it remains to descend UniversallyClosed.
 [ ] geometricallyIntegral_model                                      (l.33)
-[ ] Module docstring is empty.
+[ ] Module docstring is thin (only a goal sentence).
 
 
 AlgebraicGeometry/RationalModel/GroupStructure.lean
 ---------------------------------------------------
-New file (2026-10-30). Group structures descend to a finite extension.
-[ ] fieldOfDefintion (l.31), FiniteDimensional_ofFieldOfDefintion
-      (l.34), AddGroupObj_overFieldOfDefintion (l.38): all `sorry`.
-[ ] Cleanup: typo fieldOfDefintion → fieldOfDefinition; instance names
+Group structures descend to a finite extension.
+[ ] fieldOfDefintion (l.32), FiniteDimensional_ofFieldOfDefintion
+      (l.35), AddGroupObj_overFieldOfDefintion (l.39),
+      AddGroupObj_overFieldOfDefintion_Iso (l.44; the isomorphism
+      mk ((G ⊗ₛ fieldOfDefintion) ⊗ₛ Kₐ) ≅ mk (G ⊗ₛ Kₐ)): all `sorry`.
+[ ] Cleanup: typo fieldOfDefintion → fieldOfDefinition (also used in
+      AbelianVarieties/RationalModel.lean); instance names
       (lowerCamelCase).
 
 
 AlgebraicGeometry/AbelianVarieties/RationalModel.lean
 -----------------------------------------------------
-(Renamed from IntegralModel/Theorem.lean.) Line numbers as of 2026-10-30
-(commit 238316e).
+(Renamed from IntegralModel/Theorem.lean.)
 AbelianVarieties.exists_finiteDimensional_model (l.37) has no `sorry` of
-its own any more; it depends on the sorries in RationalModel/ (Separated,
-Morphism, GroupStructure).
+its own any more; it depends on the sorries in RationalModel/Morphism
+(isProper_model, geometricallyIntegral_model) and
+RationalModel/GroupStructure.
 
 
 Pottentially.lean
@@ -458,45 +441,32 @@ Homomorphism/RationalModel.lean).
 
 Theorem.lean
 ------------
-Line numbers as of 2026-10-31.
 CMStructure.exists_finiteDimensional_model (l.50) has no `sorry` of its
 own; it depends on exists_finiteDimensional_bijective_baseChangeHom
-(Homomorphism/RationalModel.lean), the RationalModel/ sorries and
-dimension_isStableUnderBasechange.
+(Homomorphism/RationalModel.lean: limitRatEnd.isColimit, fin_gen_end)
+and the sorries in RationalModel/Morphism and RationalModel/GroupStructure.
 [ ] CMStructure.exists_algClosureRat_model                           (l.42)
 [ ] exists_numberField_model: the `have : IsScalarTower E …` (l.124) is
       probably redundant now (E is an IntermediateField).
 [ ] exists_finiteDimensional_model: the local instances (Algebra/SMul,
-      IsScalarTower) are declared twice (for ι'' and in P₁); could be
-      merged.
+      IsScalarTower) are declared twice (l.62–65 for ι'' and l.85–88 in
+      P₁); could be merged.
 
 
 AbstractNonsense/EndBaseChange.lean
 -----------------------------------
 New file (f660978), no sorries.
-[ ] Cleanup (trailing `#min_imports` removed 2026-10-19): the module
-      docstring still says
-      the file shows that F preserves commutative group objects (that is
-      now in ForMathlib/FunctorCommAddObj.lean); could add a
-      `zsmul_asHom` lemma to ForMathlib/Endomorphism.lean and drop the
-      local `have h h'` in commutes'.
-
-
-preCMType/Algebra.lean
-----------------------
-New file (70f2e46): algebraic background for CM types. Line numbers as
-of 2026-10-02 (commit 45007ad).
-
-
-[ ] Cleanup (trailing `#min_imports` removed 2026-10-19): remove the
-      commented-out
-      `--#check IsSimpleRing.isField_center` (l.56).
+[ ] Cleanup: the module docstring (l.11–12) still says the file shows
+      that F preserves commutative group objects (that is now in
+      ForMathlib/FunctorCommAddObj.lean); could add a `zsmul_asHom` lemma
+      to ForMathlib/Endomorphism.lean and drop the local `have h h'` in
+      commutes'.
 
 
 preCMType/Defn.lean
 -------------------
-Line numbers as of 2026-10-26. No sorries left: preCMType and
-preCMType.ofComplexStructure are done.
+No sorries left: preCMType (with partition_condition stated as IsCompl),
+preCMType.ofInclusions, ofInfinitePlaces and ofComplexStructure are done.
 
 [ ] Natural map from a preCMType to the infinite places of F
       φ ↦ InfinitePlace.mk φ should be a bijection Φ ≃ InfinitePlace F,
@@ -504,18 +474,15 @@ preCMType.ofComplexStructure are done.
       (NumberField.Embeddings.card, IsTotallyComplex.finrank).
 
 [ ] Lemma: the partition condition for all embeddings σ : F →+* ℂ, not
-      just the w.embedding (comment at the end of the file, with proof idea).
+      just the w.embedding. Check whether ofInclusions (l.35, hypothesis
+      for all σ) vs ofInfinitePlaces (l.47) already covers this.
 
-[ ] Consider stating partition_condition as
-      IsCompl partition ((conj).comp '' partition) (comment at the end of
-      the file lists IsCompl and Mathlib's other partition notions).
-
-[ ] Docstrings: field `partition` ("inclusions" → "embeddings"; it is a
-      subset, not a partition); `partition_condition` ("infact"; it is
-      about an embedding and its conjugate, not an infinite place; the
-      partition is partition ⊔ conj ∘ partition, not partition ⊔
-      partitionᶜ). Missing docstrings on preCMType and
-      ofComplexStructure; module docstring says "section".
+[ ] Docstrings: field `partition` (l.28: "inclusions" → "embeddings"; it
+      is a subset, not a partition); `partition_condition` (l.30–31:
+      "partition ⊥ conj (partition)" should be ⊓; it is IsCompl of
+      partition and its conjugate image). Missing docstrings on preCMType,
+      ofInclusions, ofInfinitePlaces and ofComplexStructure; module
+      docstring (l.13) says "section".
 
 [ ] Naming: preCMType → PreCMType (UpperCamelCase), maybe just CMType;
       maybe rename the field `partition` (e.g. carrier / embeddings).
@@ -528,11 +495,12 @@ Algebra/FieldRepresentations.lean (moved from preCMType/)
 New file (a164484). Goal: for a number field F and a representation
 φ : F →+* End_ℂ V, decompose V = ⊕_{σ : F →+* ℂ} V_σ, with F acting on
 V_σ through σ (was step 5 of the old CMType plan; CMType is now
-defined via ofComplexStructure, so this file may no longer be needed). Line numbers as of
-2026-10-23.
-[ ] card : Fintype.card (F →+* ℂ) = finrank ℚ F                      (l.34)
-      Currently `sorry`. Note in the file: this lemma is not needed.
-[ ] decomposition φ : DirectSum.IsInternal (factor φ)                (l.58)
+defined via ofComplexStructure, so this file may no longer be needed).
+[ ] card : Fintype.card (F →+* ℂ) = finrank ℚ F                      (l.36)
+      Currently `sorry` (comment l.35: copilot said this can be solved,
+      but its proof gave an error).
+[ ] decomposition φ : DirectSum.IsInternal (factor φ)                (l.60)
       Currently `sorry`.
-[ ] Note in the file (l.55): opening `Classical` globally gave a
-      warning; it is now opened only locally (`open DirectSum Classical in`).
+[ ] "Hey claude" note in the file (l.57): opening `Classical` globally
+      gave a warning; it is now opened only locally
+      (`open DirectSum Classical in`).
